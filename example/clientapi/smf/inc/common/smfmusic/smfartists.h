@@ -13,25 +13,26 @@
  * Manasij Roy, Nalina Hariharan
  * 
  * Description:
- * The SmfLyrics class represents an instance of a music track's lyrics
+ * The SmfArtists class represents the artists in a track or an album
  *
  */
 
-#ifndef SMFLYRICS_H_
-#define SMFLYRICS_H_
+#ifndef SMFARTISTS_H_
+#define SMFARTISTS_H_
 
+#include <QImage>
+#include <QUrl>
 #include <qdatastream.h>
-#include <QDateTime>
 #include <QSharedData>
 #include <smfclientglobal.h>
 
-class SmfLyricsPrivate;
+class SmfArtistsPrivate;
 
 /**
  * @ingroup smf_common_group
- * The lyrics class represents an instance of a music track's lyrics
+ * The SmfArtists class represents the artists in a track or an album
  */
-class SMFCLIENT_EXPORT SmfLyrics : public QObject
+class SMFCLIENT_EXPORT SmfArtists : public QObject
 	{
 	Q_OBJECT
 public:
@@ -39,73 +40,68 @@ public:
 	 * Constructor with default argument
 	 * @param aParent The parent object
 	 */
-	SmfLyrics( QObject *aParent = 0 );
+	SmfArtists( QObject *aParent = 0 );
 	
 	/**
 	 * Copy Constructor
 	 * @param aOther The reference object
 	 */
-	SmfLyrics( const SmfLyrics &aOther );
+	SmfArtists( const SmfArtists &aOther );
 	
 	/**
 	 * Destructor
 	 */
-	~SmfLyrics( );
+	~SmfArtists( );
 	
 	/**
-	 * Method to get the lyrics
-	 * @return The lyrics data
+	 * Method to get the artists names
+	 * @return The list of artists
 	 */
-	QByteArray lyrics( ) const;
+	QStringList names( ) const;
 	
 	/**
-	 * Method to get the language
-	 * @return The language
+	 * Method to get the image of the artists
+	 * @return The image of te artists
 	 */
-	QString language( ) const;
+	QImage image( ) const;
 	
 	/**
-	 * Method to get the release year
-	 * @return The release year
+	 * Method to get the url of the artists
+	 * @return The url of the artists
 	 */
-	QDateTime releaseYear( ) const;
-	
-	/**
-	 * Method to get the id of the lyrics
-	 * @return The ID value 
-	 */
-	QString id( ) const;
-	
+	QUrl url( ) const;
+		
 private:
-	QSharedDataPointer<SmfLyricsPrivate> d;
+	QSharedDataPointer<SmfArtistsPrivate> d;
 	
 	friend QDataStream &operator<<( QDataStream &aDataStream, 
-			const SmfLyrics &aLyrics );
+			const SmfArtists &aArtists );
 
 	friend QDataStream &operator>>( QDataStream &aDataStream, 
-			SmfLyrics &aLyrics );
+			SmfArtists &aArtists );
 	
 	};
 
 
 /**
- * Method for Externalization. Writes the SmfLyrics object to 
+ * Method for Externalization. Writes the SmfArtists object to 
  * the stream and returns a reference to the stream.
  * @param aDataStream Stream to be written
- * @param aLyrics The SmfLyrics object to be externalized
+ * @param aArtists The SmfArtists object to be externalized
  * @return reference to the written stream
  */
 QDataStream &operator<<( QDataStream &aDataStream, 
-		const SmfLyrics &aLyrics );
+		const SmfArtists &aArtists );
 
 /**
- * Method for Internalization. Reads a SmfLyrics object from 
+ * Method for Internalization. Reads a SmfArtists object from 
  * the stream and returns a reference to the stream.
  * @param aDataStream Stream to be read
- * @param aLyrics The SmfLyrics object to be internalized
+ * @param aArtists The SmfArtists object to be internalized
  * @return reference to the stream
  */
 QDataStream &operator>>( QDataStream &aDataStream, 
-		SmfLyrics &aLyrics);
+		SmfArtists &aArtists);
 
-#endif /* SMFLYRICS_H_ */
+
+#endif /* SMFARTISTS_H_ */

@@ -1,20 +1,20 @@
 /**
- * @file	smfplaylist.h
- * @author  Nalina Hariharan,Manasij Roy Sasken Communication Technologies Ltd - Initial contribution
- * @version 1.0
- *
- * @section LICENSE
- *
- * Copyright (c) 2010 Sasken Communication Technologies Ltd. 
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
  * All rights reserved.
- * This component and the accompanying materials are made available 
- * under the terms of the "{License}" 
- * which accompanies  this distribution, and is available 
- * at the URL "{LicenseUrl}".
- * 
- * @section DESCRIPTION
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0" 
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  *
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Manasij Roy, Nalina Hariharan
+ * 
+ * Description:
  * The playlist class represents an instance of a playlist
+ *
  */
 
 #ifndef SMFPLAYLIST_H_
@@ -22,11 +22,16 @@
 
 #include <smftrackinfo.h>
 #include <qdatastream.h>
+#include <QSharedData>
+#include <smfclientglobal.h>
+
+class SmfPlaylistPrivate;
 
 /**
+ * @ingroup smf_common_group
  * The playlist class represents an instance of a playlist
  */
-class SmfPlaylist : public QObject
+class SMFCLIENT_EXPORT SmfPlaylist : public QObject
 	{
 	Q_OBJECT
 public:
@@ -37,33 +42,39 @@ public:
 	SmfPlaylist( QObject *aParent = 0 );
 	
 	/**
+	 * Copy Constructor
+	 * @param aOther The reference object
+	 */
+	SmfPlaylist( const SmfPlaylist &aOther );
+	
+	/**
 	 * Destructor
 	 */
 	~SmfPlaylist( );
 	
 	/**
 	 * Method to get the list of tracks in the playlist
-	 * @param aList The list of tracks in the playlist
+	 * @return The list of tracks in the playlist
 	 */
-	void getTrackList( QList<SmfTrackInfo>& aList );
+	QList<SmfTrackInfo> trackList( ) const;
 	
 	/**
 	 * Method to get the playlist title
-	 * @param aTitle The title of the playlist
+	 * @return The title of the playlist
 	 */
-	void getPlayListTitle( QString &aTitle );
+	QString playListTitle( ) const;
 	
 	/**
 	 * Method to get the creation date of the playlist
-	 * @param aDate The date and time of creation of the playlist
+	 * @return The date and time of creation of the playlist
 	 */
-	void getCreationDate( QDateTime &aDate );
+	QDateTime creationDate( ) const;
 	
 	/**
 	 * Method to get the id of the playlist
-	 * @param aId The ID value 
+	 * @return The ID value 
 	 */
-	void getId( QString &aId );
+	QString id( ) const;
 	
 	/**
 	 * Method to set the list of tracks in the playlist
@@ -84,19 +95,35 @@ public:
 	void setCreationDate( const QDateTime &aDate );
 	
 private:
-	QList<SmfTrackInfo> m_trackList;	// list of tracks
-	QString m_title;				// playlist name
-	QDateTime m_creationDate;		// creation date
-	QString m_playlistId;
+	QSharedDataPointer<SmfPlaylistPrivate> d;
+	
+	friend QDataStream &operator<<( QDataStream &aDataStream, 
+			const SmfPlaylist &aPlaylist );
+
+	friend QDataStream &operator>>( QDataStream &aDataStream, 
+			SmfPlaylist &aPlaylist );
 	
 	};
- /**
-  * Externalization
-  */
- QDataStream &operator<<(QDataStream &, const SmfPlaylist &);
- /**
-  * Internalization
-  */
- QDataStream &operator>>(QDataStream &, SmfPlaylist &);
- 
+
+
+/**
+ * Method for Externalization. Writes the SmfPlaylist object to 
+ * the stream and returns a reference to the stream.
+ * @param aDataStream Stream to be written
+ * @param aPlaylist The SmfPlaylist object to be externalized
+ * @return reference to the written stream
+ */
+QDataStream &operator<<( QDataStream &aDataStream, 
+		const SmfPlaylist &aPlaylist );
+
+/**
+ * Method for Internalization. Reads a SmfPlaylist object from 
+ * the stream and returns a reference to the stream.
+ * @param aDataStream Stream to be read
+ * @param aPlaylist The SmfPlaylist object to be internalized
+ * @return reference to the stream
+ */
+QDataStream &operator>>( QDataStream &aDataStream, 
+		SmfPlaylist &aPlaylist);
+
 #endif /* SMFPLAYLIST_H_ */

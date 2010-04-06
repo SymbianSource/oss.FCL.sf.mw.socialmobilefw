@@ -1,20 +1,20 @@
 /**
- * @file	smftrackinfo.h
- * @author  Nalina Hariharan, Sasken Communication Technologies Ltd - Initial contribution
- * @version 1.0
- *
- * @section LICENSE
- *
- * Copyright (c) 2010 Sasken Communication Technologies Ltd. 
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
  * All rights reserved.
- * This component and the accompanying materials are made available 
- * under the terms of the "{License}" 
- * which accompanies  this distribution, and is available 
- * at the URL "{LicenseUrl}".
- * 
- * @section DESCRIPTION
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0" 
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  *
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Manasij Roy, Nalina Hariharan
+ * 
+ * Description:
  * The track info class represents information about a music track
+ *
  */
 
 #ifndef SMFTRACKINFO_H_
@@ -23,138 +23,184 @@
 #include <QTime>
 #include <qdatastream.h>
 #include <smfmusicrating.h>
-#include "SmfClientGlobal.h"
+#include <smfartists.h>
+#include <smfalbum.h>
+#include <QStringList>
+#include <QSharedData>
+#include <smfclientglobal.h>
+
+class SmfTrackInfoPrivate;
+
 /**
- * Music track info as track id,title, album, artist, genre,
- * tag, director,release year, rating, comment info 
+ * @ingroup smf_common_group
+ * The track info class represents information about a music track
  */
 class SMFCLIENT_EXPORT SmfTrackInfo : public QObject
 	{
 	Q_OBJECT
 public:
-	 /**
-	  * Constructs track info 
-	  */
-	SmfTrackInfo(QObject* parent=0);
 	/**
-	 * Gets track id
+	 * Constructor with default argument
+	 * @param aParent The parent object
+	 * (parent should be of type SmfMusicServicePlugin)
 	 */
-	void getId(QString& id);
+	SmfTrackInfo(QObject *aParent = 0 );
 	
 	/**
-	 * Gets title of the track
+	 * Copy Constructor
+	 * @param aOther The reference object
 	 */
-	void getTitle(QString& title);
+	SmfTrackInfo( const SmfTrackInfo &aOther );
 	
 	/**
-	 * Gets album name
+	 * Destructor
 	 */
-	void getAlbum(QString& album);
+	~SmfTrackInfo( );
 	
 	/**
-	 * Gets track artist
+	 * Method to get the id of the track
+	 * @return The ID value 
 	 */
-	void getArtist(QString& artist);
+	QString id( ) const;
 	
 	/**
-	 * Gets track genre
+	 * Method to get the track title
+	 * @return The title of the track
 	 */
-	void getGenre(QString& genre);
+	QString title( ) const;
 	
 	/**
-	 * Gets track tag
+	 * Method to get the track album
+	 * @return The album of the track
 	 */
-	void getTag(QString& tag);
+	SmfAlbum album( ) const;
 	
 	/**
-	 * Gets director name
+	 * Method to get the track's artists
+	 * @return The artists of the track
 	 */
-	void getDirector(QString& director);
+	SmfArtists artists( ) const;
 	
 	/**
-	 * Gets release year
+	 * Method to get the genre of the track
+	 * @return The genre of the track
 	 */
-	void getYear(QString& year);
+	QString genre( ) const;
 	
 	/**
-	 * Gets track rating 
+	 * Method to get the track's tag
+	 * @return The tag of the track
 	 */
-	void getRating(SmfMusicRating& rating);
+	QStringList tags( ) const;
 	
 	/**
-	 * Gets comments
+	 * Method to get the release year of the track
+	 * @return The release year of the track
 	 */
-	void getComment(QStringList& comment);
-	
-	
-	/**
-	 * Sets id
-	 */
-	void setId(QString& id);
+	QDateTime year( ) const;
 	
 	/**
-	 * Sets title
+	 * Method to get the track's rating
+	 * @return The rating of the track
 	 */
-	void setTitle(QString& title);
+	SmfMusicRating rating( ) const;
 	
 	/**
-	 * Sets album name
+	 * Method to get the comments on the track
+	 * @return The comments on the track
 	 */
-	void setAlbum(QString& album);
+	QStringList comments( ) const;
 	
 	/**
-	 * Sets artist name
+	 * Method to get the track's duration
+	 * @return The duration of the track
 	 */
-	void setArtist(QString& artist);
+	QTime duration( ) const;
 	
 	/**
-	 * Sets genre
+	 * Method to set the track title
+	 * @param aTitle The new title of the track
 	 */
-	void setGenre(QString& genre);
+	void setTitle( const QString &aTitle );
 	
 	/**
-	 * Sets tag
+	 * Method to set the track album
+	 * @param aAlbum The new album of the track
 	 */
-	void setTag(QString& tag);
+	void setAlbum( const SmfAlbum &aAlbum );
 	
 	/**
-	 * Sets director name
+	 * Method to set the track's artists
+	 * @param aArtists The new artists of the track
 	 */
-	void setDirector(QString& director);
+	void setArtists( const SmfArtists &aArtists );
 	
 	/**
-	 * Sets release year
+	 * Method to set the genre of the track
+	 * @param aGenre The new genre of the track
 	 */
-	void setYear(QString& year);
+	void setGenre( const QString &aGenre );
 	
 	/**
-	 * Sets rating
+	 * Method to set the track's tag
+	 * @param aTag The tag of the track
 	 */
-	void setRating(SmfMusicRating& rating);
+	void setTags( const QStringList &aTag );
 	
 	/**
-	 * Sets comment
+	 * Method to set the release year of the track
+	 * @param aYear The new release year of the track
 	 */
-	void setComment(QStringList& comment);
+	void setYear( const QDateTime &aYear );
+	
+	/**
+	 * Method to set the track's rating
+	 * @param aRating The new rating of the track
+	 */
+	void setRating( const SmfMusicRating &aRating );
+	
+	/**
+	 * Method to set the comments on the track
+	 * @param aComment The new comment of the track
+	 */
+	void setComment( const QString &aComment );
+	
+	/**
+	 * Method to set the duration of the track
+	 * @param aDuration The new duration of the track
+	 */
+	void setDuration( const QTime &aDuration );
 
 private:
-	QString m_id;
-	QString m_title;
-	QString m_albumTitle;
-	QString m_artistName;
-	QString m_genre;
-	QString m_tag;
-	QString m_director;
-	QString m_year;
-	SmfMusicRating m_rating;
-	QString m_comment;
+	QSharedDataPointer<SmfTrackInfoPrivate> d;
+	
+	friend QDataStream &operator<<( QDataStream &aDataStream, 
+			const SmfTrackInfo &aTrackInfo );
+
+	friend QDataStream &operator>>( QDataStream &aDataStream, 
+			SmfTrackInfo &aTrackInfo );
+	
 	};
+
+
 /**
-* Externalization
-*/
-QDataStream &operator<<(QDataStream &, const SmfTrackInfo&);
-/**
- * Internalization
+ * Method for Externalization. Writes the SmfTrackInfo object to 
+ * the stream and returns a reference to the stream.
+ * @param aDataStream Stream to be written
+ * @param aTrackInfo The SmfTrackInfo object to be externalized
+ * @return reference to the written stream
  */
-QDataStream &operator>>(QDataStream &, SmfTrackInfo&);
+QDataStream &operator<<( QDataStream &aDataStream, 
+		const SmfTrackInfo &aTrackInfo );
+
+/**
+ * Method for Internalization. Reads a SmfTrackInfo object from 
+ * the stream and returns a reference to the stream.
+ * @param aDataStream Stream to be read
+ * @param aTrackInfo The SmfTrackInfo object to be internalized
+ * @return reference to the stream
+ */
+QDataStream &operator>>( QDataStream &aDataStream, 
+		SmfTrackInfo &aTrackInfo);
+
 #endif /* SMFTRACKINFO_H_ */

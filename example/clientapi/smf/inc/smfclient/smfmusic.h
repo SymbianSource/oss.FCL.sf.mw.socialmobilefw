@@ -1,20 +1,21 @@
-/*
-* Copyright (c) 2010 Sasken Communication Technologies Ltd.
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of the "{License}"
-* which accompanies  this distribution, and is available
-* at the URL "{LicenseUrl}".
-*
-* Initial Contributors:
-* Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
-*
-* Contributors:
-* 
-* Description:
-* Interface spefication for music related services
-*
-*/
+/**
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0"
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
+ *
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Manasij Roy, Nalina Hariharan
+ *
+ * Description:
+ * The SmfEvent class represents an event
+ *
+ */
 
 #ifndef SMFMUSIC_H
 #define SMMUSIC_H
@@ -24,9 +25,10 @@
 #include <qmobilityglobal.h>
 #include <qgeopositioninfo.h>
 
+#include "smfglobal.h"
 #include "smfprovider.h"
 #include "smfcontact.h"
-
+#include "smfevent.h"
 
 class SmfProvider; //basic Smf service Provider info
 class SmfContact; // Smf contact
@@ -35,8 +37,7 @@ class SmfMusicProfile; //user profile containing music usage and interest info, 
 class SmfTrackInfo; //id, title, album, artist, genre, tag, director,release year, rating, comment info
 class SmfMusicFingerPrint; //generation is not in scope of smf
 class SmfVenue;
-class SmfMusicModel;
-class SmfEvents;
+class SmfEvent;
 class SmfPlaylist;
 class SmfLyricsService;
 class SmfLyrics;
@@ -45,13 +46,14 @@ class SmfSubtitleSearchFilter;
 
 typedef QList<SmfMusicProfile> SmfMusicProfileList;
 typedef QList<SmfTrackInfo> SmfTrackInfoList;
-typedef QList<SmfEvents> SmfEventsList;
+typedef QList<SmfEvent> SmfEventsList;
 typedef QList<SmfProvider> SmfProviderList;
 typedef QList<SmfPlaylist> SmfPlaylistList;
 typedef QList<SmfVenue> SmfVenueList;
 typedef QList<SmfLyrics> SmfLyricsList;
 typedef QList<SmfSubtitle> SmfSubtitleList;
 /**
+ * @ingroup smf_client_group
   * Basic music service ("org.symbian.smf.client.music.service")
   */
 class SMFCLIENT_EXPORT SmfMusicService : public QObject
@@ -69,35 +71,28 @@ public:
   ~SmfMusicService();
 
 public:
-  
+
   /**
    * Gets self profile information asynchronously.
    * userInfoAvailable() signal is emitted with SmfMusicProfile when the info is arrived
    */
-  virtual void userinfo() = 0; 
-  
+  void userinfo() ;
+
   /**
    * Asynchronously searches information about other service users for a particular venue
-   * serachInfoAvailable() signal is emitted with SmfMusicProfileList when the info is arrived
+   * searchInfoAvailable() signal is emitted with SmfMusicProfileList when the info is arrived.
+   * When the list is big user can specify the page number and per page item data.
+   * If not supplied by the user default values are used.
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void searchUser(SmfVenue venue) = 0; 
-  
-  /**
-   * Returns the model
-   */
-  virtual SmfMusicModel model() = 0; // maybe we can make a QItemModel-derived model?
+  void searchUser(SmfVenue venue,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE) ;
 
-  //APIs to get/set base provider info (SmfProvider)
-  
   /**
    * Gets the base provider info
    */
-  virtual SmfProvider* getProvider() = 0;
-  
-  /**
-   * Sets the base provider info
-   */
-  virtual void setProvider(SmfProvider* provider) = 0;
+  SmfProvider* getProvider() ;
+
 
 signals:
 	/**
@@ -105,10 +100,12 @@ signals:
 	 * @param profile The self profile
 	 */
 	void userInfoAvailable(SmfMusicProfile* profile, QString error);
+
+	void searchInfoAvailable(SmfMusicProfileList& profileList, QString error,SmfResultPage resultPage);
 private:
   SmfProvider* m_baseProvider;
 };
-SMF_GETSERVICES(SmfMusicService, "org.symbian.smf.client.music.service\0.2")
+SMF_SERVICE_NAME(SmfMusicService, "org.symbian.smf.client.music.service\0.2")
 
 
 /**
@@ -130,49 +127,57 @@ public:
 
 public:
   // Get the track listing - might be made asynchrnous later
-  
+
   /**
    * Searches for music recommendations similar to a particulartrack asynchronously.
    * The signal trackSearchAvailable() is emitted with SmfTrackInfoList
    * once its arrived.
+   * When the list is big user can specify the page number and per page item data.
+   * If not supplied by the user default values are used.
    * @param track The track for which similar recommendations need to be fetched.
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void recommendations(SmfTrackInfo track) = 0; // basic list of track objects
-  
+  void recommendations(SmfTrackInfo track,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ; // basic list of track objects
+
   /**
    * Searches for tracks similar to a given track asynchronously.
    * The signal trackSearchAvailable() is emitted with SmfTrackInfoList
    * once its arrived.
+   * When the list is big user can specify the page number and per page item data.
+   * If not supplied by the user default values are used.
    * @param track The search criteria, similar tracks are searched
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void tracks(SmfTrackInfo track) = 0; // basic list of track objects
-  
+  void tracks(SmfTrackInfo track,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ; // basic list of track objects
+
   /**
    * Searches for a track having similar finger print asynchronously.
    * The signal trackSearchAvailable() is emitted with SmfTrackInfoList
    * once its arrived.
    * @param signature The search criteria,signature to be searched for
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void trackInfo(SmfMusicFingerPrint signature) = 0; // search by fingerprint object
-  
+  void trackInfo(SmfMusicFingerPrint signature,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ; // search by fingerprint object
+
   /**
    * Search information about where to buy this song from asynchronously.
    * The signal storeSearchAvailable() is emitted with SmfProviderList once its arrived.
    * @param track The search criteria for stores
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void stores(SmfTrackInfo track) = 0; 
-  
+  void stores(SmfTrackInfo track,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ;
+
   //APIs to get/set base provider info (SmfProvider)
-  
+
   /**
    * Gets the base provider info
    */
-  virtual SmfProvider* getProvider() = 0;
-  
-  /**
-   * Sets the base provider info
-   */
-  virtual void setProvider(SmfProvider* provider) = 0;
+  SmfProvider* getProvider()  ;
+
 
 public slots:
 
@@ -181,30 +186,30 @@ public slots:
 	 * Success can be checked by checking the signal postFinished()
 	 * @param track Track to post
 	 */
-  virtual void postCurrentPlaying(SmfTrackInfo track) = 0;
-  //virtual int postRating(SmfTrackInfo track, SmfMusicRating rate) = 0;
-  //virtual int postComments(SmfTrackInfo track, SmfComment comment) = 0;
+  void postCurrentPlaying(SmfTrackInfo track)  ;
+  //int postRating(SmfTrackInfo track, SmfMusicRating rate)  ;
+  //int postComments(SmfTrackInfo track, SmfComment comment)  ;
 
 signals:
 	/**
 	 * Emitted when the search result for a track is available.
 	 * Note if number of tacks in the search is large, then it can download the list page by page.
 	 * In that case this signal is emitted multiple times.
-	 * @param result The search result
+	 * @param resultPage Page number info
 	 */
-	void trackSearchAvailable(SmfTrackInfoList* result, QString error, int pageNumber=0);
-	
+	void trackSearchAvailable(SmfTrackInfoList* result, QString error,SmfResultPage resultPage);
+
 	/**
 	 *  Emitted when the search result for a store is available.
 	 *  Note if number of tacks in the search is large, then it can download the list page by page.
 	 *  In that case this signal is emitted multiple times.
-	 *  @param result The search result
+	 *  @param resultPage Page number info
 	 */
-	void storeSearchAvailable(SmfProviderList* result, QString error, int pageNumber=0);
+	void storeSearchAvailable(SmfProviderList* result, QString error, SmfResultPage resultPage);
 private:
   SmfProvider* m_baseProvider;
 };
-SMF_GETSERVICES(SmfMusicSearch, "org.symbian.smf.client.music.search\0.2")
+SMF_SERVICE_NAME(SmfMusicSearch, "org.symbian.smf.client.music.search\0.2")
 
 
 /**
@@ -213,41 +218,41 @@ SMF_GETSERVICES(SmfMusicSearch, "org.symbian.smf.client.music.search\0.2")
 class SMFCLIENT_EXPORT SmfPlaylist : public QObject
 	{
 	Q_OBJECT
-	
+
 public:
 	SmfPlaylist();
 	~SmfPlaylist();
-	
+
 	/**
 	 * Gets tracks in the playlist
 	 */
 	SmfTrackInfoList* getTrackList();
-	
+
 	/**
 	 * Gets playlist title
 	 */
 	QString getPlayListTitle();
-	
+
 	/**
 	 * Gets the creation date
 	 */
 	QDateTime getCreationDate();
-	
+
 	/**
 	 * Sets tracks in the playlist
 	 */
 	void setTrackList(SmfTrackInfoList* trackList);
-	
+
 	/**
 	 * Sets playlist title
 	 */
 	void setPlayListTitle(QString title);
-	
+
 	/**
 	 * Sets creation date
 	 */
 	void setCreationDate(QDateTime time);
-	
+
 private:
 	SmfTrackInfoList* m_trackList;
 	QString m_title;
@@ -284,33 +289,37 @@ public:
   ~SmfPlaylistService();
 
 public:
-  
+
   /**
    * Gets the list playlists for the logged-in user asynchronously.
-   * The signal playlistsListAvailable() signal is emitted with 
-   * SmfPlaylistList once its arrived 
+   * The signal playlistsListAvailable() signal is emitted with
+   * SmfPlaylistList once its arrived .
+   * When the list is big user can specify the page number and per page item data.
+   * If not supplied by the user default values are used.
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void playlists() = 0; // basic list of playlist objects 
-  
+  void playlists(int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ; // basic list of playlist objects
+
   /**
    * Gets the list playlists for the given user asynchronously.
-   * The signal playlistsListAvailable() signal is emitted with 
+   * The signal playlistsListAvailable() signal is emitted with
    * SmfPlaylistList once its arrived.
+   * When the list is big user can specify the page number and per page item data.
+   * If not supplied by the user default values are used.
    * @param user User for which to get the playlists
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void playlistsOf(SmfMusicProfile* user) = 0; 
+  void playlistsOf(SmfMusicProfile* user,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ;
 
   //APIs to get/set base provider info (SmfProvider)
-  
+
   /**
    * Gets the base provider info
    */
-  virtual SmfProvider* getProvider() = 0;
-  
-  /**
-   * Sets the base provider info
-   */
-  virtual void setProvider(SmfProvider* provider) = 0;
+  SmfProvider* getProvider()  ;
+
 
 public slots:
 
@@ -320,14 +329,14 @@ public slots:
 	 * @param plst The playlist to be added in
 	 * @param tracks The list of tracks to uploaded
 	 */
-  virtual int addToPlaylist(SmfPlaylist plst, SmfTrackInfoList* tracks) = 0;
-  
+  int addToPlaylist(SmfPlaylist plst, SmfTrackInfoList* tracks)  ;
+
 	/**
 	 * Upload currently playing playlist . Signal
 	 * playlistUpdated() can be checked for success value
 	 * @param plst The playlist to be uploaded
 	 */
-  virtual int postCurrentPlayingPlaylist(SmfPlaylist plst) = 0;
+  int postCurrentPlayingPlaylist(SmfPlaylist plst)  ;
 
 
 signals:
@@ -335,8 +344,9 @@ signals:
 	 * Notification of availability of list of playlists requested.
 	 * Note if number of list is large, then it can download the list page by page.
 	 * In that case this signal is emitted multiple times.
+	 * @param resultPage Page number info
 	 */
-	void playlistsListAvailable(SmfPlaylistList*, QString error, int pageNumber=0);
+	void playlistsListAvailable(SmfPlaylistList*, QString error, SmfResultPage resultPage);
 	/**
 	 * Signals remote updation of playlist with success value
 	 */
@@ -344,7 +354,7 @@ signals:
 private:
   SmfProvider* m_baseProvider;
 };
-SMF_GETSERVICES(SmfPlaylistService, "org.symbian.smf.client.music.playlist\0.2")
+SMF_SERVICE_NAME(SmfPlaylistService, "org.symbian.smf.client.music.playlist\0.2")
 
 
 /**
@@ -364,37 +374,45 @@ public:
   ~SmfMusicEvents();
 
 public:
-  
+
   /**
    * Gets list of events in a particular location asynchronously.
-   * eventsAvailable() signal is emitted with SmfEventsList once its arrived
+   * eventsAvailable() signal is emitted with SmfEventsList once its arrived.
+   * When the list is big user can specify the page number and per page item data.
+   * If not supplied by the user default values are used.
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void events(QtMobility::QContactGeolocation location) = 0;
-  
+  void events(QtMobility::QContactGeolocation location,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ;
+
   /**
    * Gets list of venues of a particular location asynchronously.
    * venuesAvailable() signal is emitted with SmfVenueList once its arrived.
+   * When the list is big user can specify the page number and per page item data.
+   * If not supplied by the user default values are used.
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void venues(QtMobility::QContactGeolocation location) = 0; // basic list of venue objects
-  
+  void venues(QtMobility::QContactGeolocation location,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ; // basic list of venue objects
+
   /**
    * Gets list of events in a particular venue asynchronously.
-   * eventsAvailable() signal is emitted with SmfEventsList once its arrived
+   * eventsAvailable() signal is emitted with SmfEventsList once its arrived.
+   * When the list is big user can specify the page number and per page item data.
+   * If not supplied by the user default values are used.
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void events(SmfVenue venue) = 0; // basic list of events objects
-  
+  void events(SmfVenue venue,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ; // basic list of events objects
+
 
   //APIs to get/set base provider info (SmfProvider)
-  
+
   /**
    * Gets the base provider info
    */
-  virtual SmfProvider* getProvider() = 0;
-  
-  /**
-   * Sets the base provider info
-   */
-  virtual void setProvider(SmfProvider* provider) = 0;
+  SmfProvider* getProvider()  ;
+
 
 public slots:
 
@@ -403,32 +421,34 @@ public slots:
 	 * eventsUpdated() signal can be checked for success value.
 	 * @param SmfEventsList List of events to be posted
 	 */
-	 virtual void postEvents(SmfEventsList events); 
+	 void postEvents(SmfEventsList events);
 
 signals:
-	
+
 	/**
 	 * Notification of the success of request to post an event
 	 */
 	void eventsUpdated(bool success);
-	
+
 	/**
 	 * Notification on arrival of event lists
 	 * Note if number of list is large, then it can download the list page by page.
 	 * In that case this signal is emitted multiple times.
+	 * @param resultPage Page number info
 	 */
-	void eventsAvailable(SmfEventsList* list, QString error, int pageNumber=0);
-	
+	void eventsAvailable(SmfEventsList* list, QString error, SmfResultPage resultPage);
+
 	/**
 	 *  Notification on arrival of venues lists
 	 * Note if number of list is large, then it can download the list page by page.
 	 * In that case this signal is emitted multiple times.
+	 * @param resultPage Page number info
 	 */
-	void venuesAvailable(SmfVenueList* list, QString error, int pageNumber=0);
+	void venuesAvailable(SmfVenueList* list, QString error, SmfResultPage resultPage);
 private:
   SmfProvider* m_baseProvider;
 };
-SMF_GETSERVICES(SmfMusicEvents, "org.symbian.smf.client.music.events\0.2")
+SMF_SERVICE_NAME(SmfMusicEvents, "org.symbian.smf.client.music.events\0.2")
 
 
 /**
@@ -449,56 +469,58 @@ public:
   ~SmfLyricsService();
 
 public:
-  
+
   /**
    * Get the lyrics lists asynchrnously, it fetches texts without time info.
    * lyricsAvailable() notification comes SmfLyricsList with when the data is available
    * @param track Track for which lyrics needs to be fetched.
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void lyrics(SmfTrackInfo track) = 0; 
-  
+  void lyrics(SmfTrackInfo track,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ;
+
   /**
    * Get the lyrics lists asynchrnously, it fetches texts with time info.
    * Subtitle search filter can be applied
    * subtitleAvailable() notification comes SmfSubtitleList with when the data is available
    * @param track Track for which subtitle needs to be fetched.
    * @param filter Subtitle search filter
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void subtitles(SmfTrackInfo track, SmfSubtitleSearchFilter filter) = 0; // texts with time information
+  void subtitles(SmfTrackInfo track, SmfSubtitleSearchFilter filter,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ; // texts with time information
   //APIs to get/set base provider info (SmfProvider)
-  
+
   /**
    * Gets the base provider info
    */
-  virtual SmfProvider* getProvider() = 0;
-  
-  /**
-   * Sets the base provider info
-   */
-  virtual void setProvider(SmfProvider* provider) = 0;
+  SmfProvider* getProvider()  ;
+
 
 public slots:
 
 
 signals:
-	
+
 	/**
 	 * Notification on arrival of lyrics
 	 * Note if the list is large, then it can download the list page by page.
 	 * In that case this signal is emitted multiple times.
+	 * @param resultPage Page number info
 	 */
-	void lyricsAvailable(SmfLyricsList* list, QString error, int pageNumber=0);
+	void lyricsAvailable(SmfLyricsList* list, QString error, SmfResultPage resultPage);
 
 	/**
 	 * Notification on arrival of subtitle based on filter.
 	 * Note if the list is large, then it can download the list page by page.
 	 * In that case this signal is emitted multiple times.
+	 * @param resultPage Page number info
 	 */
-	void subtitleAvailable(SmfSubtitleList* list, QString error, int pageNumber=0);
+	void subtitleAvailable(SmfSubtitleList* list, QString error, SmfResultPage resultPage);
 private:
   SmfProvider* m_baseProvider;
 };
-SMF_GETSERVICES(SmfLyricsService, "org.symbian.smf.client.music.lyrics\0.2")
+SMF_SERVICE_NAME(SmfLyricsService, "org.symbian.smf.client.music.lyrics\0.2")
 
 #endif // SMFMUSIC_H
 

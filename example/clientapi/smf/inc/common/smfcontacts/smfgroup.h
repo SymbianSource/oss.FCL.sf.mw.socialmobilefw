@@ -1,63 +1,107 @@
 /**
-* Copyright (c) 2010 Sasken Communication Technologies Ltd.
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of the "{License}"
-* which accompanies  this distribution, and is available
-* at the URL "{LicenseUrl}".
-*
-* Initial Contributors:
-* Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
-*
-* Contributors:
-* Manasij Roy
-* Description:
-* Interface spefication for smf service provider
-*
-*/
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0" 
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
+ *
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Manasij Roy, Nalina Hariharan
+ * 
+ * Description:
+ * The group class represents an instance of a group as per SN site terminolgy
+ *
+ */
 
 #ifndef SMFGROUP_H_
 #define SMFGROUP_H_
 
-#include "SmfClientGlobal.h"
-class SmfContact;
-//List of SmfContacts
-typedef QList<SmfContact> SmfContactList;
+#include <smfcontact.h>
+#include <qdatastream.h>
+#include <QSharedData>
+#include <smfclientglobal.h>
+
+class SmfGroupPrivate;
+
+
 /**
- * class for a group in social network 
+ * @ingroup smf_common_group
+ * The group class represents an instance of a group as per SN site terminolgy
  */
 class SMFCLIENT_EXPORT SmfGroup : public QObject
 	{
 	Q_OBJECT
 public:
+	/**
+	 * Constructor with default argument
+	 * @param list The list of members in the group
+	 */
+	SmfGroup( QList<SmfContact>* list = 0 );
 	
 	/**
-	 * Constructs a group with list of contacts
+	 * Copy Constructor
+	 * @param aOther The reference object
 	 */
-	SmfGroup(SmfContactList* list=0);
-	/**
-	 *Returns list of members in the group
-	 *@return list of members 
-	 */
-	SmfContactList* members()
-		{
-		return m_members;
-		}
+	SmfGroup( const SmfGroup &aOther );
 	
 	/**
-	 * Sets the group members
-	 * @param members list of members to be added to the group 
+	 * Destructor
 	 */
-	void setMembers(SmfContactList& members);
+	~SmfGroup( );
+	
+public slots:
+	/**
+	 * Method to get the list of members in the group
+	 * @return The list of members in the group
+	 */
+	QList<SmfContact> members( ) const;
+	
+	/**
+	 * Method to get the name of the group
+	 * @return The name of the group
+	 */
+	QString name( ) const;
+	
+	/**
+	 * Method to get the id of the group
+	 * @return The ID value 
+	 */
+	QString id( ) const;
+	
 private:
-	SmfContactList* m_members;
+	QSharedDataPointer<SmfGroupPrivate> d;
+	
+	friend QDataStream &operator<<( QDataStream &aDataStream, 
+			const SmfGroup &aGroup );
+
+	friend QDataStream &operator>>( QDataStream &aDataStream, 
+			SmfGroup &aGroup );
+	
 	};
+
+
 /**
- * Externalization
+ * Method for Externalization. Writes the SmfGroup object to 
+ * the stream and returns a reference to the stream.
+ * @param aDataStream Stream to be written
+ * @param aGroup The SmfGroup object to be externalized
+ * @return reference to the written stream
  */
-QDataStream &operator<<(QDataStream &, const SmfGroup &);
+QDataStream &operator<<( QDataStream &aDataStream, 
+		const SmfGroup &aGroup );
+
 /**
- * Internalization
+ * Method for Internalization. Reads a SmfGroup object from 
+ * the stream and returns a reference to the stream.
+ * @param aDataStream Stream to be read
+ * @param aGroup The SmfGroup object to be internalized
+ * @return reference to the stream
  */
-QDataStream &operator>>(QDataStream &, SmfGroup &);
+QDataStream &operator>>( QDataStream &aDataStream, 
+		SmfGroup &aGroup);
+
 #endif /* SMFGROUP_H_ */

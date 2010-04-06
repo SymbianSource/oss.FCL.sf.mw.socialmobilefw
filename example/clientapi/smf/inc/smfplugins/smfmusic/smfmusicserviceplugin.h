@@ -8,9 +8,9 @@
  * Copyright (c) 2010 Sasken Communication Technologies Ltd. 
  * All rights reserved.
  * This component and the accompanying materials are made available 
- * under the terms of the "{License}" 
+ * under the terms of the "Eclipse Public License v1.0"
  * which accompanies  this distribution, and is available 
- * at the URL "{LicenseUrl}".
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  * 
  * @section DESCRIPTION
  *
@@ -20,11 +20,12 @@
 #ifndef SMFMUSICSERVICEPLUGIN_H_
 #define SMFMUSICSERVICEPLUGIN_H_
 
-#include <smfproviderbase.h>
+#include <smfpluginbase.h>
 #include <smfmusicprofile.h>
-#include <smfvenue.h>
+#include <smfplace.h>
 
 /**
+ * @ingroup smf_plugin_group
  * Interface specification for music services. This class provides basic 
  * functionality to allow application to search for a user or check for
  * user information etc.
@@ -32,7 +33,7 @@
  * All of the functionality described here should be implemented by a service
  * specific plug-in.
  */
-class SmfMusicServicePlugin : public QObject
+class SmfMusicServicePlugin : public SmfPluginBase
 	{
 	Q_OBJECT
 public:
@@ -48,12 +49,6 @@ public:
 	~SmfMusicServicePlugin( );
 	
 	/**
-	 * Method to get the provider information
-	 * @return Instance of SmfProviderBase
-	 */
-	virtual SmfProviderBase* getProviderInfo( ) = 0;
-	
-	/**
 	 * Method to get self profile information
 	 * @param aRequest [out] The request data to be sent to network
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
@@ -62,39 +57,17 @@ public:
 	
 	/**
 	 * Method to search information about other service users for a 
-	 * particular venue
-	 * @param aVenue The venue which is the search criteria
+	 * particular place
 	 * @param aRequest [out] The request data to be sent to network
+	 * @param aPlace The place which is the search criteria
 	 * @param aPageNum The page to be extracted
 	 * @param aItemsPerPage Number of items per page
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
-	virtual SmfPluginError searchUser( const SmfVenue aVenue, 
-			SmfPluginRequestData *aRequest, 
-			const int aPageNum = 0, 
-			const int aItemsPerPage = 10) = 0;
-	
-
-	/**
-	 * Method to get the result for a network request.
-	 * @param aTransportResult The result of transport operation
-	 * @param aReply The QNetworkReply instance for the request
-	 * @param aResult [out] An output parameter to the plugin manager.If the 
-	 * return value is SmfSendRequestAgain, QVariant will be of type 
-	 * SmfPluginRequestData. 
-	 * If last operation was userInfo(), aResult will be of type SmfMusicProfile
-	 * If last operation was searchUser(), aResult will be of type 
-	 * QList<SmfMusicProfile>
-	 * @param aRetType [out] SmfPluginRetType
-	 * @param aIsLastPage [out] true if this the last page, else false
-	 * @return SmfPluginError 
-	 */
-	virtual SmfPluginError responseAvailable( 
-			const SmfTransportResult aTransportResult, 
-			QNetworkReply *aReply, 
-			QVariant* aResult, 
-			SmfPluginRetType aRetType,
-			bool aIsLastPage) = 0;
+	virtual SmfPluginError searchUser( SmfPluginRequestData *aRequest,
+			const SmfPlace aPlace,
+			const int aPageNum = SMF_FIRST_PAGE, 
+			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
 	};
 

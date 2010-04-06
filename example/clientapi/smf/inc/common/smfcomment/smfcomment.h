@@ -13,99 +13,99 @@
  * Manasij Roy, Nalina Hariharan
  * 
  * Description:
- * The SmfLyrics class represents an instance of a music track's lyrics
+ * The comment class represents a comment (on a picture or a music track etc)
  *
  */
 
-#ifndef SMFLYRICS_H_
-#define SMFLYRICS_H_
+#ifndef SMFCOMMENT_H_
+#define SMFCOMMENT_H_
 
-#include <qdatastream.h>
 #include <QDateTime>
+#include <qdatastream.h>
 #include <QSharedData>
 #include <smfclientglobal.h>
 
-class SmfLyricsPrivate;
+class SmfCommentPrivate;
 
 /**
  * @ingroup smf_common_group
- * The lyrics class represents an instance of a music track's lyrics
+ * The comment class represents a comment (on a picture or a music track etc)
  */
-class SMFCLIENT_EXPORT SmfLyrics : public QObject
+class SMFCLIENT_EXPORT SmfComment : public QObject
 	{
 	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
+	 * @param aParent The parent object 
 	 */
-	SmfLyrics( QObject *aParent = 0 );
+	SmfComment( QObject *aParent = 0 );
 	
 	/**
 	 * Copy Constructor
 	 * @param aOther The reference object
 	 */
-	SmfLyrics( const SmfLyrics &aOther );
+	SmfComment( const SmfComment &aOther );
 	
 	/**
 	 * Destructor
 	 */
-	~SmfLyrics( );
+	~SmfComment( );
 	
 	/**
-	 * Method to get the lyrics
-	 * @return The lyrics data
+	 * Method to get the comment text
+	 * @return The comment text
 	 */
-	QByteArray lyrics( ) const;
+	QString text( ) const;
 	
 	/**
-	 * Method to get the language
-	 * @return The language
+	 * Method to get the comment time stamp
+	 * @return The comment time stamp value
 	 */
-	QString language( ) const;
+	QDateTime timeStamp( ) const;
 	
 	/**
-	 * Method to get the release year
-	 * @return The release year
-	 */
-	QDateTime releaseYear( ) const;
-	
-	/**
-	 * Method to get the id of the lyrics
+	 * Method to get the id of the comment
 	 * @return The ID value 
 	 */
 	QString id( ) const;
 	
+	/**
+	 * Method to set the comment text
+	 * @param aText The comment text to be set
+	 */
+	void setText( const QString &aText );
+	
 private:
-	QSharedDataPointer<SmfLyricsPrivate> d;
+	QSharedDataPointer<SmfCommentPrivate> d;
 	
 	friend QDataStream &operator<<( QDataStream &aDataStream, 
-			const SmfLyrics &aLyrics );
+			const SmfComment &aComment );
 
 	friend QDataStream &operator>>( QDataStream &aDataStream, 
-			SmfLyrics &aLyrics );
+			SmfComment &aComment );
 	
 	};
 
 
 /**
- * Method for Externalization. Writes the SmfLyrics object to 
+ * Method for Externalization. Writes the SmfComment object to 
  * the stream and returns a reference to the stream.
  * @param aDataStream Stream to be written
- * @param aLyrics The SmfLyrics object to be externalized
+ * @param aComment The SmfComment object to be externalized
  * @return reference to the written stream
  */
 QDataStream &operator<<( QDataStream &aDataStream, 
-		const SmfLyrics &aLyrics );
+		const SmfComment &aComment );
 
 /**
- * Method for Internalization. Reads a SmfLyrics object from 
+ * Method for Internalization. Reads a SmfComment object from 
  * the stream and returns a reference to the stream.
  * @param aDataStream Stream to be read
- * @param aLyrics The SmfLyrics object to be internalized
+ * @param aComment The SmfComment object to be internalized
  * @return reference to the stream
  */
 QDataStream &operator>>( QDataStream &aDataStream, 
-		SmfLyrics &aLyrics);
+		SmfComment &aComment);
 
-#endif /* SMFLYRICS_H_ */
+#endif /* SMFCOMMENT_H_ */

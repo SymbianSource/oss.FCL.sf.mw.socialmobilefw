@@ -1,20 +1,20 @@
 /**
- * @file	smfpicture.h
- * @author  Nalina Hariharan, Sasken Communication Technologies Ltd - Initial contribution
- * @version 1.0
- *
- * @section LICENSE
- *
- * Copyright (c) 2010 Sasken Communication Technologies Ltd. 
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
  * All rights reserved.
- * This component and the accompanying materials are made available 
- * under the terms of the "{License}" 
- * which accompanies  this distribution, and is available 
- * at the URL "{LicenseUrl}".
- * 
- * @section DESCRIPTION
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0" 
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  *
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Manasij Roy, Nalina Hariharan
+ * 
+ * Description:
  * The picture class represents an instance of a picture
+ *
  */
 
 #ifndef SMFPICTURE_H_
@@ -24,7 +24,11 @@
 #include <QStringList>
 #include <QUrl>
 #include <qdatastream.h>
-#include "SmfClientGlobal.h"
+#include <QSharedData>
+#include <smfclientglobal.h>
+
+class SmfPicturePrivate;
+
 /**
  * SmfPictureVisibility enumeration
  */
@@ -36,7 +40,9 @@ enum SmfPictureVisibility
 	SMFVisibilityGroup,
 	SMFVisibilityPublic
 	};
+
 /**
+ * @ingroup smf_common_group
  * The picture class represents an instance of a picture
  */
 class SMFCLIENT_EXPORT SmfPicture : public QObject
@@ -50,71 +56,81 @@ public:
 	SmfPicture( QObject *aParent = 0 );
 	
 	/**
+	 * Copy Constructor
+	 * @param aOther The reference object
+	 */
+	SmfPicture( const SmfPicture &aOther );
+	
+	/**
+	 * CConstructs SmfPicture from QImage
+	 * @param aOther The QImage
+	 */
+	SmfPicture( const QImage &image );
+	
+	/**
 	 * Destructor
 	 */
 	~SmfPicture( );
 	
-	
 	/**
 	 * Method to get the id of the picture
-	 * @param aId The ID value 
+	 * @return The ID value 
 	 */
-	void getId( QString &aId );
+	QString id( ) const;
 	
 	/**
 	 * Method to get a picture owner
-	 * @param aOwner The owner of the picture
+	 * @return The owner of the picture
 	 */
-	void getOwner( QString &aOwner );
+	QString owner( ) const;
 	
 	/**
 	 * Method to get a picture title
-	 * @param aTitle The title of the picture
+	 * @return The title of the picture
 	 */
-	void getTitle( QString &aTitle );
+	QString title( ) const;
 	
 	/**
 	 * Method to get a picture description
-	 * @param aDescription The description of the picture
+	 * @return The description of the picture
 	 */
-	void getDescription( QString &aDescription );
+	QString description( ) const;
 	
 	/**
 	 * Method to get a visibility of a picture for public
-	 * @param aVisibility The visibility mode of 
-	 * this picture for others
+	 * @return The visibility mode of this picture for others
 	 */
-	void getVisibility( SmfPictureVisibility &aVisibility );
+	SmfPictureVisibility visibility( ) const;
 	
 	/**
 	 * Method to get the date of posting the picture
-	 * @param aPostedOn The posted date of the picture
+	 * @return The posted date of the picture
 	 */
-	void getPostedDate( QDateTime &aPostedOn );
+	QDateTime postedDate( ) const;
 	
 	/**
 	 * Method to get the comments for the picture
-	 * @param aComments The comments for the picture
+	 * @return The comments for the picture
 	 */
-	void getComments( QStringList &aComments );
+	QStringList comments( ) const;
 	
 	/**
 	 * Method to get the tags for the picture
-	 * @param aTags The tags for the picture
+	 * @return The tags for the picture
 	 */
-	void getTags( QStringList &aTags );
+	QStringList tags( ) const;
 	
 	/**
 	 * Method to get the url of the picture
-	 * @param aUrl The url of the picture
+	 * @return The url of the picture
 	 */
-	void getUrl( QUrl &aUrl );
+	QUrl url( ) const;
 	
 	/**
-	 * Method to get the picture data as a byte array
-	 * @param aData The picture as a byte array
+	 * Method to get the picture data as QImage
+	 * @return The picture as QImage
 	 */
-	void getPicture( QByteArray &aData );
+	QImage picture( ) const;
 		
 	/**
 	 * Method to set a picture owner
@@ -142,51 +158,53 @@ public:
 	void setVisibility( const SmfPictureVisibility &aVisibility );
 	
 	/**
-	 * Method to set the date of posting the picture
-	 * @param aPostedOn The posted date of the picture
-	 */
-	void setPostedDate( const QDateTime &aPostedOn );
-	
-	/**
-	 * Method to set the comments for the picture
+	 * Method to add comment on the picture
 	 * @param aComment The comment for the picture
 	 */
-	void setComment( const QString &aComment );
+	void addComment( const QString &aComment );
 	
 	/**
-	 * Method to set the tags for the picture
+	 * Method to add tags for the picture
 	 * @param aTag The tag for the picture
 	 */
-	void setTag( const QString &aTag );
+	void addTags( const QStringList &aTags );
 	
 	/**
-	 * Method to set the picture data as a byte array
-	 * @param aData The picture as a byte array
+	 * Method to set the picture data as QImage
+	 * @param aData The picture as QImage
 	 */
-	void setPicture( const QByteArray &aData );
+	void setPicture( const QImage &aData );
 	
 private:
-	QString m_photoid;		// unique ID of the picture, service provider specific
-	QString m_owner;	// owner of the picture
-	QString m_title;	// picture title
-	QString m_descrition;// description
-	bool m_ispublic;// visibility for public, Set to 0 for no, 1 for yes.
-	bool m_isfriend;// visilibility for friends Set to 0 for no, 1 for yes.
-	bool m_isfamily;// visilibility for family Set to 0 for no, 1 for yes.
-	QDateTime m_postedon;// date posted
-	QStringList m_comments;// comments
-	QStringList m_tags;	// tags
-	QUrl m_url;			// url
-	QByteArray* m_picture;	// picture data as bytearray
-	QString m_caption;	// caption
+	QSharedDataPointer<SmfPicturePrivate> d;
+	
+	friend QDataStream &operator<<( QDataStream &aDataStream, 
+			const SmfPicture &aPic );
+
+	friend QDataStream &operator>>( QDataStream &aDataStream, 
+			SmfPicture &aPic );
 	
 	};
+
+
 /**
-* Externalization
-*/
-QDataStream &operator<<(QDataStream &, const SmfPicture&);
-/**
- * Internalization
+ * Method for Externalization. Writes the SmfPicture object to 
+ * the stream and returns a reference to the stream.
+ * @param aDataStream Stream to be written
+ * @param aPic The SmfPicture object to be externalized
+ * @return reference to the written stream
  */
-QDataStream &operator>>(QDataStream &, SmfPicture&);
+QDataStream &operator<<( QDataStream &aDataStream, 
+		const SmfPicture &aPic );
+
+/**
+ * Method for Internalization. Reads a SmfPicture object from 
+ * the stream and returns a reference to the stream.
+ * @param aDataStream Stream to be read
+ * @param aPic The SmfPicture object to be internalized
+ * @return reference to the stream
+ */
+QDataStream &operator>>( QDataStream &aDataStream, 
+		SmfPicture &aPic);
+
 #endif /* SMFPICTURE_H_ */

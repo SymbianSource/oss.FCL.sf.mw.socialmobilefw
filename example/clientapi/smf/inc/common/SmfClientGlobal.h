@@ -16,18 +16,21 @@
 *
 */
 
-#ifndef SMFCLIENTDEFS_H_
-#define SMFCLIENTDEFS_H_
+#ifndef SMFCLIENTGLOBAL_H_
+#define SMFCLIENTGLOBAL_H_
 
- #include <QtCore/QtGlobal>
+#include <QtCore/QtGlobal>
 
- #ifdef SMFCLIENT_LIBRARY
- #  define SMFCLIENT_EXPORT Q_DECL_EXPORT
- #else
- #  define SMFCLIENT_EXPORT Q_DECL_IMPORT
- #endif
+
+#ifdef SMFCLIENT_LIBRARY
+#  define SMFCLIENT_EXPORT Q_DECL_EXPORT
+#else
+#  define SMFCLIENT_EXPORT Q_DECL_IMPORT
+#endif
+
 /**
- * To be designed later
- */
+* To be designed later
+*/
 #define SMF_GETSERVICES(INTERFACE,INTERFACESTRING) ;
-#endif /* SMFCLIENTDEFS_H_ */
+
+#endif /* SMFCLIENTGLOBAL_H_ */

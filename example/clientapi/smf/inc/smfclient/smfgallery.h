@@ -1,31 +1,31 @@
-/*
-* Copyright (c) 2010 Sasken Communication Technologies Ltd.
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of the "{License}"
-* which accompanies  this distribution, and is available
-* at the URL "{LicenseUrl}".
-*
-* Initial Contributors:
-* Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
-*
-* Contributors:
-*
-* Description:
-* Interface spefication for a remote picture gallery
-*
-*/
+/**
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0"
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
+ *
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Manasij Roy, Nalina Hariharan
+ *
+ * Description:
+ * The SmfEvent class represents an event
+ *
+ */
 
 #ifndef SMFGALLERY_H
 #define SMFGALLERY_H
 
-
+#include "smfglobal.h"
 #include "smfprovider.h"
 #include "../common/SmfClientGlobal.h"
 class SmfProvider;
-class SmfPicture;
-class SmfGalleryModel;
 class SmfComment; //user id, string, and url
+class SmfPicture;
 
 
 #include <QObject>
@@ -34,6 +34,7 @@ class SmfComment; //user id, string, and url
 //List of SmfPicture
 typedef QList<SmfPicture> SmfPictureList;
 /**
+ * @ingroup smf_client_group 
  * Interface to a remote gallery service. This class
  * provides some basic gallery functionality to allow applications
  * to interact with a picture gallery in a social network.
@@ -65,30 +66,24 @@ public:
   /**
    * Get the picture listing asynchronously.
    * The picturesAvailable() signal is emitted with SmfPictureList once the pictures have arrived.
+   * When the list is big user can specify the page number and per page item data.
+   * If not supplied by the user default values are used.
+   * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+   * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  virtual void pictures() = 0; 
-  
-  /**
-   * Returns model
-   */
-  virtual SmfGalleryModel model() = 0; // maybe we can make a QItemModel-derived model?
-  
+  void pictures(int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE);
+
   /**
    * Returns a user title/caption for the picture
    */
-  virtual QString description() = 0; // A user title or caption, maybe?
-  
+  QString description(SmfPicture& picture); // A user title or caption, maybe?
+
   //APIs to get/set base provider info (SmfProvider)
-  
+
   /**
    * Gets the base provider info
    */
-  virtual SmfProvider* getProvider() = 0;
-  
-  /**
-   * Sets the base provider info
-   */
-  virtual void setProvider(SmfProvider* provider) = 0;
+   SmfProvider* getProvider() ;
 
 public slots:
 	/**
@@ -96,22 +91,22 @@ public slots:
 	 * uploadFinished() signal is emitted with the success value of the upload
 	 * @param image the image to be uploaded
 	 */
-  virtual void upload(SmfPicture* image) = 0;
-  
+   void upload(SmfPicture* image) ;
+
 	/**
 	 * Upload an list image.Implemented as slot to connect to UI controls more easily
 	 * uploadFinished() signal is emitted with the success value of the upload
 	 * @param images the list image to be uploaded
 	 */
-  virtual void upload(SmfPictureList* images) = 0;
-  
+   void upload(SmfPictureList* images) ;
+
   /**
    * Posts a comment for an image. uploadFinished() signal is emitted
    * with success of the post once comment is posted.
    * @param image Image to comment on
    * @param comment Comment to post
    */
-  virtual void postComment(SmfPicture image, SmfComment comment) = 0;
+   void postComment(SmfPicture image, SmfComment comment) ;
 
 signals:
 	/*
@@ -121,20 +116,20 @@ signals:
 	 * through pictures().
 	 * @param pics Picture list
 	 * @param error Error string
-	 * @param pageNumber Page number
+	 * @param resultPage Page number info
 	 */
-	void picturesAvailable(SmfPictureList* pics, QString error, int pageNumber=0);
-  
+	void picturesAvailable(SmfPictureList* pics, QString error, SmfResultPage resultPage);
+
   /**
    * Notification of the success of the uploading of image/comment
-   * @param success The success of the post
+   * @param error The upload success result of each individual pictures
    */
-  void uploadFinished(bool success);
+  void uploadFinished(QList<bool> error);
 private:
   SmfProvider* m_baseProvider;
 };
 
-SMF_GETSERVICES(SmfGallery, "org.symbian.smf.client.gallery\0.2")
+SMF_SERVICE_NAME(SmfGallery, "org.symbian.smf.client.gallery\0.2")
 
 #endif // SMFGALLERY_H
 

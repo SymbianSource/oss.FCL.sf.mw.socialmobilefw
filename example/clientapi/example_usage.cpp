@@ -1,57 +1,127 @@
-#include <smf/smfprovider.h>
-#include <smf/smfgallery.h>
-#include <smf/smfcontact.h>
-#include <smf/smfpostprovider.h>
-#include <smf/smffcontactfetcher.h>
-#include <smf/smfmusic.h>
+#include "smfglobal.h"
+#include "smfclient.h"
+#include "smfprovider.h"
+#include "smfgallery.h"
+#include "smfcontact.h"
+#include "smfpostprovider.h"
+#include "smfcontactfetcher.h"
+#include "smfmusic.h"
+#include "smfpicture.h"
+#include "smftrackinfo.h"
+#include "smfmusicprofile.h"
+#include "smflyrics.h"
+#include <qalgorithms.h>
+#include "qtcontacts.h"
+#include <qdatastream.h>
+#include <QSharedData>
+#include <smfclientglobal.h>
 
+using namespace QtMobility;
+
+class MyAppView //: public QAbstractItemView
+	{
+public:
+	void add(QImage pic);
+	void add(SmfTrackInfo trackInfo);
+	void add(QContact qc);
+	void setPicture(QImage image);
+	void setTitle(QString cap);	
+	void setIcon(QImage image);
+	void setDescription(QString desc);
+	void setProvider(SmfProvider p);
+	void setLyricsData(SmfLyrics l);
+	};
+
+
+class MyApplication :public QObject
+	{
+	Q_OBJECT
+	
+public slots:
+	void displayGallery();
+	void showPicsSlot(SmfPictureList* pics, QString err);
+	void uploadPicture(QImage* picture, QList<SmfGallery> galleries);
+	void uploaded(bool success);
+
+	void displayFriends();
+	void showlist(SmfContactList* friendsList);
+	void postUpdate();
+	void showPosts(SmfPostList* posts, QString err);
+
+	void getMusic(SmfTrackInfo currTrack);
+	void showTrackSearch(SmfTrackInfoList* songs);
+	void showStore(SmfProviderList* stores);
+	void updateCurrentPlaying(QList<SmfMusicSearch> musicServices, SmfTrackInfo currTrack);
+	void displayLyrics(SmfTrackInfo currTrack);
+	void showLyrics(SmfLyricsList* list);
+
+private:
+	MyAppView* m_view;
+	SmfGallery* m_smfgl;
+	SmfContactFetcher* m_smfcf;
+	SmfMusicService* m_smfms;
+	QList<SmfContact> m_myfrndz;
+	};
 /** 1. Display a gallery on the screen for some remote service.
  * assume m_view is some gallery view object in the application.*/
 void MyApplication::displayGallery()
 	{
 	// Some common interface for finding implementations.
-	QList<SmfGallery> galleries = Smf::GetServices("org.symbian.smf.gallery\0.2");
+	QList<SmfProvider>* galleries = SmfClient::GetServices("org.symbian.smf.gallery\0.2");
 
 	// We will use the first one now
-	SmfGallery myGallery = galleries[0];
+	SmfProvider smfp = galleries->value(0);
+	SmfGallery* myGallery = new SmfGallery(&smfp);
 
 	// Adjust our view to show where these pictures came from
-	m_view.setIcon(myGallery.serviceIcon());
-	m_view.setProvder(myGallery.serviceName());
-	m_view.setDescription(myGallery.description());
+	QImage imge = smfp.serviceIcon();
+	QString desc = smfp.description();
+	QString name = smfp.serviceName();
+	m_view->setIcon(imge);
+	m_view->setProvider(smfp);
+	m_view->setDescription(desc);
 
 	/**
 	 * Asynchrnous request to fetch the pictures.
 	 * The picturesAvailable() signal is emitted 
 	 * with SmfPictureList once the pictures have arrived.
 	 */
-	myGallery.pictures();
-	QObject::connect(myGallery,SIGNAL(picturesAvailable(SmfPictureList*, QString, int)),this,SLOT(showPicsSlot(SmfPictureList*, QString)));
+	myGallery->pictures();
+	connect(myGallery,SIGNAL(picturesAvailable(SmfPictureList*, QString, SmfResultPage )),
+			SLOT(showPicsSlot(SmfPictureList*, QString)));
+	
+	m_smfgl = myGallery;
 	}
-}
+
 void MyApplication::showPicsSlot(SmfPictureList* pics, QString err)
 	{
 	//check err string if there is any error
-
+	if(err.compare("Err")) return;
 	//if no error
-	foreach(SmfPicture* pic, pics) {
-		m_view.add(pic); // do something with the picture in this gallery
+	foreach(SmfPicture pic, *pics) {
+		m_view->add(pic.picture() ); // do something with the picture in this gallery
 	}
 	}
 
 /** 2. Upload a picture captured by the user to some selection of galeries.*/
-void MyApplication::uploadPicture(QImage picture, QList<SmfGallery> galleries)
+void MyApplication::uploadPicture(QImage* picture, QList<SmfGallery> galleries)
 	{
 	/**
 	 * When uploading is finished we can check the success of the uploading
 	 */	
-	QObject::connect(myGallery,SIGNAL(uploadFinished(bool)),this,SLOT(uploaded(bool)));
+	QObject::connect(m_smfcf,SIGNAL(uploadFinished(bool)),SLOT(uploaded(bool)));
+	SmfPicture*  smfPic = new SmfPicture(*picture);
 	// The list could be from a selection of galleries chosen by the user,
 	// think multiple TweetDeck accounts?
-	foreach(SmfGallery gallery, galleries) {
-		gallery.upload(picture);
+	foreach(SmfGallery gallery, galleries)
+		{
+		gallery.upload(smfPic);
+		}
 	}
-	}
+
+/**
+ * Slot to catch the uploading finished event
+ */
 void MyApplication::uploaded(bool success)
 	{
 	if(!success)
@@ -68,13 +138,17 @@ void MyApplication::uploaded(bool success)
 void MyApplication::displayFriends()
 	{
 	// Some common interface for finding implementations.
-	QList<SmfContactFetcher> contactFetcherList = Smf::GetServices("org.symbian.smf.contact.fetcher\0.2");
-	//Request friend list,
-	//The friendsListAvailable() signal
+	QList<SmfProvider>* contactFetcherList = SmfClient::GetServices("org.symbian.smf.contact.fetcher\0.2");
+	SmfProvider smfp = contactFetcherList->value(0);
+	SmfContactFetcher* smfcf = new SmfContactFetcher(&smfp);
+	
+	//Request friend list, the friendsListAvailable() signal
 	//is emitted with SmfContactList once data is arrived.
-	QObject::Connect(contactFetcherList[0],SIGNAL(friendsListAvailable(SmfContactList*, QString, int)),
-			this,SLOT(showlist(SmfContactList*));
-	fetcher.friends();
+	QObject::connect(smfcf,SIGNAL(friendsListAvailable(SmfContactList*, QString, SmfResultPage )),
+			SLOT(showlist(SmfContactList*)));
+	smfcf->friends();
+	
+	m_smfcf = smfcf;
 	}
 
 void MyApplication::showlist(SmfContactList* friendsList)
@@ -82,15 +156,17 @@ void MyApplication::showlist(SmfContactList* friendsList)
 
 	// Adjust our view to show where these pictures came from
 	//display service name description and the logo
-	m_view.setIcon( myFetcher.serviceIcon() );
-	m_view.setProvider( myFetcher.serviceName() );
-	m_view.setDescription( myFetcher.description() );
+	m_view->setIcon( (m_smfcf->getProvider())->serviceIcon() );
+	m_view->setDescription( (m_smfcf->getProvider())->description() );
 
 	//now display the images
-	foreach(SmfContact* contact, friendsList) {
-		QImage pic = contact.value("Avatar");
-		m_view.setPicture(pic);
-		m_view.setTitle(contact.value("Name"));
+	foreach(SmfContact contact, *friendsList) {
+		QVariant data = contact.value("Avatar"); 
+		QImage pic = data.value<QImage>();
+		QContact qc;
+		contact.convert(qc);
+		m_view->add(qc);
+		m_myfrndz.append(contact);
 	}
 	}
 /**
@@ -99,66 +175,76 @@ void MyApplication::showlist(SmfContactList* friendsList)
 void MyApplication::postUpdate()
 	{
 	// Some common interface for finding implementations.
-	QList<SmfPostProvider> postServices = Smf::GetServices("org.symbian.smf.contact.posts\0.2");
+	QList<SmfProvider>* postServices = SmfClient::GetServices("org.symbian.smf.contact.posts\0.2");
 
 	//let us use the first one
-	SmfPostProvider myPostServer = postServices[ 0 ];
+	QString servName = postServices->value(0).serviceName();
+	if(!servName.compare("Facebook.com")) return;
+	SmfProvider smfp = postServices->value(0);
+	SmfPostProvider* myPostServer = new SmfPostProvider(&smfp);
 
 	//Adjust our view to show where these posts came from (e.g. tweets from twitter)
 	//display service name description and the logo
-	m_view.setIcon( myPostServer.serviceIcon() );
-	m_view.setProvider( myPostServer.serviceName() );
-	m_view.setDescription( myPostServer.description() );
+	m_view->setIcon((myPostServer->getProvider())->serviceIcon() );
+	m_view->setProvider(myPostServer->getProvider());
+	m_view->setDescription((myPostServer->getProvider())->description() );
 
-	SmfPost reply = new SmfPost(sampleString,samplmage, sampleUrl);
+	SmfPost reply("this is a text post", this);
 	//post my udpate to be visible to all, connect to updatePostFinished()
 	// signal of SmfPostProvider to track the success
-	myPostServer.updatePost(reply);
+	SmfContact frnd(m_myfrndz.value(0));
+	myPostServer->postDirected(reply,frnd);
 
 	//Asynchronously get all posts to me in my profle (e.g. twits from all friends)
 	//connect to postsAvailable to show the post
-	postServices.getPosts();
+	myPostServer->posts();
 
-	QObject::Connect(myPostServer,SIGNAL(postsAvailable(SmfPostList*, QString, int)),this,SLOT(showPosts(SmfPostList*, QString)));
+	QObject::connect(myPostServer,
+			SIGNAL(postsAvailable(SmfPostList*, QString, SmfResultPage )),
+			SLOT(showPosts(SmfPostList*, QString)));
 	}
-void MyApplication::showPosts(SmfPostList* posts, QString err)
+void MyApplication::showPosts(SmfPostList* posts, QString /*err*/)
 	{
 	//Show the first post  
-	m_view.setPostData(posts->at(0));
+	SmfPost post = posts->at(0);
+	m_view->setDescription( post.toPlainText() );
 	}
 /**
  * 5. This is an example of getting song recommendations from a social netowrking sites
  */
-void MyApplication::getMusic()
+void MyApplication::getMusic(SmfTrackInfo currTrack)
 	{
 	// Some common interface for finding implementations.
-	QList<SmfMusicSearch> musicServices = Smf::GetServices("org.symbian.smf.music\0.2");
+	QList<SmfProvider>* smfProList = SmfClient::GetServices("org.symbian.smf.music\0.2");
+	SmfProvider smfp = smfProList->value(0);
+	SmfMusicSearch* mServer = new SmfMusicSearch(&smfp);
 
-	//let us use the first one
-	SmfMusicSearch mServer = musicServices.at(0);
-	QObject::Connect(mServer,SIGNAL(trackSearchAvailable(SmfTrackInfoList*, QString,int)),this,SLOT(showTrackSearch(SmfTrackInfoList*)));
-	QObject::Connect(mServer,SIGNAL(storeSearchAvailable(SmfProviderList*, QString,int)),this,SLOT(showStoreSearch(SmfProviderList*)));
+	QObject::connect(mServer,SIGNAL(trackSearchAvailable(SmfTrackInfoList*, QString,SmfResultPage )),this,SLOT(showTrackSearch(SmfTrackInfoList*)));
+	QObject::connect(mServer,SIGNAL(storeSearchAvailable(SmfProviderList*, QString,SmfResultPage )),this,SLOT(showStoreSearch(SmfProviderList*)));
 	//search songs similar to currently playing,
 	//connect to trackSearchAvailable signal to get the result
-	mServer.recommendations(currTrack);
+	mServer->recommendations(currTrack);
 	//display to the user
-	m_view.setIcon( mServer.serviceIcon() );
-	m_view.setProvider( mServer.serviceName() );
-	m_view.setDescription( mServer.description() );
+	m_view->setIcon( mServer->getProvider()->serviceIcon() );
+	m_view->setProvider( mServer->getProvider());
+	m_view->setDescription( mServer->getProvider()->description() );
 
 
 
 	}
 void MyApplication::showTrackSearch(SmfTrackInfoList* songs)
 	{
-	foreach(SmfTrackInfo* track, songs){
-		m_view.add(track);
+	foreach(SmfTrackInfo track, *songs){
+		m_view->add(track);
 	}
+	QList<SmfProvider>* smfProList = SmfClient::GetServices("org.symbian.smf.client.music.search\0.2");
+	SmfProvider smfp = smfProList->value(0);
+	SmfMusicSearch* mServer = new SmfMusicSearch(&smfp);
 	//allow user to select a track and get purchase links
 	//connect to showStoreSearch signal to display the stores for that track
-	mServer.stores(selectedTrack);
+	mServer->stores(songs->value(0));
 	}
-void MyApplication::showStoreSearch(SmfProviderList* stores)
+void MyApplication::showStore(SmfProviderList* /*stores*/)
 	{
 	//show stores
 	}
@@ -175,18 +261,21 @@ void MyApplication::updateCurrentPlaying(QList<SmfMusicSearch> musicServices, Sm
 
 void MyApplication::displayLyrics(SmfTrackInfo currTrack)
 	{
+
 	// Some common interface for finding implementations.
-	SmfLyricsService lyricsService = Smf::GetServices("org.symbian.smf.music.lyrics\0.2","lyricsfly.com");
-	QObject::connect(lyricsService,SIGNAL(lyricsAvailable(SmfLyricsList*, QString, int)),this,SLOT(showLyrics(SmfLyricsList*));
+	QList<SmfProvider>* smfProList = SmfClient::GetServices("org.symbian.smf.music.lyrics\0.2","lyricsfly.com");
+	SmfProvider smfp = smfProList->value(0);
+	SmfLyricsService* lyricsService = new SmfLyricsService(&smfp);
+	QObject::connect(lyricsService,SIGNAL(lyricsAvailable(SmfLyricsList*, QString, SmfResultPage )),this,SLOT(showLyrics(SmfLyricsList*)));
 
 	//Request to get the lyrics
 	//lyricsAvailable() signal of SmfLyricsService is emitted when lyrics is available
-	lyricsService.lyrics(currTrack);
+	lyricsService->lyrics(currTrack);
 
 	}
 void MyApplication::showLyrics(SmfLyricsList* list)
 	{
 	//now display the latest edited lyrics
-	qSort(list->begin(),list->end(),caseCompareTimeMoreThan);
-	m_view.setLyricsData(list->at(0));
+	//qSort(list->begin(),list->end(),caseInsensitiveLessThan);
+	m_view->setLyricsData(list->at(0));
 	}

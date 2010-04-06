@@ -1,20 +1,21 @@
 /**
-* Copyright (c) 2010 Sasken Communication Technologies Ltd.
-* All rights reserved.
-* This component and the accompanying materials are made available
-* under the terms of the "{License}"
-* which accompanies  this distribution, and is available
-* at the URL "{LicenseUrl}".
-*
-* Initial Contributors:
-* Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
-*
-* Contributors:
-*
-* Description:
-* Interface spefication for sfm service provider
-*
-*/
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0" 
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
+ *
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Manasij Roy, Nalina Hariharan
+ * 
+ * Description:
+ * The SmfEvent class represents an event
+ *
+ */
 
 #ifndef SMFPROVIDER_H
 #define SMFPROVIDER_H
@@ -25,6 +26,7 @@
 
 #include "../common/SmfClientGlobal.h"
 /**
+ * @ingroup smf_client_group 
  * Interface for a base service provider. Other service provider classes contains 
  * implementation of this base class so that each has access to service provider 
  * information.
@@ -48,30 +50,34 @@ public:
    * Localizable name of the service 
    * @return service name
    */
-  virtual QString serviceName() = 0; 
+  QString& serviceName() const; 
   
   /**
    * Logo of the service
    * @return logo image of the service
    */
-  virtual QImage serviceIcon() = 0; // 
+  QImage& serviceIcon() const; 
   
   /**
    * Readable service description
    * @return service description
    */
-  virtual QString description() = 0; // readable service description
+  QString description() const; 
   
   /*
    * Website of the service
    */
-  virtual QUrl serviceUrl() = 0; //
+  QUrl serviceUrl() const;
   
   /**
    * URL of the application providing this service
    */
-  virtual QUrl applicationUrl() = 0; //
+  QUrl applicationUrl() const; //
   
+  /**
+   * service types - list of interfaces that this provider support
+   */
+  QList<QString> serviceTypes() const;
 };
 /**
 * Externalization
@@ -81,5 +87,5 @@ QDataStream &operator<<(QDataStream &, const SmfProvider&);
  * Internalization
  */
 QDataStream &operator>>(QDataStream &, SmfProvider&);
-SMF_GETSERVICES(SmfProvider, "org.symbian.smf.client.provider\0.2")
+
 #endif // SMFPROVIDER_H

@@ -1,20 +1,20 @@
 /**
- * @file	smfsubtitle.h
- * @author  Nalina Hariharan, Sasken Communication Technologies Ltd - Initial contribution
- * @version 1.0
- *
- * @section LICENSE
- *
- * Copyright (c) 2010 Sasken Communication Technologies Ltd. 
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
  * All rights reserved.
- * This component and the accompanying materials are made available 
- * under the terms of the "{License}" 
- * which accompanies  this distribution, and is available 
- * at the URL "{LicenseUrl}".
- * 
- * @section DESCRIPTION
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0" 
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  *
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Manasij Roy, Nalina Hariharan
+ * 
+ * Description:
  * The subtitle class represents information about a track's subtitle
+ *
  */
 
 #ifndef SMFSUBTITLE_H_
@@ -23,8 +23,24 @@
 #include <QObject>
 #include <qdatastream.h>
 #include <QDateTime>
-#include "SmfClientGlobal.h"
+#include <QSharedData>
+#include <smfclientglobal.h>
+
+enum SmfSubtitleSearchFilterFields
+	{
+	SubtitleLanguage = 0,
+	SubtitleFrameRate,		// value = 1
+	SubtitleDuration,		// value = 2
+	SubtitleReleaseYear,	// value = 3
+	SubtitleAll = SubtitleLanguage | SubtitleFrameRate | 
+			SubtitleDuration | SubtitleReleaseYear
+	};
+typedef QMap<SmfSubtitleSearchFilterFields,QString> SmfSubtitleSearchFilter;
+
+class SmfSubtitlePrivate;
+
 /**
+ * @ingroup smf_common_group
  * The subtitle class represents information about a track's subtitle
  */
 class SMFCLIENT_EXPORT SmfSubtitle : public QObject
@@ -38,61 +54,82 @@ public:
 	SmfSubtitle( QObject *aParent = 0 );
 	
 	/**
+	 * Copy Constructor
+	 * @param aOther The reference object
+	 */
+	SmfSubtitle( const SmfSubtitle &aOther );
+	
+	/**
 	 * Destructor
 	 */
 	~SmfSubtitle( );
 	
-
 	/**
 	 * Method to get the subtitle as a bytearray
-	 * @param aSubTitle The subtitle content
+	 * @return The subtitle content
 	 */
-	void getSubtitle( QByteArray &aSubTitle );
+	QByteArray subtitle( ) const;
 	
 	/**
 	 * Method to get the language
-	 * @param aLanguage The language
+	 * @return The language
 	 */
-	void getLanguage( QString &aLanguage );
+	QString language( ) const;
 	
 	/**
 	 * Method to get the frame rate
 	 * @return the frame rate
 	 */
-	double getFrameRate( );
+	double frameRate( ) const;
 	
 	/**
 	 * Method to get the duration
 	 * @return the duration
 	 */
-	double getDuration( );
+	double duration( ) const;
 	
 	/**
 	 * Method to get the release year
-	 * @param aRelYear The release year
+	 * @return The release year
 	 */
-	void getReleaseYear( QDateTime &aRelYear );
+	QDateTime releaseYear( ) const;
 	
 	/**
 	 * Method to get the id of the subtitle
-	 * @param aId The ID value 
+	 * @return The ID value 
 	 */
-	void getId( QString &aId );
+	QString id( ) const;
 	
 private:
-	QByteArray m_subtitle;	// subtitle data
-	QString m_language;		// language
-	double m_frameRate;		// frame rate
-	double m_duration;		// duration
-	QDateTime m_releaseYr;	// release year
-	QString m_subtitleId;	// subtitle id
+	QSharedDataPointer<SmfSubtitlePrivate> d;
+	
+	friend QDataStream &operator<<( QDataStream &aDataStream, 
+			const SmfSubtitle &aSubtitle );
+
+	friend QDataStream &operator>>( QDataStream &aDataStream, 
+			SmfSubtitle &aSubtitle );
+	
 	};
+
+
 /**
- * Externalization
+ * Method for Externalization. Writes the SmfSubtitle object to 
+ * the stream and returns a reference to the stream.
+ * @param aDataStream Stream to be written
+ * @param aSubtitle The SmfSubtitle object to be externalized
+ * @return reference to the written stream
  */
-QDataStream &operator<<(QDataStream &, const SmfSubtitle&);
-	/**
-	 * Internalization
-	 */
-QDataStream &operator>>(QDataStream &, SmfSubtitle&);
+QDataStream &operator<<( QDataStream &aDataStream, 
+		const SmfSubtitle &aSubtitle );
+
+/**
+ * Method for Internalization. Reads a SmfSubtitle object from 
+ * the stream and returns a reference to the stream.
+ * @param aDataStream Stream to be read
+ * @param aSubtitle The SmfSubtitle object to be internalized
+ * @return reference to the stream
+ */
+QDataStream &operator>>( QDataStream &aDataStream, 
+		SmfSubtitle &aSubtitle);
+
 #endif /* SMFSUBTITLE_H_ */

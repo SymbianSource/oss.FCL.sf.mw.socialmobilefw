@@ -8,9 +8,9 @@
  * Copyright (c) 2010 Sasken Communication Technologies Ltd. 
  * All rights reserved.
  * This component and the accompanying materials are made available 
- * under the terms of the "{License}" 
+ * under the terms of the "Eclipse Public License v1.0"
  * which accompanies  this distribution, and is available 
- * at the URL "{LicenseUrl}".
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  * 
  * @section DESCRIPTION
  *
@@ -20,12 +20,13 @@
 #ifndef SMFPLAYLISTSERVICEPLUGIN_H_
 #define SMFPLAYLISTSERVICEPLUGIN_H_
 
-#include <smfproviderbase.h>
+#include <smfpluginbase.h>
 #include <smfplaylist.h>
 #include <smfmusicprofile.h>
 #include <smftrackinfo.h>
 
 /**
+ * @ingroup smf_plugin_group
  * Interface specification for playlists service. This class provides 
  * basic functionality to allow applications to get playlists of a user, 
  * add some track to an existing playlist, post the current playing 
@@ -34,7 +35,7 @@
  * All of the functionality described here should be implemented by a service
  * specific plug-in.
  */
-class SmfPlaylistServicePlugin : public QObject
+class SmfPlaylistServicePlugin : public SmfPluginBase
 	{
 	Q_OBJECT
 public:
@@ -50,92 +51,49 @@ public:
 	~SmfPlaylistServicePlugin( );
 	
 	/**
-	 * Method to get the provider information
-	 * @return Instance of SmfProviderBase
-	 */
-	virtual SmfProviderBase* getProviderInfo( ) = 0;
-	
-	/**
 	 * Method to get the playlist
 	 * @param aRequest [out] The request data to be sent to network
 	 * @param aPageNum The page to be extracted
 	 * @param aItemsPerPage Number of items per page
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
-	virtual SmfPluginError playlists( 
-			SmfPluginRequestData *aRequest,
-			const int aPageNum = 0, 
-			const int aItemsPerPage = 10) = 0;
+	virtual SmfPluginError playlists( SmfPluginRequestData *aRequest,
+			const int aPageNum = SMF_FIRST_PAGE, 
+			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
 	/**
 	 * Method to get the playlist of a particular user
-	 * @param aUser The user whose playlists need to be fetched
 	 * @param aRequest [out] The request data to be sent to network
+	 * @param aUser The user whose playlists need to be fetched
 	 * @param aPageNum The page to be extracted
 	 * @param aItemsPerPage Number of items per page
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
-	virtual SmfPluginError playlistsOf( const SmfMusicProfile aUser,
-			SmfPluginRequestData *aRequest,
-			const int aPageNum = 0, 
-			const int aItemsPerPage = 10) = 0;
+	virtual SmfPluginError playlistsOf( SmfPluginRequestData *aRequest,
+			const SmfMusicProfile aUser,
+			const int aPageNum = SMF_FIRST_PAGE, 
+			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
 	/**
 	 * Method to add tracks to a playlist
+	 * @param aRequest [out] The request data to be sent to network
 	 * @param aPlaylist The playlist where tracks should be added
 	 * @param aTracks The tracks to be added to the playlist
-	 * @param aRequest [out] The request data to be sent to network
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
-	virtual SmfPluginError* addToPlaylist( const SmfPlaylist aPlaylist, 
-			const QList<SmfTrackInfo> aTracks,
-			SmfPluginRequestData *aRequest ) = 0;
+	virtual SmfPluginError addToPlaylist( SmfPluginRequestData *aRequest,
+			const SmfPlaylist aPlaylist, 
+			const QList<SmfTrackInfo> aTracks ) = 0;
 	
 	/**
 	 * Method to post the current playing playlist
-	 * @param aPlaylist The current playing playlist which should be posted
 	 * @param aRequest [out] The request data to be sent to network
+	 * @param aPlaylist The current playing playlist which should be posted
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
-	virtual SmfPluginError* postCurrentPlayingPlaylist( 
-			const SmfPlaylist aPlaylist,
-			SmfPluginRequestData *aRequest ) = 0;
-	
-	
-	/**
-	 * Method to get the result for a network request.
-	 * @param aTransportResult The result of transport operation
-	 * @param aReply The QNetworkReply instance for the request
-	 * @param aResult An output parameter to the plugin manager.If the 
-	 * return value is SmfSendRequestAgain, QVariant will be of type 
-	 * SmfPluginRequestData. 
-	 * If last operation was playlists() or playlistsOf(), aResult will be of 
-	 * type QList<SmfPlaylist>
-	 * If last operation was addToPlaylist() or postCurrentPlayingPlaylist(), 
-	 * aResult will be of type bool
-	 * @return SmfPluginRetType
-	 */
-	/**
-	 * Method to get the result for a network request.
-	 * @param aTransportResult The result of transport operation
-	 * @param aReply The QNetworkReply instance for the request
-	 * @param aResult [out] An output parameter to the plugin manager.If the 
-	 * return value is SmfSendRequestAgain, QVariant will be of type 
-	 * SmfPluginRequestData. 
-	 * If last operation was playlists() or playlistsOf(), aResult will be of 
-	 * type QList<SmfPlaylist>
-	 * If last operation was addToPlaylist() or postCurrentPlayingPlaylist(), 
-	 * aResult will be of type bool
-	 * @param aRetType [out] SmfPluginRetType
-	 * @param aIsLastPage [out] true if this the last page, else false
-	 * @return SmfPluginError 
-	 */
-	virtual SmfPluginError responseAvailable( 
-			const SmfTransportResult aTransportResult, 
-			QNetworkReply *aReply, 
-			QVariant* aResult, 
-			SmfPluginRetType aRetType,
-			bool aIsLastPage) = 0;
+	virtual SmfPluginError postCurrentPlayingPlaylist(
+			SmfPluginRequestData *aRequest, 
+			const SmfPlaylist aPlaylist ) = 0;
 	
 	};
 
