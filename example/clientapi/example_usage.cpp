@@ -57,6 +57,7 @@ public slots:
 
 private:
 	MyAppView* m_view;
+	SmfClient client;
 	SmfGallery* m_smfgl;
 	SmfContactFetcher* m_smfcf;
 	SmfMusicService* m_smfms;
@@ -67,7 +68,7 @@ private:
 void MyApplication::displayGallery()
 	{
 	// Some common interface for finding implementations.
-	QList<SmfProvider>* galleries = SmfClient::GetServices("org.symbian.smf.gallery\0.2");
+	QList<SmfProvider>* galleries = client.GetServices("org.symbian.smf.gallery\0.2");
 
 	// We will use the first one now
 	SmfProvider smfp = galleries->value(0);
@@ -138,7 +139,7 @@ void MyApplication::uploaded(bool success)
 void MyApplication::displayFriends()
 	{
 	// Some common interface for finding implementations.
-	QList<SmfProvider>* contactFetcherList = SmfClient::GetServices("org.symbian.smf.contact.fetcher\0.2");
+	QList<SmfProvider>* contactFetcherList = client.GetServices("org.symbian.smf.contact.fetcher\0.2");
 	SmfProvider smfp = contactFetcherList->value(0);
 	SmfContactFetcher* smfcf = new SmfContactFetcher(&smfp);
 	
@@ -175,7 +176,7 @@ void MyApplication::showlist(SmfContactList* friendsList)
 void MyApplication::postUpdate()
 	{
 	// Some common interface for finding implementations.
-	QList<SmfProvider>* postServices = SmfClient::GetServices("org.symbian.smf.contact.posts\0.2");
+	QList<SmfProvider>* postServices = client.GetServices("org.symbian.smf.contact.posts\0.2");
 
 	//let us use the first one
 	QString servName = postServices->value(0).serviceName();
@@ -215,7 +216,7 @@ void MyApplication::showPosts(SmfPostList* posts, QString /*err*/)
 void MyApplication::getMusic(SmfTrackInfo currTrack)
 	{
 	// Some common interface for finding implementations.
-	QList<SmfProvider>* smfProList = SmfClient::GetServices("org.symbian.smf.music\0.2");
+	QList<SmfProvider>* smfProList = client.GetServices("org.symbian.smf.music\0.2");
 	SmfProvider smfp = smfProList->value(0);
 	SmfMusicSearch* mServer = new SmfMusicSearch(&smfp);
 
@@ -237,7 +238,7 @@ void MyApplication::showTrackSearch(SmfTrackInfoList* songs)
 	foreach(SmfTrackInfo track, *songs){
 		m_view->add(track);
 	}
-	QList<SmfProvider>* smfProList = SmfClient::GetServices("org.symbian.smf.client.music.search\0.2");
+	QList<SmfProvider>* smfProList = client.GetServices("org.symbian.smf.client.music.search\0.2");
 	SmfProvider smfp = smfProList->value(0);
 	SmfMusicSearch* mServer = new SmfMusicSearch(&smfp);
 	//allow user to select a track and get purchase links
@@ -263,7 +264,7 @@ void MyApplication::displayLyrics(SmfTrackInfo currTrack)
 	{
 
 	// Some common interface for finding implementations.
-	QList<SmfProvider>* smfProList = SmfClient::GetServices("org.symbian.smf.music.lyrics\0.2","lyricsfly.com");
+	QList<SmfProvider>* smfProList = client.GetServices("org.symbian.smf.music.lyrics\0.2","lyricsfly.com");
 	SmfProvider smfp = smfProList->value(0);
 	SmfLyricsService* lyricsService = new SmfLyricsService(&smfp);
 	QObject::connect(lyricsService,SIGNAL(lyricsAvailable(SmfLyricsList*, QString, SmfResultPage )),this,SLOT(showLyrics(SmfLyricsList*)));
