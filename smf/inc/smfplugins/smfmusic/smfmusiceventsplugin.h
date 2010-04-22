@@ -23,12 +23,13 @@
 #define SMFMUSICEVENTSPLUGIN_H_
 
 #include <smfpluginbase.h>
-#include <qtcontacts.h>
+//#include <qtcontacts.h>
 #include <smfevent.h>
 #include <smfplace.h>
+#include <qgeopositioninfo.h> // Qt mobility class
 
 // Forward declaration
-class SmfPluginManagerUtil;
+class SmfPluginUtil;
 
 using namespace QtMobility;
 
@@ -43,16 +44,15 @@ using namespace QtMobility;
  */
 class SmfMusicEventsPlugin : public SmfPluginBase
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aUtil The SmfPluginManagerUtil instance. The plugins can 
+	 * @param aUtil The SmfPluginUtil instance. The plugins can 
 	 * call the method getAuthKeys() of this class, with its pluginID to 
 	 * get the OAuth keys, keys are returned only if this plugin is 
 	 * authorised by Smf framework
 	 */
-	SmfMusicEventsPlugin( SmfPluginManagerUtil* aUtil );
+	SmfMusicEventsPlugin( SmfPluginUtil* aUtil );
 	
 	/**
 	 * Destructor
@@ -68,7 +68,7 @@ public:
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
 	virtual SmfPluginError events( SmfPluginRequestData &aRequest,
-			const QtMobility::QContactGeolocation &aLocation,
+			const QGeoPositionInfo &aLocation,
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
@@ -81,7 +81,7 @@ public:
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
 	virtual SmfPluginError venues( SmfPluginRequestData &aRequest,
-			const QtMobility::QContactGeolocation &aLocation,
+			const QGeoPositionInfo &aLocation,
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	

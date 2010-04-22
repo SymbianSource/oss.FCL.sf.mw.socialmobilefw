@@ -28,6 +28,7 @@
 #include <QSharedData>
 #include <smfclientglobal.h>
 #include <QMetaType>
+#include <smfcomment.h>
 
 class SmfPicturePrivate;
 
@@ -47,15 +48,13 @@ enum SmfPictureVisibility
  * @ingroup smf_common_group
  * The picture class represents an instance of a picture
  */
-class SMFCLIENT_EXPORT SmfPicture : public QObject
+class SMFCLIENT_EXPORT SmfPicture
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
 	 */
-	SmfPicture( QObject *aParent = 0 );
+	SmfPicture( );
 	
 	/**
 	 * Copy Constructor
@@ -65,20 +64,21 @@ public:
 	
 	/**
 	 * CConstructs SmfPicture from QImage
-	 * @param aOther The QImage
+	 * @param aImage The QImage
 	 */
-	SmfPicture( const QImage &image );
+	SmfPicture( const QImage &aImage );
+	
+	/**
+	 * Overloaded = operator
+	 * @param aOther The reference object
+	 * @return The current object reference
+	 */
+	SmfPicture& operator=(const SmfPicture &aOther);
 	
 	/**
 	 * Destructor
 	 */
 	~SmfPicture( );
-	
-	/**
-	 * Method to get the id of the picture
-	 * @return The ID value 
-	 */
-	QString id( ) const;
 	
 	/**
 	 * Method to get a picture owner
@@ -114,7 +114,7 @@ public:
 	 * Method to get the comments for the picture
 	 * @return The comments for the picture
 	 */
-	QStringList comments( ) const;
+	QList<SmfComment> comments( ) const;
 	
 	/**
 	 * Method to get the tags for the picture
@@ -133,6 +133,12 @@ public:
 	 * @return The picture as QImage
 	 */
 	QImage picture( ) const;
+		
+	/**
+	 * Method to get the id of the picture
+	 * @return The ID value 
+	 */
+	QString id( ) const;
 		
 	/**
 	 * Method to set a picture owner
@@ -160,10 +166,16 @@ public:
 	void setVisibility( const SmfPictureVisibility &aVisibility );
 	
 	/**
+	 * Method to set the date of posting the picture
+	 * @param aDate The post date of the picture
+	 */
+	void setPostedDate( const QDateTime &aDate );
+	
+	/**
 	 * Method to add comment on the picture
 	 * @param aComment The comment for the picture
 	 */
-	void addComment( const QString &aComment );
+	void addComment( const SmfComment &aComment );
 	
 	/**
 	 * Method to add tags for the picture
@@ -172,10 +184,22 @@ public:
 	void addTags( const QStringList &aTags );
 	
 	/**
+	 * Method to set the url of the picture
+	 * @param aUrl The url of the picture
+	 */
+	void setUrl( const QUrl &aUrl );
+	
+	/**
 	 * Method to set the picture data as QImage
 	 * @param aData The picture as QImage
 	 */
 	void setPicture( const QImage &aData );
+	
+	/**
+	 * Method to set the id of the picture
+	 * @param aId The ID value 
+	 */
+	void setId( const QString &aId );
 	
 private:
 	QSharedDataPointer<SmfPicturePrivate> d;
@@ -209,7 +233,9 @@ QDataStream &operator<<( QDataStream &aDataStream,
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfPicture &aPic);
 
+
 // Make the class SmfPicture known to QMetaType, so that as to register it.
 Q_DECLARE_METATYPE(SmfPicture)
+
 
 #endif /* SMFPICTURE_H_ */

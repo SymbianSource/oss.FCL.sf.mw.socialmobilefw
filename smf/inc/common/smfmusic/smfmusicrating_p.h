@@ -21,6 +21,7 @@
 #define SMFMUSICRATING_P_H_
 
 #include <QSharedData>
+#include <smfmusicrating.h>
 
 class SmfMusicRatingPrivate : public QSharedData
 {
@@ -28,28 +29,20 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfMusicRatingPrivate( ) { 
-		m_rating = 0;
-	}
-	
+	SmfMusicRatingPrivate( ) ;
 	/**
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfMusicRatingPrivate( const SmfMusicRatingPrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_rating ( aOther.m_rating ),
-		m_max ( aOther.m_max ),
-		m_min ( aOther.m_min )  { }
-	
+	SmfMusicRatingPrivate( const SmfMusicRatingPrivate &aOther );
 	/**
 	 * Destructor
 	 */
 	~SmfMusicRatingPrivate( );
   
-	int m_rating;	// rating
-	int m_max;		// max rating
-	int m_min;		// min rating
+	qint32 m_rating;	// rating
+	qint32 m_max;		// max rating
+	qint32 m_min;		// min rating
 	
 };
 

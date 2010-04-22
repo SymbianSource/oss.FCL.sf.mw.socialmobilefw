@@ -27,7 +27,7 @@
 #include <smftrackinfo.h>
 
 // Forward declaration
-class SmfPluginManagerUtil;
+class SmfPluginUtil;
 
 /**
  * @ingroup smf_plugin_group
@@ -41,16 +41,15 @@ class SmfPluginManagerUtil;
  */
 class SmfPlaylistServicePlugin : public SmfPluginBase
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aUtil The SmfPluginManagerUtil instance. The plugins can 
+	 * @param aUtil The SmfPluginUtil instance. The plugins can 
 	 * call the method getAuthKeys() of this class, with its pluginID to 
 	 * get the OAuth keys, keys are returned only if this plugin is 
 	 * authorised by Smf franework
 	 */
-	SmfPlaylistServicePlugin( SmfPluginManagerUtil *aUtil );
+	SmfPlaylistServicePlugin( SmfPluginUtil *aUtil );
 	
 	/**
 	 * Destructor

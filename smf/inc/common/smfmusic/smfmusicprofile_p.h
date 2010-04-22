@@ -31,24 +31,13 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfMusicProfilePrivate( ) { 
-		m_usage.clear(); 
-		m_interest.clear();
-		m_events.clear();
-		m_profileId.clear();
-	}
+	SmfMusicProfilePrivate( ) ;
 	
 	/**
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfMusicProfilePrivate( const SmfMusicProfilePrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_usage ( aOther.m_usage ), 
-		m_interest ( aOther.m_interest ),
-		m_events ( aOther.m_events ),
-		m_profileId ( aOther.m_profileId ) 	{ }
-	
+	SmfMusicProfilePrivate( const SmfMusicProfilePrivate &aOther );
 	/**
 	 * Destructor
 	 */
@@ -57,7 +46,7 @@ public:
 	QList<SmfTrackInfo> m_usage;	// usage tracks
 	QList<SmfTrackInfo> m_interest;// interested tracks
 	QList<SmfEvent> m_events;		// events list
-	QString m_profileId;
+	QString m_profileId;			// profile Id
 	
 };
 

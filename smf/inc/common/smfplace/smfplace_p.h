@@ -32,29 +32,12 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfPlacePrivate( ) { 
-		m_name.clear();
-		m_city.clear();
-		m_street.clear();
-		m_zipcode.clear();
-		m_country.clear();
-		m_url.clear();
-		m_placeId.clear(); }
-	
+	SmfPlacePrivate( );
 	/**
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfPlacePrivate( const SmfPlacePrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_name ( aOther.m_name ),
-		m_city ( aOther.m_city ),
-		m_street ( aOther.m_street ),
-		m_zipcode ( aOther.m_zipcode ),
-		m_country ( aOther.m_country ),
-		m_geo ( aOther.m_geo ),
-		m_url ( aOther.m_url ),
-		m_placeId ( aOther.m_placeId ) 	{ }
+	SmfPlacePrivate( const SmfPlacePrivate &aOther ) ;
 	
 	/**
 	 * Destructor

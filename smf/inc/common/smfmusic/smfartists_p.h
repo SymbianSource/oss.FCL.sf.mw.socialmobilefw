@@ -31,21 +31,13 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfArtistsPrivate( ) { 
-		m_names.clear(); 
-		m_url.clear();
-	}
+	SmfArtistsPrivate( );
 	
 	/**
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfArtistsPrivate( const SmfArtistsPrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_names ( aOther.m_names ), 
-		m_image ( aOther.m_image ),
-		m_url ( aOther.m_url ) 	{ }
-	
+	SmfArtistsPrivate( const SmfArtistsPrivate &aOther );
 	/**
 	 * Destructor
 	 */

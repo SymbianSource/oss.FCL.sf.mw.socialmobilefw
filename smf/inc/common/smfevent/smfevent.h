@@ -33,21 +33,26 @@ class SmfEventPrivate;
  * @ingroup smf_common_group
  * The event class represents an event
  */
-class SMFCLIENT_EXPORT SmfEvent : public QObject
+class SMFCLIENT_EXPORT SmfEvent
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
 	 */
-	SmfEvent( QObject *aParent = 0 );
+	SmfEvent( );
 	
 	/**
 	 * Copy Constructor
 	 * @param aOther The reference object
 	 */
 	SmfEvent( const SmfEvent &aOther );
+	
+	/**
+	 * Overloaded = operator
+	 * @param aOther The reference object
+	 * @return The current object reference
+	 */
+	SmfEvent& operator=( const SmfEvent &aOther );
 	
 	/**
 	 * Destructor
@@ -134,6 +139,12 @@ public:
 	 */
 	void setTicketUrl( const QUrl &aUrl );
 	
+	/**
+	 * Method to set the id of the event
+	 * @param aId The ID value 
+	 */
+	void setId( const QString &aId );
+	
 private:
 	QSharedDataPointer<SmfEventPrivate> d;
 	
@@ -165,5 +176,10 @@ QDataStream &operator<<( QDataStream &aDataStream,
  */
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfEvent &aEvent);
+
+
+// Make the class SmfEvent known to QMetaType, so that as to register it.
+Q_DECLARE_METATYPE(SmfEvent)
+
 
 #endif /* SMFEVENT_H_ */

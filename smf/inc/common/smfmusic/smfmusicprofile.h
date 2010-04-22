@@ -32,21 +32,25 @@ class SmfMusicProfilePrivate;
  * @ingroup smf_common_group
  * The music profile class represents a user's profile in music site
  */
-class SMFCLIENT_EXPORT SmfMusicProfile : public QObject
+class SMFCLIENT_EXPORT SmfMusicProfile
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
 	 */
-	SmfMusicProfile( QObject *aParent = 0 );
+	SmfMusicProfile( );
 	
 	/**
 	 * Copy Constructor
 	 * @param aOther The reference object
 	 */
 	SmfMusicProfile( const SmfMusicProfile &aOther );
+	
+	/**
+	 * Overloaded = operator
+	 * @param aOther The reference object
+	 */
+	SmfMusicProfile& operator=( const SmfMusicProfile &aOther );
 	
 	/**
 	 * Destructor
@@ -89,6 +93,18 @@ public:
 	 */
 	void setInterestInfo( const QList<SmfTrackInfo>& aInterest );
 
+	/**
+	 * Method to set the user events as list of SmfEvents
+	 * @param aList The list of events
+	 */
+	void setUserEvents( const QList<SmfEvent> &aList );
+	
+	/**
+	 * Method to set the id of the music profile
+	 * @param aId The ID value 
+	 */
+	void setId( const QString &aId );
+
 private:
 	QSharedDataPointer<SmfMusicProfilePrivate> d;
 
@@ -120,6 +136,7 @@ QDataStream &operator<<( QDataStream &aDataStream,
  */
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfMusicProfile &aProfile);
+
 
 // Make the class SmfMusicProfile known to QMetaType, so that as to register it.
 Q_DECLARE_METATYPE(SmfMusicProfile)

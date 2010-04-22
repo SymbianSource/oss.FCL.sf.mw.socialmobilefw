@@ -30,15 +30,13 @@ class SmfMusicFingerPrintPrivate;
  * @ingroup smf_common_group
  * The musicfingerprint class represents a music finger print used in searches
  */
-class SMFCLIENT_EXPORT SmfMusicFingerPrint : public QObject
+class SMFCLIENT_EXPORT SmfMusicFingerPrint
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
 	 */
-	SmfMusicFingerPrint( QObject *aParent = 0 );
+	SmfMusicFingerPrint( );
 	
 	/**
 	 * Constructor with default argument
@@ -47,15 +45,27 @@ public:
 	SmfMusicFingerPrint( const SmfMusicFingerPrint &aOther );
 	
 	/**
+	 * Overloaded = operator
+	 * @param aOther The reference object
+	 */
+	SmfMusicFingerPrint& operator=( const SmfMusicFingerPrint &aOther );
+	
+	/**
 	 * Destructor
 	 */
 	~SmfMusicFingerPrint( );
 	
 	/**
-	 * GEt the music finger print data
+	 * Method to get the music finger print data
 	 * @return The music finger print data
 	 */
 	QByteArray musicFingerPrint ( ) const;
+	
+	/**
+	 * Method to set the music finger print data
+	 * @param aFp The music finger print data
+	 */
+	void setMusicFingerPrint ( const QByteArray &aFp);
 	
 private:
 	QSharedDataPointer<SmfMusicFingerPrintPrivate> d;
@@ -88,5 +98,10 @@ QDataStream &operator<<( QDataStream &aDataStream,
  */
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfMusicFingerPrint &aMFP);
+
+
+// Make the class SmfMusicFingerPrint known to QMetaType, so that as to register it.
+Q_DECLARE_METATYPE(SmfMusicFingerPrint)
+
 
 #endif /* SMFMUSICFINGERPRINT_H_ */

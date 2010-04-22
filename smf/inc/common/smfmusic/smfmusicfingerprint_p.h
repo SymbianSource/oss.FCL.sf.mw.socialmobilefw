@@ -34,10 +34,7 @@ public:
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfMusicFingerPrintPrivate( const SmfMusicFingerPrintPrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_fingerPrintData ( aOther.m_fingerPrintData )	{ }
-	
+	SmfMusicFingerPrintPrivate( const SmfMusicFingerPrintPrivate &aOther );
 	/**
 	 * Destructor
 	 */

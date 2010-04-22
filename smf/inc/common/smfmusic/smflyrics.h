@@ -31,21 +31,26 @@ class SmfLyricsPrivate;
  * @ingroup smf_common_group
  * The lyrics class represents an instance of a music track's lyrics
  */
-class SMFCLIENT_EXPORT SmfLyrics : public QObject
+class SMFCLIENT_EXPORT SmfLyrics
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
 	 */
-	SmfLyrics( QObject *aParent = 0 );
+	SmfLyrics( );
 	
 	/**
 	 * Copy Constructor
 	 * @param aOther The reference object
 	 */
 	SmfLyrics( const SmfLyrics &aOther );
+	
+	/**
+	 * Overloaded = operator
+	 * @param aOther The reference object
+	 * @return The current object reference
+	 */
+	SmfLyrics& operator=( const SmfLyrics &aOther );
 	
 	/**
 	 * Destructor
@@ -75,6 +80,30 @@ public:
 	 * @return The ID value 
 	 */
 	QString id( ) const;
+	
+	/**
+	 * Method to set the lyrics
+	 * @param aLyrics The lyrics data
+	 */
+	void setLyrics( const QByteArray &aLyrics );
+	
+	/**
+	 * Method to set the language
+	 * @param aLang The language
+	 */
+	void setLanguage( const QString &aLang );
+	
+	/**
+	 * Method to set the release year
+	 * @param aRelYear The release year
+	 */
+	void setReleaseYear( const QDateTime &aRelYear );
+	
+	/**
+	 * Method to set the id of the lyrics
+	 * @param aId The ID value 
+	 */
+	void setId( const QString &aId );
 	
 private:
 	QSharedDataPointer<SmfLyricsPrivate> d;
@@ -108,7 +137,9 @@ QDataStream &operator<<( QDataStream &aDataStream,
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfLyrics &aLyrics);
 
+
 // Make the class SmfLyrics known to QMetaType, so that as to register it.
 Q_DECLARE_METATYPE(SmfLyrics)
+
 
 #endif /* SMFLYRICS_H_ */

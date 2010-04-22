@@ -29,22 +29,13 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfPlaylistPrivate( ) { 
-		m_trackList.clear(); 
-		m_title.clear();
-		m_playlistId.clear();
-	}
+	SmfPlaylistPrivate( );
 	
 	/**
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfPlaylistPrivate( const SmfPlaylistPrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_trackList ( aOther.m_trackList ), 
-		m_title ( aOther.m_title ),
-		m_creationDate ( aOther.m_creationDate ),
-		m_playlistId ( aOther.m_playlistId ) 	{ }
+	SmfPlaylistPrivate( const SmfPlaylistPrivate &aOther ) ;
 	
 	/**
 	 * Destructor

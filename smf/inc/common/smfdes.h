@@ -50,6 +50,7 @@
  *				- how to get a list of images from a remote gallery e.g. Flickr.com, see @ref MyApplication::displayGallery()
  *				- how to post privately to a contact see @ref MyApplication::postUpdate()
  *				- how to tell others about the music you are currently listen to, see @ref MyApplication::updateCurrentPlaying()
+ *				- how to list all the activities that has happened recently, see @ref MyApplication::getActivities() and @ref MyApplication::showActivities() 
  *
  *		@section smf_sample_plugin Sample Plugin From Service provider
  *		- This shows how to write a plugin for extending SMF service. Authentication Application also needs to be provided for these plugins.

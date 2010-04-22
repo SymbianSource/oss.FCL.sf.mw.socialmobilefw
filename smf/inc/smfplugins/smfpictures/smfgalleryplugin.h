@@ -21,11 +21,11 @@
 #define SMFGALLERYPLUGIN_H_
 
 #include <smfpluginbase.h>
-#include </inc/common/smfpictures/smfpicture.h>
-#include </inc/common/smfcomment/smfcomment.h>
+#include <smfpicture.h>
+#include <smfcomment.h>
 
 // Forward declaration
-class SmfPluginManagerUtil;
+class SmfPluginUtil;
 
 /**
  * @ingroup smf_plugin_group
@@ -57,16 +57,15 @@ class SmfPluginManagerUtil;
  */
 class SmfGalleryPlugin : public SmfPluginBase
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aUtil The SmfPluginManagerUtil instance. The plugins can 
+	 * @param aUtil The SmfPluginUtil instance. The plugins can 
 	 * call the method getAuthKeys() of this class, with its pluginID to 
 	 * get the OAuth keys, keys are returned only if this plugin is 
 	 * authorised by Smf franework
 	 */
-	SmfGalleryPlugin( SmfPluginManagerUtil *aUtil );
+	SmfGalleryPlugin( SmfPluginUtil *aUtil );
 	
 	/**
 	 * Destructor

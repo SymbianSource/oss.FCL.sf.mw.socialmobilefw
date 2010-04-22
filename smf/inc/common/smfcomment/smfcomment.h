@@ -31,21 +31,26 @@ class SmfCommentPrivate;
  * @ingroup smf_common_group
  * The comment class represents a comment (on a picture or a music track etc)
  */
-class SMFCLIENT_EXPORT SmfComment : public QObject
+class SMFCLIENT_EXPORT SmfComment
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object 
 	 */
-	SmfComment( QObject *aParent = 0 );
+	SmfComment();
 	
 	/**
 	 * Copy Constructor
 	 * @param aOther The reference object
 	 */
 	SmfComment( const SmfComment &aOther );
+	
+	/**
+	 * Overloaded = operator
+	 * @param aOther The reference object
+	 * @return The current object reference
+	 */
+	SmfComment& operator=(const SmfComment &aOther);
 	
 	/**
 	 * Destructor
@@ -71,11 +76,35 @@ public:
 	QString id( ) const;
 	
 	/**
+	 * Method to get the canonical link for the comment
+	 * @return The base url 
+	 */
+	QString link( ) const;
+
+	/**
 	 * Method to set the comment text
 	 * @param aText The comment text to be set
 	 */
 	void setText( const QString &aText );
 	
+	/**
+	 * Method to set the time stamp
+	 * @param aDateTime The comment time stamp value to be set
+	 */
+	void setTimeStamp( const QDateTime &aDateTime );
+	
+	/**
+	 * Method to set the id of the comment
+	 * @param aId The ID value to be set
+	 */
+	void setId( const QString &aId );
+	
+	/**
+	 * Method to set the link of the comment
+	 * @param aLink The url to be set
+	 */
+	void setLink( const QString &aLink );
+
 private:
 	QSharedDataPointer<SmfCommentPrivate> d;
 	
@@ -108,7 +137,9 @@ QDataStream &operator<<( QDataStream &aDataStream,
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfComment &aComment);
 
+
 // Make the class SmfComment known to QMetaType, so that as to register it.
 Q_DECLARE_METATYPE(SmfComment)
+
 
 #endif /* SMFCOMMENT_H_ */

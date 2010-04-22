@@ -41,7 +41,6 @@ class SmfProviderBasePrivate;
 class SmfProviderBase : public QObject
 	{
 	Q_OBJECT
-
 public:
 	/**
 	 * Constructor with default argument
@@ -158,5 +157,8 @@ QDataStream &operator<<( QDataStream &aDataStream,
  */
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfProviderBase &aProviderBase);
+
+// Make the class SmfProviderBase known to QMetaType, so that as to register it.
+Q_DECLARE_METATYPE(SmfProviderBase)
 
 #endif /* SMFPROVIDERBASE_H_ */

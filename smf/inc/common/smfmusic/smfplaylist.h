@@ -31,21 +31,25 @@ class SmfPlaylistPrivate;
  * @ingroup smf_common_group
  * The playlist class represents an instance of a playlist
  */
-class SMFCLIENT_EXPORT SmfPlaylist : public QObject
+class SMFCLIENT_EXPORT SmfPlaylist
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
 	 */
-	SmfPlaylist( QObject *aParent = 0 );
+	SmfPlaylist();
 	
 	/**
 	 * Copy Constructor
 	 * @param aOther The reference object
 	 */
 	SmfPlaylist( const SmfPlaylist &aOther );
+	
+	/**
+	 * Overloaded = operator
+	 * @param aOther The reference object
+	 */
+	SmfPlaylist& operator=( const SmfPlaylist &aOther );
 	
 	/**
 	 * Destructor
@@ -94,6 +98,12 @@ public:
 	 */
 	void setCreationDate( const QDateTime &aDate );
 	
+	/**
+	 * Method to set the id of the playlist
+	 * @param aId The ID value 
+	 */
+	void setId( const QString &aId);
+	
 private:
 	QSharedDataPointer<SmfPlaylistPrivate> d;
 	
@@ -125,6 +135,7 @@ QDataStream &operator<<( QDataStream &aDataStream,
  */
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfPlaylist &aPlaylist);
+
 
 // Make the class SmfPlaylist known to QMetaType, so that as to register it.
 Q_DECLARE_METATYPE(SmfPlaylist)

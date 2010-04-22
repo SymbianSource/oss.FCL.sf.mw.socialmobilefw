@@ -21,7 +21,6 @@
 #ifndef SMFMUSICRATING_H_
 #define SMFMUSICRATING_H_
 
-#include <QObject>
 #include <QSharedData>
 #include <smfclientglobal.h>
 
@@ -40,14 +39,12 @@ const int SMF_MIN_RATING = 0;
  * The music rating class represents an instance of rating 
  * about a music track 
  */
-class SMFCLIENT_EXPORT SmfMusicRating : public QObject
+class SMFCLIENT_EXPORT SmfMusicRating
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
-	 * (parent should be of type SmfTrackInfo)
+	 * @param aParent The SmfTrackInfo instance
 	 */
 	SmfMusicRating(SmfTrackInfo *aParent = 0);
 	
@@ -86,6 +83,24 @@ public:
 	 */
 	int minRating( ) const;
 	
+	/**
+	 * Method to set the rating
+	 * @param aRating The rating value
+	 */
+	void setRating( const int &aRating );
+
+	/**
+	 * Method to set the max rating
+	 * @param aMax The max rating value
+	 */
+	void setMaxRating( const int &aMax );
+	
+	/**
+	 * Method to set the min rating
+	 * @param aMin The min rating value
+	 */
+	void setMinRating( const int &aMin );
+	
 private:
 	QSharedDataPointer<SmfMusicRatingPrivate> d;
 	
@@ -118,7 +133,9 @@ QDataStream &operator<<( QDataStream &aDataStream,
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfMusicRating &aMusicRating);
 
+
 // Make the class SmfMusicRating known to QMetaType, so that as to register it.
 Q_DECLARE_METATYPE(SmfMusicRating)
+
 
 #endif /* SMFMUSICRATING_H_ */

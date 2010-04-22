@@ -20,7 +20,6 @@
 #ifndef SMFSUBTITLE_H_
 #define SMFSUBTITLE_H_
 
-#include <QObject>
 #include <qdatastream.h>
 #include <QDateTime>
 #include <QSharedData>
@@ -43,21 +42,25 @@ class SmfSubtitlePrivate;
  * @ingroup smf_common_group
  * The subtitle class represents information about a track's subtitle
  */
-class SMFCLIENT_EXPORT SmfSubtitle : public QObject
+class SMFCLIENT_EXPORT SmfSubtitle
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
 	 */
-	SmfSubtitle( QObject *aParent = 0 );
+	SmfSubtitle( );
 	
 	/**
 	 * Copy Constructor
 	 * @param aOther The reference object
 	 */
 	SmfSubtitle( const SmfSubtitle &aOther );
+	
+	/**
+	 * Overloaded = operator
+	 * @param aOther The reference object
+	 */
+	SmfSubtitle& operator=( const SmfSubtitle &aOther );
 	
 	/**
 	 * Destructor
@@ -100,6 +103,42 @@ public:
 	 */
 	QString id( ) const;
 	
+	/**
+	 * Method to set the subtitle as a bytearray
+	 * @param aSubtitle The subtitle content
+	 */
+	void setSubtitle( const QByteArray &aSubtitle );
+	
+	/**
+	 * Method to set the language
+	 * @param aLang The language
+	 */
+	void setLanguage( const QString &aLang );
+	
+	/**
+	 * Method to set the frame rate
+	 * @param aFramerate the frame rate
+	 */
+	void setFrameRate( const double &aFramerate );
+	
+	/**
+	 * Method to set the duration
+	 * @param aDuration the duration
+	 */
+	void setDuration( const double &aDuration );
+	
+	/**
+	 * Method to set the release year
+	 * @param aRelYear The release year
+	 */
+	void setReleaseYear( const QDateTime &aRelYear );
+	
+	/**
+	 * Method to set the id of the subtitle
+	 * @param aId The ID value 
+	 */
+	void setId( const QString &aId );
+	
 private:
 	QSharedDataPointer<SmfSubtitlePrivate> d;
 	
@@ -132,7 +171,9 @@ QDataStream &operator<<( QDataStream &aDataStream,
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfSubtitle &aSubtitle);
 
+
 // Make the class SmfSubtitle known to QMetaType, so that as to register it.
 Q_DECLARE_METATYPE(SmfSubtitle)
+
 
 #endif /* SMFSUBTITLE_H_ */

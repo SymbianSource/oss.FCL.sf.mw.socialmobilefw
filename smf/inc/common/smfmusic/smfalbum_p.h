@@ -30,23 +30,13 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfAlbumPrivate( ) { 
-		m_name.clear(); 
-		m_albumId.clear();
-		
-	}
+	SmfAlbumPrivate( ) ;
 	
 	/**
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfAlbumPrivate( const SmfAlbumPrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_name ( aOther.m_name ), 
-		m_image ( aOther.m_image ),
-		m_artists ( aOther.m_artists ),
-		m_albumId ( aOther.m_albumId ) 	{ }
-	
+	SmfAlbumPrivate( const SmfAlbumPrivate &aOther ) ;
 	/**
 	 * Destructor
 	 */
@@ -55,7 +45,7 @@ public:
 	QString		m_name;		// album name
 	QImage 		m_image;	// album image
 	SmfArtists m_artists;	// album's artists
-	QString 	m_albumId;
+	QString 	m_albumId;	// album Id
 	
 };
 

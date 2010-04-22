@@ -36,7 +36,7 @@ class SmfPostPrivate;
  */
 class SMFCLIENT_EXPORT SmfPost : public QTextDocument
 	{
-	Q_OBJECT
+
 public:
 	/**
 	 * Constructor with default argument

@@ -26,8 +26,10 @@
 #include <qdatastream.h>
 #include <QSharedData>
 #include <smfclientglobal.h>
+#include <QMetaType>
 
-using namespace QtMobility; // Qt mobility - namespace
+// Qt mobility - namespace
+using namespace QtMobility;
 
 typedef enum 
 {
@@ -48,15 +50,13 @@ class SmfPlacePrivate;
  * 
  * Note: This class has dependencies on QtMobility project
  */
-class SMFCLIENT_EXPORT SmfPlace : public QObject
+class SMFCLIENT_EXPORT SmfPlace
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
 	 */
-	SmfPlace( QObject *aParent = 0 );
+	SmfPlace( );
 	
 	/**
 	 * Copy Constructor
@@ -67,8 +67,9 @@ public:
 	/**
 	 * Overloaded = operator 
 	 * @param aOther The reference object
+	 * @return The current object reference
 	 */
-	SmfPlace operator=( const SmfPlace &aOther );
+	SmfPlace& operator=( const SmfPlace &aOther );
 	
 	/**
 	 * Destructor
@@ -111,7 +112,7 @@ public:
 	 * in time) of the place.
 	 * @return The Geo Position information of place
 	 */
-	QtMobility::QGeoPositionInfo geoPositionInfo( ) const;
+	QGeoPositionInfo geoPositionInfo( ) const;
 	
 	/**
 	 * Method to get the url indicating the place
@@ -161,13 +162,19 @@ public:
 	 * in time) of the place.
 	 * @param aGeoPosInfo The new Geo Position information of place
 	 */
-	void setGeoPositionInfo( const QtMobility::QGeoPositionInfo& aGeoPosInfo );
+	void setGeoPositionInfo( const QGeoPositionInfo &aGeoPosInfo );
 	
 	/**
 	 * Method to set the url indicating the place
 	 * @param aUrl The new url indicating the place
 	 */
 	void setUrl( const QUrl& aUrl );
+	
+	/**
+	 * Method to set the id of the place
+	 * @return The ID value 
+	 */
+	void setId( const QString &aId );
 	
 private:
 	QSharedDataPointer<SmfPlacePrivate> d;
@@ -200,5 +207,10 @@ QDataStream &operator<<( QDataStream &aDataStream,
  */
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfPlace &aPlace);
+
+
+// Make the class SmfPlace known to QMetaType, so that as to register it.
+Q_DECLARE_METATYPE(SmfPlace)
+
 
 #endif /* SMFPLACE_H_ */

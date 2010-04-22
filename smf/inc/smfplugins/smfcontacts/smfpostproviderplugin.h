@@ -12,8 +12,7 @@
  * Contributors:
  * Manasij Roy, Nalina Hariharan
  * 
- * @section DESCRIPTION
- *
+ * Description:
  * Interface specification for getting/posting updates to a social site
  *
  */
@@ -28,7 +27,7 @@
 #include <smfplace.h>
 
 // Forward declaration
-class SmfPluginManagerUtil;
+class SmfPluginUtil;
 
 /**
  * SmfPresenceInfo.
@@ -58,16 +57,15 @@ enum SmfPresenceInfo
  */
 class SmfPostProviderPlugin : public SmfPluginBase
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aUtil The SmfPluginManagerUtil instance. The plugins can 
+	 * @param aUtil The SmfPluginUtil instance. The plugins can 
 	 * call the method getAuthKeys() of this class, with its pluginID to 
 	 * get the OAuth keys, keys are returned only if this plugin is 
 	 * authorised by Smf franework
 	 */
-	SmfPostProviderPlugin( SmfPluginManagerUtil* aUtil );
+	SmfPostProviderPlugin( SmfPluginUtil* aUtil );
 	
 	/**
 	 * Destructor
@@ -113,7 +111,7 @@ public:
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
 	virtual SmfPluginError retrieve( SmfPluginRequestData &aRequest,
-			const SmfContact &aUser = 0,
+			const SmfContact *aUser=0,
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 
@@ -149,7 +147,7 @@ public:
 	virtual SmfPluginError postDirected( SmfPluginRequestData &aRequest,
 			const SmfPost &aPostData, 
 			const SmfContact &aContact, 
-			const SmfPlace &aLocation = NULL ) = 0;
+			const SmfPlace *aLocation = NULL ) = 0;
 	
 	
 	/**
@@ -162,7 +160,7 @@ public:
 	virtual SmfPluginError commentOnAPost(SmfPluginRequestData &aRequest,
 			const SmfPost& aTarget,
 			const SmfPost& aComment, 
-			const SmfPlace &aLocation = NULL);
+			const SmfPlace *aLocation = NULL);
 	
 	/**
 	 * Method to update the presence information of the user

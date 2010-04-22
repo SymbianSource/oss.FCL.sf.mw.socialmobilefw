@@ -52,7 +52,6 @@ enum SmfParsingMode
 class SmfPluginUtil : public QObject
 	{
 	Q_OBJECT
-
 public:
 	/**
 	 * Method to get the instance of SmfPluginUtil class
@@ -76,10 +75,13 @@ public:
 	 * Method called by plugins to get the OAuth Keys. The PM sends the
 	 * keys only if the pluginID is that of a currently loaded plugin
 	 * @param aKeys [out] The OAuth keys
+	 * @param aRegToken The plugin's registration token
 	 * @param aPluginID The ID of the plugin that requests for
 	 * the OAuth keys
 	 */
-	void getAuthKeys( QMap<QString, QString> &aKeys, QString aPluginID );
+	void getAuthKeys( QMap<QString, QString> &aKeys, 
+			const QString aRegToken, 
+			const QString aPluginID );
 
 	/**
 	 * Method called by plugins to get the Nonce value
@@ -110,7 +112,7 @@ public:
 private:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
+	 * @param aParser The QJOSN parser object
 	 */
 	SmfPluginUtil ( Parser *aParser );
 

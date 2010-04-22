@@ -32,15 +32,13 @@ class SmfArtistsPrivate;
  * @ingroup smf_common_group
  * The SmfArtists class represents the artists in a track or an album
  */
-class SMFCLIENT_EXPORT SmfArtists : public QObject
+class SMFCLIENT_EXPORT SmfArtists
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
 	 */
-	SmfArtists( QObject *aParent = 0 );
+	SmfArtists();
 	
 	/**
 	 * Copy Constructor
@@ -77,6 +75,24 @@ public:
 	 */
 	QUrl url( ) const;
 		
+	/**
+	 * Method to set the artists names
+	 * @param aList The list of artists names
+	 */
+	void setNames( const QStringList &aList );
+	
+	/**
+	 * Method to set the image of the artists
+	 * @param aImage The image of the artists
+	 */
+	void setImage( const QImage &aImage );
+	
+	/**
+	 * Method to set the url of the artists
+	 * @param aUrl The url of the artists
+	 */
+	void setUrl( const QUrl &aUrl );
+		
 private:
 	QSharedDataPointer<SmfArtistsPrivate> d;
 	
@@ -109,5 +125,7 @@ QDataStream &operator<<( QDataStream &aDataStream,
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfArtists &aArtists);
 
+// Make the class SmfArtists known to QMetaType, so that as to register it.
+Q_DECLARE_METATYPE(SmfArtists)
 
 #endif /* SMFARTISTS_H_ */

@@ -30,16 +30,13 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfContactPrivate( ) { m_details.clear(); }
+	SmfContactPrivate( );
 	
 	/**
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfContactPrivate( const SmfContactPrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_details ( aOther.m_details )	{ }
-	
+	SmfContactPrivate( const SmfContactPrivate &aOther );
 	/**
 	 * Destructor
 	 */

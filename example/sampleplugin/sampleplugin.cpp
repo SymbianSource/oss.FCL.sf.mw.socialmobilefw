@@ -3,6 +3,8 @@
 #include "sampleplugin.h"
 #include <QNetworkRequest>
 #include <QNetworkAccessManager>
+#include <qfile.h>
+#include <stdio.h>
 
 /**
  * Constructor with default argument
@@ -86,7 +88,8 @@ SmfPluginError SamplePlugin::createRequest( SmfPluginRequestData &aRequest,
 
 	// Get the oAuth keys from The Smf Server
 	QMap<QString, QString> keys;
-	m_util->getAuthKeys(keys, m_provider->pluginId());
+	QString registrationToken = retrievePrivateRegToken();
+	m_util->getAuthKeys(keys, registrationToken, m_provider->pluginId());
 
 	// Unable to get the tokens
 	if(keys.isEmpty())
@@ -242,7 +245,7 @@ SmfPluginError SamplePlugin::postComment( SmfPluginRequestData &aRequest,
 	QMultiMap<QByteArray, QByteArray> params;
 	params.insert("method", "postComment");
 	params.insert("photoId", aImage.id().toAscii());
-	params.insert("comment", aImage.comments().join(" ").toAscii());
+	params.insert("comment", "excellent Himalaya");
 
 	QNetworkAccessManager::Operation type = QNetworkAccessManager::GetOperation;
 	SmfSignatureMethod signMethod = HMAC_SHA1;
@@ -251,6 +254,29 @@ SmfPluginError SamplePlugin::postComment( SmfPluginRequestData &aRequest,
 	error = createRequest(aRequest, type, signMethod, params, mode, NULL);
 	return error;
 	}
+
+/**
+ * This function retrieves the registration token that was provided to Authentication App
+ * while authenticatiing user with the service
+ * 
+ * Plugin source codes are not open source - so free to use anything they like
+ */
+QString SamplePlugin::retrievePrivateRegToken()
+	{
+
+	/**
+	 * This is a private implementation - 
+	 * implementer might choose to use registry to store/retrieve this token
+	 * or to write encrypted (symmetric) token to a file kept at known dir
+	 */
+	QFile qf("/resource/data/sampleplugindata.dat"); 
+	qf.open(QIODevice::ReadOnly);
+	QByteArray qba = qf.read(20); 
+	qba.chop(5);
+	QString rs(qba.toBase64());
+	return rs;
+	}
+
 
 /**
  * Method to get the provider information
@@ -476,7 +502,6 @@ bool SampleProviderBase::updateDataUsage( const uint &aBytesSent,
 
 	return ret;
 	}
-
 
 /*
  * Export Macro

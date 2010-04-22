@@ -36,16 +36,15 @@ class SmfContactPrivate;
  * 
  * Note: This class has dependencies on QtMobility project
  */
-class SMFCLIENT_EXPORT SmfContact : public QObject
+class SMFCLIENT_EXPORT SmfContact
 	{
-	Q_OBJECT
 
 public:
 	/**
 	 * Constructor with default argument
 	 * @param aParent The parent object
 	 */
-	SmfContact( QObject *aParent = 0 );
+	SmfContact();
 	
 	/**
 	 * Copy Constructor
@@ -58,7 +57,6 @@ public:
 	 */
 	~SmfContact( );
 	
-public slots:
 	/**
 	 * Method to get the available sub fields for contacts.
 	 * The following are the available sub types of a contact

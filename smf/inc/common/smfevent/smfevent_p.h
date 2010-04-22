@@ -32,27 +32,13 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfEventPrivate( ) { 
-		m_name.clear(); 
-		m_url.clear();
-		m_eventId.clear();
-		
-	}
+	SmfEventPrivate( );
 	
 	/**
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfEventPrivate( const SmfEventPrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_name ( aOther.m_name ), 
-		m_dateTime ( aOther.m_dateTime ),
-		m_duration ( aOther.m_duration ),
-		m_artists ( aOther.m_artists ),
-		m_venue ( aOther.m_venue ),
-		m_url ( aOther.m_url ),
-		m_eventId ( aOther.m_eventId ) 	{ }
-	
+	SmfEventPrivate( const SmfEventPrivate &aOther );
 	/**
 	 * Destructor
 	 */
@@ -64,7 +50,7 @@ public:
 	SmfArtists m_artists;		// event artist names
 	SmfPlace 	m_venue;		// venue of the event
 	QUrl 		m_url;			// ticket url
-	QString 	m_eventId;
+	QString 	m_eventId;	// event Id
 	
 };
 

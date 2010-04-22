@@ -29,17 +29,13 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfCommentPrivate( ) { m_text.clear(); m_commentId.clear(); }
+	SmfCommentPrivate( );
 	
 	/**
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfCommentPrivate( const SmfCommentPrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_text ( aOther.m_text ), 
-		m_timeStamp ( aOther.m_timeStamp ),
-		m_commentId ( aOther.m_commentId ) 	{ }
+	SmfCommentPrivate( const SmfCommentPrivate &aOther );
 	
 	/**
 	 * Destructor
@@ -48,7 +44,8 @@ public:
   
 	QString m_text;			// comment text
 	QDateTime m_timeStamp;	// comment time stamp
-	QString m_commentId;
+	QString m_commentId; //id of the comment
+	QString m_link; //url\permalink of the comment 
 	
 };
 

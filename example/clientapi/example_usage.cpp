@@ -10,6 +10,8 @@
 #include "smftrackinfo.h"
 #include "smfmusicprofile.h"
 #include "smflyrics.h"
+#include "smfactions.h"
+#include "smfactivityfetcher.h"
 #include <qalgorithms.h>
 #include "qtcontacts.h"
 #include <qdatastream.h>
@@ -55,6 +57,8 @@ public slots:
 	void displayLyrics(SmfTrackInfo currTrack);
 	void showLyrics(SmfLyricsList* list);
 
+	void getActivities();
+	void showActivities(SmfActivityEntryList* entries);
 private:
 	MyAppView* m_view;
 	SmfClient client;
@@ -68,7 +72,7 @@ private:
 void MyApplication::displayGallery()
 	{
 	// Some common interface for finding implementations.
-	QList<SmfProvider>* galleries = client.GetServices("org.symbian.smf.gallery\0.2");
+	QList<SmfProvider>* galleries = client.GetServices("org.symbian.smf.client.gallery\0.2");
 
 	// We will use the first one now
 	SmfProvider smfp = galleries->value(0);
@@ -139,7 +143,7 @@ void MyApplication::uploaded(bool success)
 void MyApplication::displayFriends()
 	{
 	// Some common interface for finding implementations.
-	QList<SmfProvider>* contactFetcherList = client.GetServices("org.symbian.smf.contact.fetcher\0.2");
+	QList<SmfProvider>* contactFetcherList = client.GetServices("org.symbian.smf.cleint.contact.fetcher\0.2");
 	SmfProvider smfp = contactFetcherList->value(0);
 	SmfContactFetcher* smfcf = new SmfContactFetcher(&smfp);
 	
@@ -176,7 +180,7 @@ void MyApplication::showlist(SmfContactList* friendsList)
 void MyApplication::postUpdate()
 	{
 	// Some common interface for finding implementations.
-	QList<SmfProvider>* postServices = client.GetServices("org.symbian.smf.contact.posts\0.2");
+	QList<SmfProvider>* postServices = client.GetServices("org.symbian.smf.client.contact.posts\0.2");
 
 	//let us use the first one
 	QString servName = postServices->value(0).serviceName();
@@ -216,7 +220,7 @@ void MyApplication::showPosts(SmfPostList* posts, QString /*err*/)
 void MyApplication::getMusic(SmfTrackInfo currTrack)
 	{
 	// Some common interface for finding implementations.
-	QList<SmfProvider>* smfProList = client.GetServices("org.symbian.smf.music\0.2");
+	QList<SmfProvider>* smfProList = client.GetServices("org.symbian.smf.client.music\0.2");
 	SmfProvider smfp = smfProList->value(0);
 	SmfMusicSearch* mServer = new SmfMusicSearch(&smfp);
 
@@ -264,7 +268,7 @@ void MyApplication::displayLyrics(SmfTrackInfo currTrack)
 	{
 
 	// Some common interface for finding implementations.
-	QList<SmfProvider>* smfProList = client.GetServices("org.symbian.smf.music.lyrics\0.2","lyricsfly.com");
+	QList<SmfProvider>* smfProList = client.GetServices("org.symbian.smf.client.music.lyrics\0.2","lyricsfly.com");
 	SmfProvider smfp = smfProList->value(0);
 	SmfLyricsService* lyricsService = new SmfLyricsService(&smfp);
 	QObject::connect(lyricsService,SIGNAL(lyricsAvailable(SmfLyricsList*, QString, SmfResultPage )),this,SLOT(showLyrics(SmfLyricsList*)));
@@ -279,4 +283,54 @@ void MyApplication::showLyrics(SmfLyricsList* list)
 	//now display the latest edited lyrics
 	//qSort(list->begin(),list->end(),caseInsensitiveLessThan);
 	m_view->setLyricsData(list->at(0));
+	}
+
+void MyApplication::getActivities()
+	{
+	// Some common interface for finding implementations.
+	QList<SmfProvider>* activityServices = client.GetServices("org.symbian.smf.client.activity.fetcher\0.2");
+
+	//let us use the Facebook one
+	QString servName = activityServices->value(0).serviceName();
+	if(!servName.compare("Facebook.com")) return;
+	SmfProvider smfp = activityServices->value(0);
+	SmfActivityFetcher* myActivityServer = new SmfActivityFetcher(&smfp);
+
+	//Adjust our view to show where these posts came from (e.g. streams from Facebook)
+	//display service name description and the logo
+	m_view->setIcon((myActivityServer->getProvider())->serviceIcon() );
+	m_view->setProvider(myActivityServer->getProvider());
+	m_view->setDescription((myActivityServer->getProvider())->description() );
+	
+	QObject::connect(myActivityServer,
+			SIGNAL(resultsAvailable(SmfActivityEntryList*,QString,SmfResultPage)),
+			this,SLOT(showActivities(SmfActivityEntryList*)));	
+
+	//get a list of updates to my wall
+	myActivityServer->selfActivities();
+	}
+
+void MyApplication::showActivities(SmfActivityEntryList* entries)
+	{
+	foreach(SmfActivityEntry entry, *entries) {
+		SmfContact sc = entry.author();
+		QString desc = (sc.value("Name")).toString();
+		SmfPost details = entry.details();
+		QList<SmfActivityObject> aol = entry.activities();
+		SmfActivityObject sao = aol.value(0);
+		if(SmfActivityMarkAsFavorite == entry.actionName() )
+			{
+			desc.append("  has marked  ");
+			QVariant qv = sao.objData();
+			SmfActivityObjectType otype = sao.type();
+			if((SmfActivityObjTypePhoto == otype ) && (qv.canConvert<SmfPicture>()))
+				{
+				SmfPicture pic = qv.value<SmfPicture>();
+				desc.append( pic.description() );
+				}
+			desc.append("  as Favorite at");
+			QDateTime qdt = sao.time();
+			desc.append(qdt.toString("h:m:s ap"));
+			}
+	}
 	}

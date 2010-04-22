@@ -22,6 +22,7 @@
 
 #include <QTime>
 #include <smfmusicrating.h>
+#include <smfcomment.h>
 #include <QStringList>
 #include <QSharedData>
 
@@ -31,34 +32,13 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfTrackInfoPrivate( int aMaxRating = 0, int aMinRating = 0 ) : m_rating(/*aMaxRating, aMinRating*/) 
-		{ 
-		m_trackId.clear();
-		m_title.clear();
-		m_album.clear();
-		m_artist.clear();
-		m_genre.clear();
-		m_tags.clear();
-		m_comments.clear();
-	}
+	SmfTrackInfoPrivate( int aMaxRating = 0, int aMinRating = 0 );
 	
 	/**
 	 * Copy Constructor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfTrackInfoPrivate( const SmfTrackInfoPrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_trackId ( aOther.m_trackId ),
-		m_title ( aOther.m_title ),
-		m_album ( aOther.m_album ),
-		m_artists ( aOther.m_artists ),
-		m_genre ( aOther.m_genre ),
-		m_tags ( aOther.m_tags ),
-		m_year ( aOther.m_year ),
-		m_rating ( aOther.m_rating ),
-		m_comments ( aOther.m_comments ),
-		m_duration ( aOther.m_duration ) 	{ }
-	
+	SmfTrackInfoPrivate( const SmfTrackInfoPrivate &aOther ) ;
 	/**
 	 * Destructor
 	 */
@@ -72,7 +52,7 @@ public:
 	QStringList m_tags;		// tag information
 	QDateTime m_year;			// release year
 	SmfMusicRating m_rating;// rating
-	QStringList m_comments;	// comments
+	QList<SmfComment> m_comments;	// comments
 	QTime m_duration;		// duration
 	
 };

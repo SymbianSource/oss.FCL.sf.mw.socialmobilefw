@@ -29,23 +29,12 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfLyricsPrivate( ) { 
-		m_lyrics.clear();
-		m_language.clear();
-		m_lyricsId.clear(); 
-	}
-	
+	SmfLyricsPrivate( );
 	/**
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfLyricsPrivate( const SmfLyricsPrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_lyrics ( aOther.m_lyrics ),
-		m_language ( aOther.m_language ),
-		m_releaseYr ( aOther.m_releaseYr ),
-		m_lyricsId ( aOther.m_lyricsId ) 	{ }
-	
+	SmfLyricsPrivate( const SmfLyricsPrivate &aOther );
 	/**
 	 * Destructor
 	 */

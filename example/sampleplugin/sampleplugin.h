@@ -136,7 +136,10 @@ private:
 			QMultiMap<QByteArray, QByteArray> &aParams, 
 			const SmfParsingMode aMode,
 			QBuffer *aPostData );
-	
+	/**
+	 * Function to retrieve registration token supplied by SMF to authentication app.
+	 */
+	QString retrievePrivateRegToken();
 private:
 	SampleProviderBase *m_provider;
 	SmfPluginUtil *m_util;

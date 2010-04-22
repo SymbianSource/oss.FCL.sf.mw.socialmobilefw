@@ -34,49 +34,17 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfPicturePrivate( ) { 
-		m_photoId.clear();
-		m_owner.clear();
-		m_title.clear();
-		m_description.clear();
-		m_comments.clear();
-		m_tags.clear();
-		m_url.clear();
-		m_caption.clear();
-	}
+	SmfPicturePrivate( );
 	/**
 	 * Constructor
 	 */
-	SmfPicturePrivate( const QImage &aImage ) { 
-		m_photoId.clear();
-		m_owner.clear();
-		m_title.clear();
-		m_description.clear();
-		m_comments.clear();
-		m_tags.clear();
-		m_url.clear();
-		m_picture = aImage;
-		m_caption.clear();
-	}
+	SmfPicturePrivate( const QImage &aImage );
 	
 	/**
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfPicturePrivate( const SmfPicturePrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_photoId ( aOther.m_photoId ),
-		m_owner ( aOther.m_owner ),
-		m_title ( aOther.m_title ),
-		m_description ( aOther.m_description ),
-		m_picVisibility ( aOther.m_picVisibility ),
-		m_postedOn ( aOther.m_postedOn ),
-		m_comments ( aOther.m_comments ),
-		m_tags ( aOther.m_tags ),
-		m_url ( aOther.m_url ),
-		m_picture ( aOther.m_picture ),
-		m_caption ( aOther.m_caption ) 	{ }
-	
+	SmfPicturePrivate( const SmfPicturePrivate &aOther ) ;
 	/**
 	 * Destructor
 	 */

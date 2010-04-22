@@ -29,25 +29,13 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfSubtitlePrivate( ) { 
-		m_language.clear();
-		m_frameRate = 0;
-		m_duration = 0;
-		m_subtitleId.clear();
-	}
+	SmfSubtitlePrivate( ) ;
 	
 	/**
 	 * Copy Consturctor
 	 * @param aOther The reference object to be copy constructed
 	 */
-	SmfSubtitlePrivate( const SmfSubtitlePrivate &aOther ) : 
-		QSharedData ( aOther ), 
-		m_subtitle ( aOther.m_subtitle ), 
-		m_language ( aOther.m_language ),
-		m_frameRate ( aOther.m_frameRate ),
-		m_duration ( aOther.m_duration ),
-		m_releaseYr ( aOther.m_releaseYr ),
-		m_subtitleId ( aOther.m_subtitleId ) 	{ }
+	SmfSubtitlePrivate( const SmfSubtitlePrivate &aOther );
 	
 	/**
 	 * Destructor

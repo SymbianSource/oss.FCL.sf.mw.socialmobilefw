@@ -25,6 +25,7 @@
 #include <smfmusicrating.h>
 #include <smfartists.h>
 #include <smfalbum.h>
+#include <smfcomment.h>
 #include <QStringList>
 #include <QSharedData>
 #include <smfclientglobal.h>
@@ -35,33 +36,30 @@ class SmfTrackInfoPrivate;
  * @ingroup smf_common_group
  * The track info class represents information about a music track
  */
-class SMFCLIENT_EXPORT SmfTrackInfo : public QObject
+class SMFCLIENT_EXPORT SmfTrackInfo
 	{
-	Q_OBJECT
 public:
 	/**
 	 * Constructor with default argument
-	 * @param aParent The parent object
-	 * (parent should be of type SmfMusicServicePlugin)
 	 */
-	SmfTrackInfo(QObject *aParent = 0 );
+	SmfTrackInfo( );
 	
 	/**
 	 * Copy Constructor
 	 * @param aOther The reference object
 	 */
 	SmfTrackInfo( const SmfTrackInfo &aOther );
+
+	/**
+	 * Overloaded = operator
+	 * @param aOther The reference object
+	 */
+	SmfTrackInfo& operator=( const SmfTrackInfo &aOther );
 	
 	/**
 	 * Destructor
 	 */
 	~SmfTrackInfo( );
-	
-	/**
-	 * Method to get the id of the track
-	 * @return The ID value 
-	 */
-	QString id( ) const;
 	
 	/**
 	 * Method to get the track title
@@ -109,13 +107,19 @@ public:
 	 * Method to get the comments on the track
 	 * @return The comments on the track
 	 */
-	QStringList comments( ) const;
+	QList<SmfComment> comments( ) const;
 	
 	/**
 	 * Method to get the track's duration
 	 * @return The duration of the track
 	 */
 	QTime duration( ) const;
+	
+	/**
+	 * Method to get the id of the track
+	 * @return The ID value 
+	 */
+	QString id( ) const;
 	
 	/**
 	 * Method to set the track title
@@ -163,13 +167,19 @@ public:
 	 * Method to set the comments on the track
 	 * @param aComment The new comment of the track
 	 */
-	void setComment( const QStringList &aComments );
+	void setComment( const QList<SmfComment> &aComments );
 	
 	/**
 	 * Method to set the duration of the track
 	 * @param aDuration The new duration of the track
 	 */
 	void setDuration( const QTime &aDuration );
+
+	/**
+	 * Method to set the id of the track
+	 * @param aId The ID value 
+	 */
+	void setId( const QString &aId );
 
 private:
 	QSharedDataPointer<SmfTrackInfoPrivate> d;
@@ -203,7 +213,9 @@ QDataStream &operator<<( QDataStream &aDataStream,
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfTrackInfo &aTrackInfo);
 
+
 // Make the class SmfTrackInfo known to QMetaType, so that as to register it.
 Q_DECLARE_METATYPE(SmfTrackInfo)
+
 
 #endif /* SMFTRACKINFO_H_ */
