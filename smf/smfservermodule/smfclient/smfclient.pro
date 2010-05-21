@@ -13,6 +13,11 @@ DEFINES += WRITE_LOG \
 include(client/client.pri)
 include(common/common.pri)
 
+!symbian {
+    include(../../desktop.pri)
+    LIBS += -lqjson
+}
+
 # Private Headers
 HEADERS += $$PUBLIC_HEADERS \
     $$PRIVATE_HEADERS
@@ -28,8 +33,5 @@ symbian: {
     TARGET.EPOCALLOWDLLDATA = 1
     SOURCES += smfclient_reg.rss
     LIBS += -lqjson.dll
-} else {
-    INCLUDEPATH += ../util/qjson/src
-    LIBS += -L../util/qjson/lib -lqjson
-}
+} 
 

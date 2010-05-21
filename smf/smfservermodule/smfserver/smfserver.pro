@@ -22,11 +22,10 @@ include(smfplugins/smfplugins.pri)
 include(transportmgr/transportmgr.pri)
 
 !symbian {
-    # On desktop, we need to include these locally, as there is
-    # no /epoc32/include available.
-    INCLUDEPATH += ../util/qjson/src
-    LIBS += -L../util/qjson/lib -lqjson
+    include(../../desktop.pri)
     include(../smfclient/common/common.pri)
+
+    LIBS += -lqjson
 }
 
 PUBLIC_HEADERS += \

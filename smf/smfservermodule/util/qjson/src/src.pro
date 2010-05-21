@@ -4,8 +4,12 @@ QJSON_SRCBASE = .
 TEMPLATE = lib
 QT      -= gui
 TARGET   = qjson
-DESTDIR  = $$QJSON_BASE/lib
 CONFIG += create_prl
+
+# SMF dest directory for desktop builds
+!symbian {
+    include(../../../../desktop.pri)
+}
 
 VERSION = 0.7.1
 
