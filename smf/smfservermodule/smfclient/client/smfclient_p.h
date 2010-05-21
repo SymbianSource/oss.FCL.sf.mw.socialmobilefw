@@ -17,7 +17,7 @@
 #define SMFCLIENT_P_H_
 
 #include "smfprovider.h"
-#include "SmfObserver.h"
+#include "smfobserver.h"
 #include <QObject>
 #include <QDateTime>
 #include <QStringList>
@@ -27,7 +27,7 @@
 #ifdef Q_OS_SYMBIAN
 #include "smfclientsymbian.h"
 #else
-class SmfClientQt;
+#include "smfclientqt.h"
 #endif
 
 /**

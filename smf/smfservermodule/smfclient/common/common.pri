@@ -1,105 +1,103 @@
-INCLUDEPATH += common \
-    ./
+INCLUDEPATH += $$PWD
 
 PUBLIC_HEADERS += \
-	common/smfalbum.h \
-	common/smfartists.h \
-	common/smfcomment.h \
-	common/smfcontact.h \
-	common/smfevent.h \
-	common/smfgroup.h \
-	common/smflocation.h \
-	common/smflyrics.h \
-	common/smfmusicfingerprint.h \
-	common/smfmusicprofile.h \
-	common/smfmusicrating.h \
-	common/smfpicture.h \
-	common/smfplaylist.h \
-	common/smfpluginutil.h \
-	common/smfpost.h \
-	common/smfprovider.h \
-	common/smfsubtitle.h \
-	common/smftrackinfo.h \
-	common/smfclientglobal.h \
-	common/smfglobal.h \
-	common/smfobserver.h
+	$$PWD/smfalbum.h \
+	$$PWD/smfartists.h \
+	$$PWD/smfcomment.h \
+	$$PWD/smfcontact.h \
+	$$PWD/smfevent.h \
+	$$PWD/smfgroup.h \
+	$$PWD/smflocation.h \
+	$$PWD/smflyrics.h \
+	$$PWD/smfmusicfingerprint.h \
+	$$PWD/smfmusicprofile.h \
+	$$PWD/smfmusicrating.h \
+	$$PWD/smfpicture.h \
+	$$PWD/smfplaylist.h \
+	$$PWD/smfpluginutil.h \
+	$$PWD/smfpost.h \
+	$$PWD/smfprovider.h \
+	$$PWD/smfsubtitle.h \
+	$$PWD/smftrackinfo.h \
+	$$PWD/smfclientglobal.h \
+	$$PWD/smfglobal.h \
+	$$PWD/smfobserver.h
 
 PRIVATE_HEADERS += \
-	common/smfalbum_p.h \
-	common/smfartists_p.h \
-	common/smfcomment_p.h \
-	common/smfcontact_p.h \
-	common/smfevent_p.h \
-	common/smfgroup_p.h \
-	common/smflocation_p.h \
-	common/smflyrics_p.h \
-	common/smfmusicfingerprint_p.h \
-	common/smfmusicprofile_p.h \
-	common/smfmusicrating_p.h \
-	common/smfpicture_p.h \
-	common/smfplaylist_p.h \
-	common/smfpost_p.h \
-	common/smfsubtitle_p.h \
-	common/smftrackinfo_p.h \
-	common/smfobserver.h
+	$$PWD/smfalbum_p.h \
+	$$PWD/smfartists_p.h \
+	$$PWD/smfcomment_p.h \
+	$$PWD/smfcontact_p.h \
+	$$PWD/smfevent_p.h \
+	$$PWD/smfgroup_p.h \
+	$$PWD/smflocation_p.h \
+	$$PWD/smflyrics_p.h \
+	$$PWD/smfmusicfingerprint_p.h \
+	$$PWD/smfmusicprofile_p.h \
+	$$PWD/smfmusicrating_p.h \
+	$$PWD/smfpicture_p.h \
+	$$PWD/smfplaylist_p.h \
+	$$PWD/smfpost_p.h \
+	$$PWD/smfsubtitle_p.h \
+	$$PWD/smftrackinfo_p.h \
+	$$PWD/smfobserver.h
 
 SOURCES += \
-	common/smfalbum.cpp \
-	common/smfartists.cpp \
-	common/smfcomment.cpp \
-	common/smfcontact.cpp \
-	common/smfevent.cpp \
-	common/smfgroup.cpp \
-	common/smflocation.cpp \
-	common/smflyrics.cpp \
-	common/smfmusicfingerprint.cpp \
-	common/smfmusicprofile.cpp \
-	common/smfmusicrating.cpp \
-	common/smfpicture.cpp \
-	common/smfplaylist.cpp \
-	common/smfpluginutil.cpp \
-	common/smfpost.cpp \
-	common/smfprovider.cpp \
-	common/smfsubtitle.cpp \
-	common/smftrackinfo.cpp
-
+	$$PWD/smfalbum.cpp \
+	$$PWD/smfartists.cpp \
+	$$PWD/smfcomment.cpp \
+	$$PWD/smfcontact.cpp \
+	$$PWD/smfevent.cpp \
+	$$PWD/smfgroup.cpp \
+	$$PWD/smflocation.cpp \
+	$$PWD/smflyrics.cpp \
+	$$PWD/smfmusicfingerprint.cpp \
+	$$PWD/smfmusicprofile.cpp \
+	$$PWD/smfmusicrating.cpp \
+	$$PWD/smfpicture.cpp \
+	$$PWD/smfplaylist.cpp \
+	$$PWD/smfpluginutil.cpp \
+	$$PWD/smfpost.cpp \
+	$$PWD/smfprovider.cpp \
+	$$PWD/smfsubtitle.cpp \
+	$$PWD/smftrackinfo.cpp
 
 symbian: {
-	BLD_INF_RULES.prj_exports += common/smfclientglobal.h
-	BLD_INF_RULES.prj_exports += common/smfglobal.h
-	BLD_INF_RULES.prj_exports += common/smfobserver.h
-	BLD_INF_RULES.prj_exports += common/smfalbum.h
-	BLD_INF_RULES.prj_exports += common/smfalbum_p.h
-	BLD_INF_RULES.prj_exports += common/smfartists.h
-	BLD_INF_RULES.prj_exports += common/smfartists_p.h
-	BLD_INF_RULES.prj_exports += common/smfcomment.h
-	BLD_INF_RULES.prj_exports += common/smfcomment_p.h
-	BLD_INF_RULES.prj_exports += common/smfcontact.h
-	BLD_INF_RULES.prj_exports += common/smfcontact_p.h
-	BLD_INF_RULES.prj_exports += common/smfevent.h
-	BLD_INF_RULES.prj_exports += common/smfevent_p.h
-	BLD_INF_RULES.prj_exports += common/smfgroup.h
-	BLD_INF_RULES.prj_exports += common/smfgroup_p.h
-	BLD_INF_RULES.prj_exports += common/smflocation.h
-	BLD_INF_RULES.prj_exports += common/smflocation_p.h
-	BLD_INF_RULES.prj_exports += common/smflyrics.h
-	BLD_INF_RULES.prj_exports += common/smflyrics_p.h
-	BLD_INF_RULES.prj_exports += common/smfmusicfingerprint.h
-	BLD_INF_RULES.prj_exports += common/smfmusicfingerprint_p.h
-	BLD_INF_RULES.prj_exports += common/smfmusicprofile.h
-	BLD_INF_RULES.prj_exports += common/smfmusicprofile_p.h
-	BLD_INF_RULES.prj_exports += common/smfmusicrating.h
-	BLD_INF_RULES.prj_exports += common/smfmusicrating_p.h
-	BLD_INF_RULES.prj_exports += common/smfpicture.h
-	BLD_INF_RULES.prj_exports += common/smfpicture_p.h
-	BLD_INF_RULES.prj_exports += common/smfplaylist.h
-	BLD_INF_RULES.prj_exports += common/smfplaylist_p.h
-	BLD_INF_RULES.prj_exports += common/smfpluginutil.h
-	BLD_INF_RULES.prj_exports += common/smfpost.h
-	BLD_INF_RULES.prj_exports += common/smfpost_p.h
-	BLD_INF_RULES.prj_exports += common/smfprovider.h
-	BLD_INF_RULES.prj_exports += common/smfsubtitle.h
-	BLD_INF_RULES.prj_exports += common/smfsubtitle_p.h
-	BLD_INF_RULES.prj_exports += common/smftrackinfo.h
-	BLD_INF_RULES.prj_exports += common/smftrackinfo_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfclientglobal.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfglobal.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfobserver.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfalbum.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfalbum_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfartists.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfartists_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfcomment.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfcomment_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfcontact.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfcontact_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfevent.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfevent_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfgroup.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfgroup_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smflocation.h
+	BLD_INF_RULES.prj_exports += $$PWD/smflocation_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smflyrics.h
+	BLD_INF_RULES.prj_exports += $$PWD/smflyrics_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfmusicfingerprint.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfmusicfingerprint_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfmusicprofile.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfmusicprofile_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfmusicrating.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfmusicrating_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfpicture.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfpicture_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfplaylist.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfplaylist_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfpluginutil.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfpost.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfpost_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfprovider.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfsubtitle.h
+	BLD_INF_RULES.prj_exports += $$PWD/smfsubtitle_p.h
+	BLD_INF_RULES.prj_exports += $$PWD/smftrackinfo.h
+	BLD_INF_RULES.prj_exports += $$PWD/smftrackinfo_p.h
 }

@@ -310,7 +310,7 @@ void SmfServer::clientAuthorizationFinished(bool success,SmfClientAuthID authID 
 	//TODO:- implement this api in session class
 	//note:- in case success is false client completes the request with SmfErrClientAuthFailed
 	//TODO:- define set of smf wide error after consulting with other module owners
-	authID.session->clientathorizationFinished(success);
+	authID.session->clientAuthorizationFinished(success);
 	}
 /**
  * This API is called by PM once its done with request and parsing

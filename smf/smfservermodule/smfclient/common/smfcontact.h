@@ -22,7 +22,7 @@
 #define SMFCONTACT_H_
 
 #include "qtcontacts.h"
-#include "SmfClientGlobal.h"
+#include "smfclientglobal.h"
 #include <qdatastream.h>
 #include <QSharedData>
 #include <QVariant>

@@ -25,7 +25,7 @@
 #ifdef Q_OS_SYMBIAN
 #include "smfclientsymbian.h"
 #else
-#include "SmfClientQt.h"
+#include "smfclientqt.h"
 #endif
 
   SmfGalleryPrivate::SmfGalleryPrivate(SmfGallery* gallery)

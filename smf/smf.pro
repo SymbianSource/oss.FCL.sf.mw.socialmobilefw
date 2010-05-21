@@ -1,5 +1,5 @@
 TEMPLATE  = 	subdirs
 
-SUBDIRS   =	smfcredentialmgr \
-		smfservermodule \
-		smfsettingsui
+SUBDIRS   =	smfservermodule \
+		# smfsettingsui \
+                # smfcredentialmgr

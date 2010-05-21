@@ -26,7 +26,8 @@
 #include <QStringList>
 #include <QMetaType>
 
-#include "SmfClientGlobal.h"
+#include "smfclientglobal.h"
+
 /**
  * @ingroup smf_client_group 
  * Interface for a base service provider. Other service provider classes contains 

@@ -26,9 +26,11 @@
 #include "smfcontact.h"
 #include "smflocation.h"
 #include "smfgroup.h"
+
 class SmfProvider; //base-class for service provider
 class SmfContact; //class for Contact in a social network
 class SmfGroup; //class for a group in social network
+class SmfContactFetcherPrivate;
 
 typedef QList<SmfContact>  SmfContactList;
 typedef QList<SmfGroup> SmfGroupList;

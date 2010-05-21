@@ -206,7 +206,7 @@ public:
 	 * Called by the SmfServer when client authorization finishes.
 	 * @param success success of the authorization
 	 */
-	void clientathorizationFinished(bool success);
+	void clientAuthorizationFinished(bool success);
 protected:
     //TMessageParams ReadMessageAndRetrieveParams (const RMessage2 & aMessage);
     void PanicClient(const RMessage2 & aMessage, TInt aPanic) const;

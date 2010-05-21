@@ -11,14 +11,16 @@
  *
  * Contributors:
  * Manasij Roy, Nalina Hariharan
-* Description:
-* SMF Server implementation for platforms other than Symbian.
-* Uses  QLocalServer-QLocalSocket classes
-*
-*/
+ * Description:
+ * SMF Server implementation for platforms other than Symbian.
+ * Uses  QLocalServer-QLocalSocket classes
+ *
+ */
 
 #ifndef SMFSERVERQT_P_H
 #define SMFSERVERQT_P_H
+
+#include "smfglobal.h"
 
 #include <QObject>
 class QLocalServer;
@@ -29,35 +31,41 @@ class SmfServerQt : public QObject
     Q_OBJECT
 
 public:
-    SmfServerQt() {}
-#endif
+    SmfServerQt();
+    ~SmfServerQt();
 
-    ~SmfServerQt() {}
-    bool start() {return false;}
-    int sessionListCount() const {return 0;}
+    bool start();
+    int sessionListCount() const;
+    void writeLog(QString log) const;
+    void clientAuthorizationFinished(bool success);
+    int findAndServiceclient(int requestID,QByteArray* parsedData,SmfError error);
+
 private slots:
-    void newClientConnected() {}
-    void removeFromList() {}
+    void newClientConnected();
+    void removeFromList();
 
 private:
-    QLocalServer *server;
-    QLocalSocket *iClient;
+    QLocalServer *m_server;
+    QLocalSocket *m_client;
 };
 
 class SmfServerQtSession : public QObject
 {
     Q_OBJECT
+
 public:
-    SmfServerQtSession(QLocalSocket *clientConnection, SmfServerQt *server) {Q_UNUSED(server) Q_UNUSED(clientConnection)}
-    ~SmfServerQtSession() {}
+    SmfServerQtSession(QLocalSocket *clientConnection, SmfServerQt *server);
+    ~SmfServerQtSession();
+
+    void clientAuthorizationFinished(bool success);
 
 public slots:
-    void readDataFromClient() {}
+    void readDataFromClient();
     
 private:
-    SmfServerQt *iServer;
-    QLocalSocket *iClientConnection;
+    SmfServerQt *m_server;
+    QLocalSocket *m_clientConnection;
 
 };
 
-//#endif // SMFSERVERQT_P_H
+#endif // SMFSERVERQT_P_H

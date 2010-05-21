@@ -138,7 +138,6 @@ public:
    * Note:- SmfPluginManager will invoke resultsAvailable on session object once
    * it receives parsed data.
    */
-#ifdef Q_OS_SYMBIAN
   /**
    * Request the Plugin manager to get the data.
    * @param requestID Corresponds to a client's session
@@ -148,9 +147,6 @@ public:
    * 
    */
   void getRequestedData(int requestID,SmfPluginID pluginID,SmfInterfaceID interfaceID, SmfRequestTypeID requestTypeID,QByteArray dataForPlugin = QByteArray());
-#else
-  void getRequestedData(SmfServerQtSession* session,SmfPluginID pluginID, SmfRequestTypeID requestTypeID);
-#endif
   
 public slots:
 

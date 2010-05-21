@@ -15,12 +15,12 @@
 #include "smfcontactfetcher_p.h"
 #ifdef WRITE_LOG
 #include <QFile>
-#include <QTextstream>
+#include <QTextStream>
 #endif
 #ifdef Q_OS_SYMBIAN
 #include "SmfClientSymbian.h"
 #else
-#include "SmfClientQt.h"
+#include "smfclientqt.h"
 #endif
  /**
    * Constructs the SmfContactFetcher.

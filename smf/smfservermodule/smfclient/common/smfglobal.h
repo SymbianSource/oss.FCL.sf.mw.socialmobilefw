@@ -20,7 +20,11 @@
 
 #ifndef SMFGLOBAL_H
 #define SMFGLOBAL_H
+
+#ifdef Q_OS_SYMBIAN
 #include <e32cmn.h>
+#endif
+
 #include <qglobal.h>
 #include <QBuffer>
 #include <QNetworkRequest>
@@ -44,7 +48,9 @@ const int SMF_FIRST_PAGE=0;
  */
 const int SMF_ITEMS_PER_PAGE=10;
 
+
 class SmfServerSymbianSession;
+class SmfServerQtSession;
 
 
 /**

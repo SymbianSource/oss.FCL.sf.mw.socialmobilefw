@@ -9,18 +9,15 @@ MOBILITY = contacts \
 DEFINES += WRITE_LOG \
     SMFCLIENT_LIB_EXPORT #\
 #    OLDER_QT_MOBILITY
+
 include(client/client.pri)
 include(common/common.pri)
-PUBLIC_HEADERS += 
 
 # Private Headers
-PRIVATE_HEADERS += 
 HEADERS += $$PUBLIC_HEADERS \
     $$PRIVATE_HEADERS
-SOURCES += main.cpp \
-    smfclient_reg.rss
-FORMS += 
-RESOURCES += 
+SOURCES += main.cpp
+
 symbian: { 
     TARGET.UID3 = 0xE08059D4
     TARGET.CAPABILITY = ReadUserData \
@@ -29,5 +26,10 @@ symbian: {
         NetworkServices \
         UserEnvironment
     TARGET.EPOCALLOWDLLDATA = 1
+    SOURCES += smfclient_reg.rss
     LIBS += -lqjson.dll
+} else {
+    INCLUDEPATH += ../util/qjson/src
+    LIBS += -L../util/qjson/lib -lqjson
 }
+

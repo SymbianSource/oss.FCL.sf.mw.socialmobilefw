@@ -8,11 +8,12 @@
 #ifndef SMFCLIENTGLOBAL_H_
 #define SMFCLIENTGLOBAL_H_
 
- #include <QtCore/QtGlobal>
+#include <QtCore/QtGlobal>
+#include <QString>
+const QString KSmfServerName("smfserver");
+const QString KSmfServerSemaphoreName("smfserverSemaphore");
+const QString KSmfServerFilename("smfserver");
 
-_LIT(KSmfServerName,"smfserver");
-_LIT( KSmfServerSemaphoreName, "smfserverSemaphore" );
-_LIT( KSmfServerFilename, "smfserver" );
 //TUid KSmfServerUID3 = { 0xE37E0269 };
 
  #ifdef SMFCLIENT_LIB_EXPORT

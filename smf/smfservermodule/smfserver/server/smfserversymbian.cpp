@@ -162,7 +162,7 @@ SmfServerSymbianSession::~SmfServerSymbianSession()
 	}
 
 
-void SmfServerSymbianSession::clientathorizationFinished(bool success)
+void SmfServerSymbianSession::clientAuthorizationFinished(bool success)
 	{
 	//Client authorization failed
 	if(!success)

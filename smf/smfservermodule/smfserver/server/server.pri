@@ -4,10 +4,12 @@ INCLUDEPATH += server \
 PUBLIC_HEADERS += \
 	server/smfserver.h 
 
-PRIVATE_HEADERS += \
-	server/smfserverqt_p.h \
-	server/smfserversymbian_p.h 
+SOURCES += server/smfserver.cpp
 
-SOURCES += \
-	server/smfserver.cpp \
-	server/smfserversymbian.cpp 
+symbian {
+    PRIVATE_HEADERS += server/smfserversymbian_p.h 
+    SOURCES += server/smfserversymbian.cpp
+} else {
+    PRIVATE_HEADERS += server/smfserverqt_p.h
+    SOURCES += server/smfserverqt.cpp
+}

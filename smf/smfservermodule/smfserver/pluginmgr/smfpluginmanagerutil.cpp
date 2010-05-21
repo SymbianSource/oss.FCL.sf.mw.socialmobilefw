@@ -86,7 +86,7 @@ void SmfPluginManagerUtil::createRequest ( QObject* aInstance,
 		SmfPluginManagerResult &aResult )
 	{
 	SmfPluginManager::getInstance()->server()->writeLog("SmfPluginManagerUtil::createRequest");
-	SmfPluginError pluginErrorVal;
+	SmfPluginError pluginErrorVal = SmfPluginErrNone;
 	
 	// Find the type of service required
 	switch(aOperation)
@@ -198,7 +198,7 @@ SmfPluginError SmfPluginManagerUtil::createContactFetcherRequest ( QObject *aPlu
 	
 	// typecast instance to the contact - fetcher type, here SmfContactFetcherPlugin
 	SmfContactFetcherPlugin *plugin = qobject_cast<SmfContactFetcherPlugin *>(aPlugin);
-	SmfPluginError pluginErrorVal;
+	SmfPluginError pluginErrorVal = SmfPluginErrNone;
 	
 	if(plugin)
 		{
@@ -298,7 +298,7 @@ SmfPluginError SmfPluginManagerUtil::createContactPostRequest ( QObject *aPlugin
 	
 	// typecast instance to SmfPostProviderPlugin
 	SmfPostProviderPlugin *plugin = qobject_cast<SmfPostProviderPlugin *>(aPlugin);
-	SmfPluginError pluginErrorVal;	
+	SmfPluginError pluginErrorVal = SmfPluginErrNone;	
 	
 	if(plugin)
 		{
@@ -407,7 +407,7 @@ SmfPluginError SmfPluginManagerUtil::createMusicLyricsRequest ( QObject *aPlugin
 	
 	// typecast instance to SmfLyricsServicePlugin
 	SmfLyricsServicePlugin *plugin = qobject_cast<SmfLyricsServicePlugin *>(aPlugin);
-	SmfPluginError pluginErrorVal;
+	SmfPluginError pluginErrorVal = SmfPluginErrNone;
 	
 	if(plugin)
 		{
@@ -476,7 +476,7 @@ SmfPluginError SmfPluginManagerUtil::createMusicEventsRequest ( QObject *aPlugin
 	
 	// typecast instance to SmfMusicEventsPlugin
 	SmfMusicEventsPlugin *plugin = qobject_cast<SmfMusicEventsPlugin *>(aPlugin);
-	SmfPluginError pluginErrorVal;
+	SmfPluginError pluginErrorVal = SmfPluginErrNone;
 	
 	if(plugin)
 		{
@@ -559,7 +559,7 @@ SmfPluginError SmfPluginManagerUtil::createMusicSearchRequest ( QObject *aPlugin
 	
 	// typecast instance to SmfMusicSearchPlugin
 	SmfMusicSearchPlugin *plugin = qobject_cast<SmfMusicSearchPlugin *>(aPlugin);
-	SmfPluginError pluginErrorVal;
+	SmfPluginError pluginErrorVal = SmfPluginErrNone;
 	
 	if(plugin)
 		{
@@ -646,7 +646,7 @@ SmfPluginError SmfPluginManagerUtil::createMusicServiceRequest ( QObject *aPlugi
 	
 	// typecast instance to SmfMusicServicePlugin
 	SmfMusicServicePlugin *plugin = qobject_cast<SmfMusicServicePlugin *>(aPlugin);
-	SmfPluginError pluginErrorVal;
+	SmfPluginError pluginErrorVal = SmfPluginErrNone;
 	
 	if(plugin)
 		{
@@ -710,7 +710,7 @@ SmfPluginError SmfPluginManagerUtil::createMusicPlaylistRequest ( QObject *aPlug
 	
 	// typecast instance to SmfPlaylistServicePlugin
 	SmfPlaylistServicePlugin *plugin = qobject_cast<SmfPlaylistServicePlugin *>(aPlugin);
-	SmfPluginError pluginErrorVal;
+	SmfPluginError pluginErrorVal = SmfPluginErrNone;
 	
 	if(plugin)
 		{
@@ -790,7 +790,7 @@ SmfPluginError SmfPluginManagerUtil::createGalleryRequest ( QObject *aPlugin,
 	
 	// typecast instance to SmfGalleryPlugin
 	SmfGalleryPlugin *plugin = qobject_cast<SmfGalleryPlugin *>(aPlugin);
-	SmfPluginError pluginErrorVal;
+	SmfPluginError pluginErrorVal = SmfPluginErrNone;
 	
 	if(plugin)
 		{

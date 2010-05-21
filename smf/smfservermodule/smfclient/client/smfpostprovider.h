@@ -30,7 +30,8 @@
 #include "smfcontact.h"
 #include "smflocation.h"
 #include "smfpost.h"
-#include "smfpostprovider_p.h"
+
+class SmfPostProviderPrivate;
 
 /**
  * @ingroup smf_client_group 

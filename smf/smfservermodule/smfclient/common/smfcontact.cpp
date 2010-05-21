@@ -15,6 +15,7 @@
 	 */
 	SmfContact::SmfContact( QObject *aParent)//:QObject(aParent)
 	{
+	        Q_UNUSED(aParent);
 		d = new SmfContactPrivate;
 	}
 	
@@ -36,7 +37,7 @@
 		}
 	QStringList SmfContact::subTypes( ) const
 			{
-		
+			    return QStringList();
 			}
 	
 	/**
@@ -47,7 +48,7 @@
 	 */
 	void SmfContact::convert( QContact &aContact ) const
 			{
-		
+			    Q_UNUSED(aContact);
 			}
 	
 	/**

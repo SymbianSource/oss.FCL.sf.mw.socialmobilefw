@@ -18,6 +18,8 @@
  */
 
 #include "smfpostprovider.h"
+#include "smfpostprovider_p.h"
+
 #include <QVector>
 #include <QTextFormat>
 

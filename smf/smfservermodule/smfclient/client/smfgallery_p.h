@@ -26,9 +26,9 @@
  **/
 
 #include "smfprovider.h"
-#include "SmfClientGlobal.h"
-#include "smfGlobal.h"
-#include "SmfObserver.h"
+#include "smfclientglobal.h"
+#include "smfglobal.h"
+#include "smfobserver.h"
 
 class SmfProvider;
 
@@ -37,7 +37,7 @@ class SmfProvider;
 #include <QDateTime>
 #include <QStringList>
 
-#include "SmfObserver.h"
+#include "smfobserver.h"
 #include "smfgallery.h"
 #ifdef Q_OS_SYMBIAN
 class CSmfClientSymbian;

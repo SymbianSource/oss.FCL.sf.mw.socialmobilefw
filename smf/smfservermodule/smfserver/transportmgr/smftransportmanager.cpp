@@ -174,6 +174,7 @@ void SmfTransportManager::getCurrentNetworkStatus (
 void SmfTransportManager::configurationAdded ( 
 		const QNetworkConfiguration &aConfig )
 	{
+	Q_UNUSED(aConfig);
 	SmfTransportManagerUtil::getInstance()->configurationAdded(SmfTransportOpIAPChanged);
 	}
 

@@ -24,9 +24,9 @@
  * Note:- only symbian client-server impl is provided at the moment
  **/
 #include "smfprovider.h"
-#include "SmfClientGlobal.h"
-#include "smfGlobal.h"
-#include "SmfObserver.h"
+#include "smfclientglobal.h"
+#include "smfglobal.h"
+#include "smfobserver.h"
 
 class SmfProvider;
 
@@ -35,9 +35,10 @@ class SmfProvider;
 #include <QDateTime>
 #include <QStringList>
 
-#include "SmfObserver.h"
+#include "smfobserver.h"
 #include "smfcontactfetcher.h"
 #include "smfpostprovider.h"
+
 #ifdef Q_OS_SYMBIAN
 class CSmfClientSymbian;
 #else

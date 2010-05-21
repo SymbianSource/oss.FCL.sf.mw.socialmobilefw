@@ -26,6 +26,7 @@
 #include <smfpluginutil.h>
 #include <smfprovider.h>
 
+#include "smfpluginutil.h"
 #include "smfpluginmanager.h"
 #include "smfpluginmanagerutil.h"
 #include "smftransportmanagerutil.h"
@@ -524,7 +525,7 @@ QObject* SmfPluginManager::load ( const QString &aPluginId,
 	{
 	m_server->writeLog("Inside SmfPluginManager::load()");
 	
-	QPluginLoader *pluginLoader;
+	QPluginLoader *pluginLoader = 0;
 	
 	// Find the plugin Path
 	QString pluginPath = m_pluginIdPathHash.value(aPluginId);
@@ -792,7 +793,7 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 	// Open the database
 	bool opened = m_pluginDataBase.open();
 	if(!opened)
-		;//return;
+        {}//return;
 	
 	// If plugin is changed
 	if( newPlugins.count() == availablePlugins.count() )

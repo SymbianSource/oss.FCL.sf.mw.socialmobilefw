@@ -21,6 +21,14 @@ include(server/server.pri)
 include(smfplugins/smfplugins.pri)
 include(transportmgr/transportmgr.pri)
 
+!symbian {
+    # On desktop, we need to include these locally, as there is
+    # no /epoc32/include available.
+    INCLUDEPATH += ../util/qjson/src
+    LIBS += -L../util/qjson/lib -lqjson
+    include(../smfclient/common/common.pri)
+}
+
 PUBLIC_HEADERS += \
 	smfserverglobal.h
 
@@ -29,8 +37,7 @@ HEADERS += \
     $$PRIVATE_HEADERS
     
 SOURCES += \
-	main.cpp \
-	smfserver_reg.rss
+	main.cpp
 
 FORMS	  +=
 RESOURCES +=
@@ -45,4 +52,6 @@ symbian: {
         UserEnvironment
 
     LIBS += -lsmfclient.dll
+    
+    SOURCES += smfserver_reg.rss
 }

@@ -20,9 +20,9 @@
 #define SMFPOSTPROVIDER_P_H_
 
 #include "smfprovider.h"
-#include "SmfClientGlobal.h"
-#include "smfGlobal.h"
-#include "SmfObserver.h"
+#include "smfclientglobal.h"
+#include "smfglobal.h"
+#include "smfobserver.h"
 
 class SmfProvider;
 class SmfPostProvider;
