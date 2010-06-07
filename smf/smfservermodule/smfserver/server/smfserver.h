@@ -76,7 +76,7 @@ public:
    */
   bool startServer();
   
-  ~SmfServer(){}
+  ~SmfServer();
 
 public:
   /*

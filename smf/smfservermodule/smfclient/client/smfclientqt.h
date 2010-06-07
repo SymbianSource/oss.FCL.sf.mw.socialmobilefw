@@ -19,6 +19,8 @@
 #include <QObject>
 #include <QByteArray>
 #include <QString>
+#include <QLocalSocket>
+
 #include "smfglobal.h"
 
 class SmfClientQt : public QObject
@@ -27,6 +29,7 @@ Q_OBJECT
 
 public:
     explicit SmfClientQt(QObject *parent = 0);
+    ~SmfClientQt();
 
 public:
     /**
@@ -58,11 +61,13 @@ public:
     */
     void CancelRequest();
 
+private slots:
+    void connectionEstablished();
+    void readIncomingData();
+    void handleError(QLocalSocket::LocalSocketError error);
 
-signals:
-
-public slots:
-
+private:
+    QLocalSocket *m_serverConnection;
 };
 
 #endif // SMFCLIENTQT_H

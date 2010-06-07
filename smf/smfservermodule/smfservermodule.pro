@@ -2,4 +2,5 @@ TEMPLATE  = 	subdirs
 
 SUBDIRS   =	util \
                 smfserver \
-                smfclient
+                smfclient \
+                tests

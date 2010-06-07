@@ -35,9 +35,14 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    
-	SmfServer* server = new SmfServer();
-	server->startServer();
-	
-    return a.exec();
+    SmfServer* server = new SmfServer(&a);
+    int status = -1;
+
+    if (server)
+    {
+        server->startServer();
+        status = a.exec();
+    }
+
+    return status;
 }

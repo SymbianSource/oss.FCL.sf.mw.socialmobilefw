@@ -1,6 +1,8 @@
 syntax: regexp
 ^.*~$
+^.*\.user$
 ^.*\.o$
 ^.*moc_.*$
+^.*\.moc$
 ^.*Makefile.*$
 ^bin/.*$

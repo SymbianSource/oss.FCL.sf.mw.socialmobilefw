@@ -23,6 +23,7 @@
 #include "smfglobal.h"
 
 #include <QObject>
+class SmfServer;
 class QLocalServer;
 class QLocalSocket;
 
@@ -31,8 +32,10 @@ class SmfServerQt : public QObject
     Q_OBJECT
 
 public:
-    SmfServerQt();
+    SmfServerQt(SmfServer* wrapper);
     ~SmfServerQt();
+
+    inline SmfServer *wrapper() const;
 
     bool start();
     int sessionListCount() const;
@@ -45,27 +48,15 @@ private slots:
     void removeFromList();
 
 private:
+    SmfServer *m_generic;
     QLocalServer *m_server;
-    QLocalSocket *m_client;
+    QList<SmfServerQtSession*> m_sessions;
 };
 
-class SmfServerQtSession : public QObject
+inline SmfServer *SmfServerQt::wrapper() const
 {
-    Q_OBJECT
+    return m_generic;
+}
 
-public:
-    SmfServerQtSession(QLocalSocket *clientConnection, SmfServerQt *server);
-    ~SmfServerQtSession();
-
-    void clientAuthorizationFinished(bool success);
-
-public slots:
-    void readDataFromClient();
-    
-private:
-    SmfServerQt *m_server;
-    QLocalSocket *m_clientConnection;
-
-};
 
 #endif // SMFSERVERQT_P_H

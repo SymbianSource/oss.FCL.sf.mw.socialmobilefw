@@ -21,6 +21,8 @@ SmfClientPrivate::SmfClientPrivate(SmfClient* client):m_client(client)
 	//private impl for symbian
 	#ifdef Q_OS_SYMBIAN
 	m_SmfClientPrivate = CSmfClientSymbian::NewL(this);
+        #else
+        m_SmfClientPrivate = new SmfClientQt(this);
 	#endif
 
 	}

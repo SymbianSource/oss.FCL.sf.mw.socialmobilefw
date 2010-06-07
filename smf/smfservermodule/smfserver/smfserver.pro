@@ -38,9 +38,6 @@ HEADERS += \
 SOURCES += \
 	main.cpp
 
-FORMS	  +=
-RESOURCES +=
-
 symbian: { 
     TARGET.UID3 = 0xE5027327
 

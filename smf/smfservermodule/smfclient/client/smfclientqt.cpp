@@ -15,9 +15,23 @@
 
 #include "smfclientqt.h"
 
-SmfClientQt::SmfClientQt(QObject *parent) :
-    QObject(parent)
+SmfClientQt::SmfClientQt(QObject *parent)
+    : QObject(parent)
 {
+    m_serverConnection = new QLocalSocket();
+
+    connect(m_serverConnection, SIGNAL(connected()), this, SLOT(connectionEstablished()));
+    connect(m_serverConnection, SIGNAL(readyRead()), this, SLOT(readIncomingData()));
+    connect(m_serverConnection, SIGNAL(error(QLocalSocket::LocalSocketError)),
+            this, SLOT(handleError(QLocalSocket::LocalSocketError)));
+
+    m_serverConnection->connectToServer("SmfServerQt", QIODevice::ReadWrite);
+}
+
+SmfClientQt::~SmfClientQt()
+{
+    m_serverConnection->close();
+    delete m_serverConnection;
 }
 
 /**
@@ -26,20 +40,33 @@ SmfClientQt::SmfClientQt(QObject *parent) :
  * @param aInterfaceName Interface name
  * @param requestType Opcode
  */
-int SmfClientQt::sendRequest(QByteArray& aSerializedData, QString aInterfaceName,
+int SmfClientQt::sendRequest(QByteArray& serializedData, QString interfaceName,
                              SmfRequestTypeID requestType)
 {
-
+    QDataStream out(m_serverConnection);
+    out << requestType;
+    out << interfaceName;
+    out << serializedData.size();
+    out << serializedData;
 }
 
 /**
  * This overloaded API is for ESmfGetServices, where data should be
  * fetched synchronously
  */
-QByteArray SmfClientQt::sendRequest(QString aInterfaceName,
+QByteArray SmfClientQt::sendRequest(QString interfaceName,
             SmfRequestTypeID requestType)
 {
+    QDataStream out(m_serverConnection);
+    out << requestType;
+    out << interfaceName;
 
+    // TODO: This needs to be asynchronous. Remove this wait when user API is updated.
+    m_serverConnection->waitForBytesWritten(-1);
+
+    QByteArray in;
+    out >> in;
+    return in;
 }
 
 /**
@@ -48,7 +75,9 @@ QByteArray SmfClientQt::sendRequest(QString aInterfaceName,
 int SmfClientQt::sendDummyRequest(QByteArray* provider,QString aInterfaceName,
             SmfRequestTypeID requestType)
 {
-
+    Q_UNUSED(provider);
+    Q_UNUSED(aInterfaceName);
+    Q_UNUSED(requestType);
 }
 
 /**
@@ -58,4 +87,26 @@ int SmfClientQt::sendDummyRequest(QByteArray* provider,QString aInterfaceName,
 void SmfClientQt::CancelRequest()
 {
 
+}
+
+void SmfClientQt::connectionEstablished()
+{
+    qDebug() << "Connected to server successfully.";
+}
+
+void SmfClientQt::readIncomingData()
+{
+}
+
+void SmfClientQt::handleError(QLocalSocket::LocalSocketError error)
+{
+    switch(error)
+    {
+    case QLocalSocket::ServerNotFoundError:
+        qDebug() << "Server not found.";
+        break;
+    default:
+        qDebug() << "Unhandled socket error";
+        break;
+    }
 }

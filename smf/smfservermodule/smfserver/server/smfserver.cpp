@@ -34,11 +34,19 @@
 #include "smfserversymbian_p.h"
 #else
 #include "smfserverqt_p.h"
+#include "smfserverqtsession.h"
 #endif
 
-SmfServer::SmfServer(QObject* parent): QObject(parent)
+SmfServer::SmfServer(QObject* parent)
+    : QObject(parent)
 	{
 	}
+
+SmfServer::~SmfServer()
+{
+    delete m_SmfServerPrivate;
+}
+
 bool SmfServer::startServer()
 	{
 	bool success = false;
@@ -83,7 +91,7 @@ bool SmfServer::startServer()
 			return success;
 			}
 		#else
-		m_SmfServerPrivate = new SmfServerQt();
+                m_SmfServerPrivate = new SmfServerQt(this);
 		success = m_SmfServerPrivate->start();
 		if (!success) 
 			{

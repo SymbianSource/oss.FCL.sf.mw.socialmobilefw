@@ -11,42 +11,62 @@
  *
  * Contributors:
  * Manasij Roy, Nalina Hariharan
-* Description:
-* SMF Server implementation for platforms other than Symbian.
-* Uses  QLocalServer-QLocalSocket classes
-*
-*/
+ * Description:
+ * SMF Server implementation for platforms other than Symbian.
+ * Uses  QLocalServer-QLocalSocket classes
+ *
+ */
 
 #include "smfserverqt_p.h"
+#include "smfserverqtsession.h"
+#include "smfserver.h"
 
 #include <QLocalServer>
 #include <QLocalSocket>
 
-//
-// SmfServerQt
-//
 
-SmfServerQt::SmfServerQt()
+SmfServerQt::SmfServerQt(SmfServer *wrapper)
+    : m_generic(wrapper)
 {
+    m_server = new QLocalServer(this);
+    connect(m_server, SIGNAL(newConnection()), this, SLOT(newClientConnected()));
 }
 
 SmfServerQt::~SmfServerQt()
 {
+    m_server->close();
 }
 
+/**
+  * Start the server listening for connections.
+  */
 bool SmfServerQt::start()
 {
-    return false;
+    const QString KServerName("SmfServerQt");
+    if (m_server->listen(KServerName))
+    {
+        writeLog(QString(m_server->serverName() + ": listening for connections."));
+        return true;
+    }
+    else
+    {
+        writeLog(QString(KServerName + ": failed to start"));
+        writeLog(QString(m_server->errorString()));
+        return false;
+    }
 }
 
+/**
+ * Return the number of open sessions
+ */
 int SmfServerQt::sessionListCount() const
 {
-    return 0;
+    return m_sessions.count();
 }
 
 void SmfServerQt::writeLog(QString log) const
 {
-    Q_UNUSED(log);
+    qDebug() << log.toAscii().constData();
 }
 
 /**
@@ -58,8 +78,22 @@ void SmfServerQt::clientAuthorizationFinished(bool success)
     Q_UNUSED(success);
 }
 
+/**
+  * Slot to receive incoming connections
+  */
 void SmfServerQt::newClientConnected()
 {
+    QLocalSocket *client(m_server->nextPendingConnection());
+    if (!client)
+    {
+        writeLog("SmfServerQt::newClientConnected(): no socket - client may have dropped.");
+        return;
+    }
+
+    // Create a new session for this client.
+    writeLog("Client connected.");
+
+    m_sessions.append(new SmfServerQtSession(client, this));
 }
 
 void  SmfServerQt::removeFromList()
@@ -74,25 +108,3 @@ int SmfServerQt::findAndServiceclient(int requestID,QByteArray* parsedData,SmfEr
     return 0;
 }
 
-//
-// SmfServerQtSession
-//
-
-SmfServerQtSession::SmfServerQtSession(QLocalSocket *clientConnection, SmfServerQt *server)
-{
-    Q_UNUSED(server);
-    Q_UNUSED(clientConnection);
-}
-
-SmfServerQtSession::~SmfServerQtSession()
-{
-}
-
-void SmfServerQtSession::readDataFromClient()
-{
-}
-
-void SmfServerQtSession::clientAuthorizationFinished(bool success)
-{
-    Q_UNUSED(success);
-}
