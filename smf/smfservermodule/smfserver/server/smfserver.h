@@ -24,6 +24,7 @@
 #include "smfglobal.h"
 #include "smfprovider.h"
 #include "smftransportmanager.h" // Transport Manager
+#include <SmfCredMgrClientGlobal.h>
 /*
 * Forward declarations
 * Other components of the SMF
@@ -33,7 +34,7 @@ class SmfPluginManager;
 class SmfDataStoreManager;
 class SmfSettingsAuthManager;
 class SmfClient;
-
+class SmfCredMgrClient;
 //For the time being, need to change later
 typedef QString SmfInterfaceID;
 //For the time being, need to change later
@@ -80,25 +81,6 @@ public:
 
 public:
   /*
-   * Request the Credential and Settings manager to check whether client has
-   * been authorized previously.
-   * SmfClientAuthID may be same as SID of the client which can be retrieved
-   * if using Symbian Client-Server private implementation. Not supported for
-   * other platforms
-   */
-  bool isClientAuthorized(SmfClientAuthID clientID);
-  
-  /*
-   * In case the client is yet to be authorized, it starts the authorization
-   * process by triggering Credential Manager.
-   * The SLOT clientAuthorizationFinished is called once its done.
-   * SmfClientAuthID may be same as SID of the client which can be retrieved
-   * if using Symbian Client-Server private implementation. Not supported for
-   * other platforms.
-   */
-  void authorizeClient(SmfClientAuthID clientID);
-  
-  /*
    * Requests Plugin Manager to get a list of plugin IDs who implement
    * the interface interfaceID.
    * This is used got SmfClient::GetServices () where we need a list of plugins
@@ -115,29 +97,19 @@ public:
    * from the list and get authorized plugins into authList. 
    */
   void getAuthorizedPlugins(QList<SmfPluginID>& list,QList<SmfPluginID>& authList);
-  
-  /*
-   * Prepares the transport.
-   * What it'll do is not yet clear
+
+  /**
+   * Request CM API to get the list of authenticated plugins
+   * @see SmfCredMgrClient::authenticatedPluginList()
    */
-  void prepareTransport();
+  QStringList getAuthenticatedPluginList(QString RegistrationToken);
+
+
+  SmfTransportInitializeResult prepareTransport();
   /**
    * DEbugging purpose only
    */
-  void writeLog(QString log) const;
-  /*
-   * Delegates the request of the client (to get the data from SN sites)
-   * to the Plugin Manager.
-   * Once the Plugin Manager gets parsed response data it calls the SLOT
-   * resultsAvailable(). 
-   * pluginID is the Plugin to be used.
-   * requestTypeID is the function codes(opcodes) used for message passing 
-   * betn clien-server.
-   * Note:- Should there be an overloaded function which takes
-   * list of SmfPluginID ?
-   * Note:- SmfPluginManager will invoke resultsAvailable on session object once
-   * it receives parsed data.
-   */
+  //void writeLog(QString log) const;
   /**
    * Request the Plugin manager to get the data.
    * @param requestID Corresponds to a client's session
@@ -146,8 +118,15 @@ public:
    * @param dataForPlugin Data to be sent for this request
    * 
    */
-  void getRequestedData(int requestID,SmfPluginID pluginID,SmfInterfaceID interfaceID, SmfRequestTypeID requestTypeID,QByteArray dataForPlugin = QByteArray());
-  
+  void sendToPluginManager(int requestID,SmfPluginID pluginID,SmfInterfaceID interfaceID,SmfRequestTypeID requestTypeID,QByteArray dataForPlugin = QByteArray(), int pageNo=-1,int perpage=-1);
+  /**
+   * Delegates the request to DSM and receives data synshronously.
+   * @param qtdataForDSM Data to be passed to DSM
+   * @param opcode Opcode
+   * @param qtdataFromDSM Data received from DSM
+   * @return Error value returned from DSM
+   */
+  SmfError sendToDSM(QByteArray qtdataForDSM,SmfRequestTypeID opcode,QByteArray& qtdataFromDSM);
 public slots:
 
 	/*
@@ -195,25 +174,12 @@ public slots:
 	void dataStoreUpdateAvailable(QByteArray* respData){Q_UNUSED(respData)};
 	
 	/**
-	 * Request the CM to get the authentication keys for the given pluginID
-	 */
-	void getAuthenticationKeys(int pluginID,QStringList& keys,QStringList& urls);
-	
-	/**
 	 * Server calls this method when it receives message from the CM
 	 * that authentication keys for the pluginID has expired
 	 */
 	void authenticationKeysExpired(NotificationType type,SmfPluginID id);
 signals:
   //None at the moment
-private:
-/*
- * Starts the clean-up timer for data store refresh, called from the "startServer()"
- * timeOutValue should be picked out from SmfSettingsAuthManager's API
- */
-bool startCleanupTimer(int timeOutValue){Q_UNUSED(timeOutValue) return true;};
-
-
 private:
 	//private impl
 #ifdef Q_OS_SYMBIAN
@@ -227,7 +193,25 @@ private:
 	SmfDataStoreManager* m_dataStoreManager;
 	SmfSettingsAuthManager* m_settingsAuthManager;
 	SmfClient* m_smfClient;
+	SmfCredMgrClient* m_credentialMngr;
 };
-
+#ifdef CLIENT_SERVER_TEST
+class dummyPM : public QObject
+	{
+		Q_OBJECT
+public:
+		dummyPM(SmfServer* server,QObject* parent=0);
+		~dummyPM();
+		SmfError createRequest ( const quint32& aSessionID, 
+				const QString& aPluginID, 
+				const SmfRequestTypeID& aOperation, 
+				QByteArray& aInputData );
+public slots:
+	void responseAvailable();
+private:
+		QTimer* m_timer;
+		SmfServer* m_server;
+	};
+#endif
 
 #endif // SMFSERVER_H

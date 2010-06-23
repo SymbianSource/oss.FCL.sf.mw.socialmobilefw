@@ -1,3 +1,22 @@
+/**
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0" 
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
+ *
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Nalina Hariharan
+ * 
+ * Description:
+ * The Plugin that manages post operations on the logged in user's facebook account
+ *
+ */
+
 #ifndef _FBPOSTPROVIDERPLUGIN_H
 #define _FBPOSTPROVIDERPLUGIN_H
 
@@ -10,16 +29,23 @@ class FBProviderBase;
 class QVariant;
 class QNetworkReply;
 
-// Class declaration
+
+/**
+ * The Plugin that manages post operations on the logged in user's 
+ * facebook account
+ */
 class FBPostProviderPlugin : public QObject, public SmfPostProviderPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES( SmfPostProviderPlugin SmfPluginBase )
 
 public:
+	/**
+	 * Destructor
+	 */
 	virtual ~FBPostProviderPlugin( );
 	
-public: // From SmfPostProviderPlugin
+public: // From SmfPostProviderPlugin interface
 	
 	/**
 	 * Method that returns maximum no of chars (unicode) that service 
@@ -149,7 +175,7 @@ public: // From SmfPostProviderPlugin
 	SmfPluginError customRequest( SmfPluginRequestData &aRequest, 
 			const int &aOperation, QByteArray *aData );
 	
-public: // From SmfPluginBase
+public: // From SmfPluginBase interface
 	/**
 	 * The first method to be called in the plugin that implements this interface.
 	 * If this method is not called, plugin may not behave as expected.
@@ -166,6 +192,7 @@ public: // From SmfPluginBase
 	
 	/**
 	 * Method to get the result for a network request.
+	 * @param aOperation The type of operation to be requested
 	 * @param aTransportResult The result of transport operation
 	 * @param aResponse The QByteArray instance containing the network response.
 	 * The plugins should delete this instance once they have read the 
@@ -181,6 +208,7 @@ public: // From SmfPluginBase
 	 * @param aPageResult [out] The SmfResultPage structure variable
 	 */
 	SmfPluginError responseAvailable( 
+			const SmfRequestTypeID aOperation,
 			const SmfTransportResult &aTransportResult, 
 			QByteArray *aResponse, 
 			QVariant* aResult, 
@@ -193,26 +221,44 @@ private:
 	 * @param aBaseString The base string
 	 * @return The md5 hash of the base string
 	 */
-	QString generateSignature(const QString aBaseString);
+	QString generateSignature( const QString aBaseString );
 	
 	/**
-	 * Method called by plugins for logging
-	 * @param log string to be logged
+	 * Method to get the user's facebook ID
+	 * @param aRequest [out] The request data to be sent to network
+	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
-	void writeLog(QString log) const;
+	SmfPluginError getFacebookUserId( SmfPluginRequestData &aRequest );
+
+	/**
+	 * Method to get the user's posts
+	 * @param aRequest [out] The request data to be sent to network
+	 * @param aPageNum The page to be extracted
+	 * @param aItemsPerPage Number of items per page
+	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 */
+	SmfPluginError getPosts( SmfPluginRequestData &aRequest,
+			const int aPageNum , 
+			const int aItemsPerPage );
 	
 private:
 	FBProviderBase *m_provider;
 	SmfPluginUtil *m_util;
 };
 
-// Class declaration
+
+/**
+ * The Plugin class that implements SmfProviderBase for this facebook plugin
+ */
 class FBProviderBase : public QObject, public SmfProviderBase
 	{
 	Q_OBJECT
 	Q_INTERFACES( SmfProviderBase )
 
 public:
+	/**
+	 * Destructor
+	 */
 	virtual ~FBProviderBase( );
 
 	/**
@@ -252,6 +298,19 @@ public:
 	QImage applicationIcon( ) const;
 	
 	/**
+	* Method to get the list of interfaces that this provider support
+	* @return List of supported Interafces
+	*/
+	QList<QString> supportedInterfaces( ) const;
+	
+	/**
+	* Method to get the list of languages supported by this service provider
+	* @return a QStringList of languages supported by this service 
+	* provider in 2 letter ISO 639-1 format.
+	*/
+	QStringList supportedLanguages( ) const;
+	
+	/**
 	 * Method to get the Plugin specific ID
 	 * @return The Plugin specific ID
 	 */
@@ -277,8 +336,14 @@ public:
 	QString smfRegistrationId( ) const;
 	
 private:
-	friend class FBPostProviderPlugin;
+	/**
+	 * Method that initializes this class. This method should be called 
+	 * from the initialize() method of the FBPostProviderPlugin class
+	 */
 	void initialize();
+	
+private:
+	friend class FBPostProviderPlugin;
 	QString m_serviceName;
 	QImage m_serviceIcon;
 	QString m_description;
@@ -288,6 +353,8 @@ private:
 	QString m_pluginId;
 	QString m_authAppId;
 	QString m_smfRegToken;
+	QList<QString> m_supportedInterfaces;
+	QStringList m_supportedLangs;
 	};
 
 #endif /*_FBPOSTPROVIDERPLUGIN_H*/

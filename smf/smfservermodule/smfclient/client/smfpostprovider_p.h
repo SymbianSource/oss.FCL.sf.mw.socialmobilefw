@@ -20,9 +20,9 @@
 #define SMFPOSTPROVIDER_P_H_
 
 #include "smfprovider.h"
-#include "smfclientglobal.h"
-#include "smfglobal.h"
-#include "smfobserver.h"
+#include "SmfClientGlobal.h"
+#include "smfGlobal.h"
+#include "SmfObserver.h"
 
 class SmfProvider;
 class SmfPostProvider;
@@ -121,6 +121,8 @@ public:
 	  //serialized byte array of provider+other info to be sent to the server
 	  //The order:- SmfProvider then params in order of their appearance in fn
 	  QByteArray m_serializedDataToServer;
+	  //serialized xtra info, order of serialization follows order of param
+	  QByteArray m_xtraInfoSerialized;
 	#ifdef Q_OS_SYMBIAN
 	  CSmfClientSymbian* m_SmfClientPrivate;
 	  friend class CSmfClientSymbian;
@@ -129,8 +131,12 @@ public:
 	  friend class SmfClientQt;
 	#endif
 	  bool m_connected;
+	  int m_xtraInfoFlag;
+	  int m_pageInfoFlag;
 	  SmfPostProvider* m_postProvider;
 	  SmfPostList* m_postList;
 	 void writeLog(QString log) const;
+	private:
+	 QString intfName;
 	};
 #endif /* SMFPOSTPROVIDER_P_H_ */

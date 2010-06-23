@@ -16,6 +16,7 @@
 #include "smfserver.h"
 #include "smfpluginmanager.h"
 #include "smftransportmanager.h"
+#include "dsm.h"
 #include "smfclientglobal.h"
 #include <smfprovider.h>
 #include <smfpost.h>
@@ -23,13 +24,15 @@
 #include <smfcontact.h>
 #include <smfpicture.h>
 #include <smfcomment.h>
-//#ifdef NO_OTHER_MODULES
+#include <SmfCredMgrClient.h>
+#include <smfrelationmgr.h>
+#include <smfclientglobal.h> 
 #include <QImage>
 #include <QUrl>
 #include <smfgroup.h>
 #include <QTextStream>
 #include <QFile>
-//#endif
+
 #ifdef Q_OS_SYMBIAN
 #include "smfserversymbian_p.h"
 #else
@@ -44,94 +47,68 @@ SmfServer::SmfServer(QObject* parent)
 
 SmfServer::~SmfServer()
 {
-    delete m_SmfServerPrivate;
+	if(m_SmfServerPrivate)
+		{
+		delete m_SmfServerPrivate;
+		m_SmfServerPrivate = NULL;
+		}
+    
 }
 
 bool SmfServer::startServer()
 	{
 	bool success = false;
 	//Initialize all the component handles
-	writeLog("Not doing SmfTransportManager::getInstance");
-	//m_transportManager = SmfTransportManager::getInstance();
-	writeLog("Not doing m_transportManager->initializeTransport");
-	//checking the network status, no need to proceed if not permitted
-	//SmfTransportInitializeResult networkStatus = m_transportManager->initializeTransport();
-	writeLog("Before networkStatus");
-	//TODO:-check this
-	if(1/*networkStatus == SmfTransportInitNoError*/)
+	
+	SmfTransportInitializeResult networkStatus = prepareTransport();
+	qDebug()<<("Before m_pluginManager construction");
+	m_pluginManager = SmfPluginManager::getInstance(this);
+	qDebug()<<("After m_pluginManager construction");
+	//	m_dataStoreManager = new SmfDataStoreManager();
+	//Initialize private implementation
+	#ifdef Q_OS_SYMBIAN
+	TRAPD(err, m_SmfServerPrivate = SmfServerSymbian::NewL(CActive::EPriorityStandard,this));
+	QString log("SmfServer::startServer=");
+	int errorQ = err ;
+	log += errorQ;
+	 qDebug()<<(log);
+	if( KErrNone != err )
 		{
-		writeLog("Before m_pluginManager construction");
-		m_pluginManager = SmfPluginManager::getInstance(this);
-		writeLog("After m_pluginManager construction");
-		//	m_dataStoreManager = new SmfDataStoreManager();
-		//Initialize private implementation
-		#ifdef Q_OS_SYMBIAN
-		TRAPD(err, m_SmfServerPrivate = SmfServerSymbian::NewL(CActive::EPriorityStandard,this));
-		QString log("SmfServer::startServer=");
-		int errorQ = err ;
-		log += errorQ;
-		 writeLog(log);
-		if( KErrNone != err )
-			{
-			return success;
-			}
-		TInt error = m_SmfServerPrivate->Start( KSmfServerName );
-		errorQ = error ;
-		log.clear();
-		log = QString("m_SmfServerPrivate->Start=");
-		log += QString::number(error);
-		 writeLog(log);
-		if( KErrNone == error ) 
-			{
-			success = true;
-			}
-		else 
-			{
-			//error
-			return success;
-			}
-		#else
-                m_SmfServerPrivate = new SmfServerQt(this);
-		success = m_SmfServerPrivate->start();
-		if (!success) 
-			{
-			return success;
-			}
-		#endif
-		//request CM server for auth expiry info, note:- we should resend the request everytime we get expiry
-		//notification
-		//TODO:- Do it after CM implementation
-		//CMclient->requestAuthExpiryNotify();
-		//connect(CMClient,SIGNAL(authExpiryNotify(NotificationType,SmfPluginID),this,SLOT(NotificationType,SmfPluginID));
+		return success;
 		}
+	TInt error = m_SmfServerPrivate->Start( KSmfServerName );
+    RSemaphore semaphore;
+    User::LeaveIfError( semaphore.OpenGlobal( KSmfServerSemaphoreName ) );
+    // Semaphore opened ok
+    semaphore.Signal();
+    semaphore.Close();
+	errorQ = error ;
+	log.clear();
+	log = QString("m_SmfServerPrivate->Start=");
+	log += QString::number(error);
+	 qDebug()<<(log);
+	if( KErrNone == error ) 
+		{
+		success = true;
+		}
+	else 
+		{
+		//error
+		return success;
+		}
+	#else
+			m_SmfServerPrivate = new SmfServerQt(this);
+	success = m_SmfServerPrivate->start();
+	if (!success) 
+		{
+		return success;
+		}
+	#endif
+	
+	m_credentialMngr = new SmfCredMgrClient();
     return success;
 	}
 //Note:- Almost all the following APIs are called by private impl via the handle
-/**
- * This called first once a session is created by the private impl
- * @param clientID some unique client process ID, SID for symbian platform
- * TODO:-How to get the pid for rest of the platforms?
- * @return true if client is already athorized, else false
- * 
- */
-bool SmfServer::isClientAuthorized(SmfClientAuthID clientID)
-	{
-	//TODO:- once CM is complete do it properly
-	Q_UNUSED(clientID);
-	return true;
-	}
-/**
- * This API is called by the private impl when isClientAuthorized returns false
- * @param clientID client Id (SID for symbian platform), provided by the private impl
- * Note:- The session(and in turn the client) will be blocked untill authorization completes.
- */
-void SmfServer::authorizeClient(SmfClientAuthID clientID)
-	{
-	//TODO:- once CM is complete, do it properly
-	//CMclient->authorizeClient(clientID)
-	//connect(CMClient,SIGNAL(clientAuthorizationFinished(bool,SmfClientAuthID)),this,SLOT(clientAuthorizationFinished(bool,SmfClientAuthID)));
-	Q_UNUSED(clientID);	
-	}
 /**
  * This API is called by the private impl when client is authorized
  * @param interfaceID Interface id, provided by the private impl (it gets it from client)
@@ -166,148 +143,118 @@ SmfPluginID SmfServer::getPlugin(SmfInterfaceID interfaceID,SmfProvider provider
  */
 void SmfServer::getAuthorizedPlugins(QList<SmfPluginID>& list,QList<SmfPluginID>& authList)
 	{
-	//TODO:- do it properly as per CMclient implementation
-	//CMclient->getAuthorizedPlugins(list,authList);
-	//testing purpose only
-#ifdef NO_OTHER_MODULES
+	//TODO:-Uncomment the following once authorization flow of plugin is implemented 
+/*	authList.clear();
+	for(int i=0;i<list.count();i++)
+		{
+		bool isAuthorized = m_credentialMngr->CheckPluginAuthentication(list[i]);
+		if(isAuthorized)
+			{
+			authList.append(list[i]);
+			}
+		}*/
 	authList = list;
-#endif
 	}
-/**
- * This API is called by the private impl to request the PM to do the actual request/parsing asynchronously
- * Note:- the sever private impl (SmfServerSymbian for symbian platform) maintains a map of session ptr and some randomely
- * generated number.For the time being we are allowing only one outstanding request per session, so no need to store
- * both session and msg ptr, but in future we may need to.
- * @param requestID Request id (corresponds to the key of the mapmaintained by SmfServerSymbian).
- * @param pluginID PluginID, provided by the session
- * @param interfaceID InterfaceID provided by session
- * @requestTypeID Request Opcode, provided by session
- */
-void SmfServer::getRequestedData(int requestID,SmfPluginID pluginID,SmfInterfaceID interfaceID, SmfRequestTypeID requestTypeID,QByteArray dataForPlugin)
+SmfTransportInitializeResult SmfServer::prepareTransport()
 	{
-		//TODO:- cross check the params with PM owner
-		//PM->getData(requestID,pluginID,interfaceID,requestTypeID);
-		m_SmfServerPrivate->writeLog("SmfServer::getRequestedData");
-		m_SmfServerPrivate->writeLog(QString::number(requestID));
-		m_SmfServerPrivate->writeLog(pluginID);
-		m_SmfServerPrivate->writeLog(interfaceID);
-		m_SmfServerPrivate->writeLog(QString::number(requestTypeID));
-		bool defaultCase = false;
-		//serializedInfo contains base provider info+ other data depending on requestTypeID
-		QDataStream reader(&dataForPlugin,QIODevice::ReadOnly);
-		QByteArray dataTobeSent;
-		switch(requestTypeID)
+	qDebug()<<("Before SmfTransportManager::getInstance");
+	m_transportManager = SmfTransportManager::getInstance();
+	qDebug()<<("Before m_transportManager->initializeTransport");
+	//checking the network status
+	SmfTransportInitializeResult networkStatus = m_transportManager->initializeTransport();
+	qDebug()<<("m_transportManager->initializeTransport return = ")<<networkStatus;
+	return networkStatus;
+	}
+void SmfServer::sendToPluginManager(int requestID,SmfPluginID pluginID,SmfInterfaceID interfaceID,SmfRequestTypeID requestTypeID,QByteArray dataForPlugin ,int pageno,int perpage)
+	{
+	qDebug()<<("SmfServer::delegateToPluginManager");
+	qDebug()<<(QString::number(requestID));
+	qDebug()<<(pluginID);
+	qDebug()<<(interfaceID);
+	qDebug()<<(QString::number(requestTypeID));
+	//TODO:-PM should take page info too
+	m_pluginManager->createRequest(requestID,pluginID,requestTypeID,dataForPlugin);
+	}
+SmfError SmfServer::sendToDSM(QByteArray qtdataForDSM,SmfRequestTypeID opcode,QByteArray& qtdataFromDSM)
+	{
+	DataStoreManager* dsm = DataStoreManager::getDataStoreManager();
+	//Note:- deserialization and formation of user profile and social profile are done by server
+	QDataStream readStream(&qtdataForDSM,QIODevice::ReadOnly);
+	QDataStream writeStream(&qtdataFromDSM,QIODevice::ReadOnly);
+	switch(opcode)
+		{
+		case SmfRelationCreate:
 			{
-			case SmfContactPost:
-				{
-				SmfProvider provider;
-				SmfPost post;
-				SmfLocation loc;
-				reader>>provider;
-				reader>>post;
-				reader>>loc;
-				//now form the serialized bytearray with only SmfPost and SmfPlace
-				QDataStream writer(&dataTobeSent,QIODevice::WriteOnly);
-				writer<<post;
-				writer<<loc;
-				}
-				break;
-			case SmfContactUpdatePost:
-				{
-				SmfProvider provider;
-				SmfPost post;
-				reader>>provider;
-				reader>>post;
-				//now form the serialized bytearray with only SmfPost
-				QDataStream writer(&dataTobeSent,QIODevice::WriteOnly);
-				writer<<post;
-				}
-				break;
-			case SmfContactPostDirected:
-				{
-				SmfProvider provider;
-				SmfPost post;
-				SmfContact contact;
-				SmfLocation place;
-				reader>>provider;
-				reader>>post;
-				reader>>contact;
-				reader>>place;
-				QDataStream writer(&dataTobeSent,QIODevice::WriteOnly);
-				writer<<post;
-				writer<<contact;
-				writer<<place;
-				}
-				break;
-			case SmfContactSharePost:
-				{
-				SmfProvider provider;
-				SmfPost post;
-				SmfContact contact;
-				bool edited;
-				reader>>provider;
-				reader>>post;
-				reader>>contact;
-				reader>>edited;
-				//now form the serialized bytearray with only SmfPost
-				QDataStream writer(&dataTobeSent,QIODevice::WriteOnly);
-				writer<<post;
-				writer<<contact;
-				writer<<edited;
-				}
-				break;
-			case SmfPictureDescription:
-			case SmfPictureUpload:
-				{
-				SmfProvider provider;
-				SmfPicture picture;
-				reader>>provider;
-				reader>>picture;
-				//now form the serialized bytearray with only SmfPicture
-				QDataStream writer(&dataTobeSent,QIODevice::WriteOnly);
-				writer<<picture;
-				}
-				break;
-			case SmfPictureMultiUpload:
-				{
-				SmfProvider provider;
-				SmfPictureList pictureList;
-				reader>>provider;
-				reader>>pictureList;
-				//now form the serialized bytearray with only SmfPicture
-				QDataStream writer(&dataTobeSent,QIODevice::WriteOnly);
-				writer<<pictureList;
-				}
-				break;
-			case SmfPicturePostComment:
-				{
-				SmfProvider provider;
-				SmfPicture picture;
-				SmfComment comment;
-				reader>>provider;
-				reader>>picture;
-				reader>>comment;
-				//now form the serialized bytearray with only SmfPicture
-				QDataStream writer(&dataTobeSent,QIODevice::WriteOnly);
-				writer<<picture;
-				writer<<comment;
-				}
-				break;
-			default:
-				defaultCase = true;
-				break;
+			//read the incoming data
+			SmfProvider provider;
+			SmfContact contact;
+			readStream>>provider;
+			readStream>>contact;
+
+			SmfRelationId relnId = dsm->create(&provider,&contact);
+			writeStream<<relnId;
 			}
-		//When xtra info to be sent to plugin manager
-		if(!defaultCase)
+			break;
+		case SmfRelationAssociate:
 			{
-				m_pluginManager->createRequest(requestID,pluginID,requestTypeID,dataTobeSent);
+			SmfRelationId relnId;
+			SmfContact contact;
+			SmfProvider provider;
+			readStream>>relnId;
+			readStream>>contact;
+			readStream>>provider;
+
+			SmfError err = dsm->associate(relnId,&contact,&provider);
+			int errInt = err;
+			writeStream<<errInt;
 			}
-		//when plugin manager needs to xtra info
-		else
+			break;
+		case SmfRelationSearchById:
 			{
-			QByteArray arr;
-			m_pluginManager->createRequest(requestID,pluginID,requestTypeID,arr);
+			SmfRelationId relnId;
+			readStream>>relnId;
+
+			SmfRelationItem* relnItem = dsm->searchById(relnId);
+			writeStream<<*(relnItem);
 			}
+			break;
+		case SmfRelationCount:
+			{
+			SmfRelationId relationId;
+			readStream>>relationId;
+			int cnt = dsm->count(relationId);
+			writeStream<<cnt;
+			}
+			break;
+		case SmfRelationGet:
+			{
+			SmfRelationId relationId;
+			quint32 index;
+			readStream>>relationId;
+			readStream>>index;
+			SmfRelationItem* relnItem = dsm->getContact(relationId,index);
+			writeStream<<relnItem;
+			}
+			break;
+		case SmfRelationGetAll:
+			{
+			SmfRelationId relationId;
+			readStream>>relationId;
+
+			QList<SmfRelationItem> relnIditemList = dsm->getAll(relationId);
+			writeStream<<relnIditemList;
+			}
+			break;
+		case SmfRelationGetAllRelations:
+			{
+			QList<SmfRelationId> relnIdList = dsm->getAllRelations();
+			writeStream<<relnIdList;
+			}
+			break;
+		default:
+			break;
+		}
+	return SmfNoError;
 	}
 /**
  * This slot is invoked when CM finishes the authorization of the client.
@@ -318,7 +265,7 @@ void SmfServer::clientAuthorizationFinished(bool success,SmfClientAuthID authID 
 	//TODO:- implement this api in session class
 	//note:- in case success is false client completes the request with SmfErrClientAuthFailed
 	//TODO:- define set of smf wide error after consulting with other module owners
-	authID.session->clientAuthorizationFinished(success);
+	authID.session->clientathorizationFinished(success);
 	}
 /**
  * This API is called by PM once its done with request and parsing
@@ -329,42 +276,31 @@ void SmfServer::clientAuthorizationFinished(bool success,SmfClientAuthID authID 
  */
 void SmfServer::resultsAvailable(int requestID,QByteArray* parsedData,SmfError error)
 	{
-	m_SmfServerPrivate->writeLog("SmfServer::resultsAvailable");
-	m_SmfServerPrivate->writeLog("requestID=");
-	m_SmfServerPrivate->writeLog(QString::number(requestID));
-	m_SmfServerPrivate->writeLog("parsedData->size()=");
-	m_SmfServerPrivate->writeLog(QString::number(parsedData->size()));
-	m_SmfServerPrivate->writeLog("Error=");
-	m_SmfServerPrivate->writeLog(QString::number(error));
+	qDebug()<<("SmfServer::resultsAvailable");
+	qDebug()<<("requestID=");
+	qDebug()<<(QString::number(requestID));
+	qDebug()<<("parsedData->size()=");
+	qDebug()<<(QString::number(parsedData->size()));
+	qDebug()<<("Error=");
+	qDebug()<<(QString::number(error));
 	//Serialize error followed by actual data
 	QByteArray dataWithError;
 	QDataStream writer(&dataWithError,QIODevice::WriteOnly);
 	writer<<error;
-	writer<<*(parsedData);
+	if(parsedData->size())
+		{
+		writer<<*(parsedData);
+		}
 	//find out the appropriate session and request id and service that
 	m_SmfServerPrivate->findAndServiceclient(requestID,&dataWithError,error);
 	}
 /**
- * Seems reduntant in symbian as client is served with RMessage2::Complete()
+ * Seems reduntant
  */
 void SmfServer::serviceClient(QByteArray* parsedData)
 	{
-	Q_UNUSED(parsedData);
+	Q_UNUSED(parsedData)
 	}
-/**
- * Used by PM to get a list of tokens
- * TODO:- cross check the params
- */
-void SmfServer::getAuthenticationKeys(int pluginID,QStringList& keys,QStringList& urls)
-	{
-	//SMF-CM communication will be via CM client
-	//TODO:- do it properly as per CM client impl
-	//CMclient->getKeys(pluginID,keys,urls);
-	Q_UNUSED(pluginID);
-	Q_UNUSED(keys);
-	Q_UNUSED(urls);
-	}
-
 /**
  * This is called when CMclient notifies client expiry.
  * @param type notification type, set of enums for future expansion
@@ -372,13 +308,12 @@ void SmfServer::getAuthenticationKeys(int pluginID,QStringList& keys,QStringList
  */
 void SmfServer::authenticationKeysExpired(NotificationType type,SmfPluginID id)
 	{
+	Q_UNUSED(type)
+	Q_UNUSED(id)
 	//resend the notify request
 	//CMclient->requestAuthExpiryNotify();
-	Q_UNUSED(type);
-	Q_UNUSED(id);
 	}
-
-void SmfServer::writeLog(QString log) const
+/*void SmfServer::writeLog(QString log) const
 	{
 #ifdef WRITE_LOG
 	QFile file("c:\\data\\SmfServerLogs.txt");
@@ -388,6 +323,29 @@ void SmfServer::writeLog(QString log) const
     out << log << "\n";
     file.close();
 #else
-    Q_UNUSED(log);
+    Q_UNUSED(log)
 #endif
+	}*/
+//#ifdef CLIENT_SERVER_TEST
+dummyPM::dummyPM(SmfServer* server,QObject* parent)
+: m_server(server),QObject(parent)
+	{
+	m_timer = new QTimer(this);
+	connect(m_timer, SIGNAL(timeout()), this, SLOT(responseAvailable()));
 	}
+SmfError dummyPM::createRequest ( const quint32& aSessionID, 
+		const QString& aPluginID, 
+		const SmfRequestTypeID& aOperation, 
+		QByteArray& aInputData )
+	{
+	qDebug()<<QString::number(aSessionID);
+	qDebug()<<aPluginID;
+	qDebug()<<QString::number(aOperation);
+	qDebug()<<QString::number(aInputData.size());
+	m_timer->start(1000);
+	}
+void dummyPM::responseAvailable()
+	{
+	
+	}
+//#endif

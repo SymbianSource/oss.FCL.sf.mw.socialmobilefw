@@ -47,15 +47,36 @@ public:
     void Close(){};
 	bool isConnected();
 	bool connected;
+	/**
+	 * Sends async request to the Smf server
+	 * @param aSerializedData Serialized data to be sent to the server.
+	 * Consists of provider Info(SmfProvider*)+ Other common class data
+	 * (when applicable)-serialized
+	 * @param aInterfaceName Name of the interface
+	 * @param aStatus TRequestStatus
+	 * @param maxSize Size of the data to be allocated. This info is sent to the server
+	 * @param aXtraInfo When xtra common data class instances to be passed other than SmfProvider
+	 * so that it can allocate this much of memory.
+	 */
 	void sendAsyncRequest(QByteArray& aSerializedData,
 			QString aInterfaceName,
 			SmfRequestTypeID aRequestType,
-			TRequestStatus& aStatus);
+			TRequestStatus& aStatus,
+			TInt aMaxAllocation,
+			QByteArray aXtraInfo=QByteArray());
 	/**
-	 * This for getservices only
+	 * Sends sync request to the Smf server
 	 */
 	TPtr8 sendSyncRequest(QString aInterfaceName,
-			SmfRequestTypeID aRequestType);
+			SmfRequestTypeID aRequestType,
+			TInt maxSize=0);
+	/**
+	 * Sends DSM related sync request to the Smf server
+	 */
+	TPtr8 sendDSMSyncRequest(SmfRequestTypeID aRequestType,
+			QByteArray& aSerializedData,
+			SmfError aErr,
+			TInt maxSize=0);
 	void writeLog(QString log) const;
     /**
      * Returns data,used to return back the data received from server
@@ -75,6 +96,7 @@ public:
     TBuf8<525> iProviderSymbian;
     TBuf<125> iInterfaceSymbian;
     TBuf8<125> iInterfaceSymbian8;
+    TBuf<100> iDSMErr;
 	QString iInterfaceName;
 	QByteArray iInterfaceNamebyte;
 
@@ -88,8 +110,10 @@ public:
 	TPtr8 iPtrProvider;
 	TPtr iIntfNamePtr;
 	TPtr8 iIntfNamePtr8;
-	
+	HBufC8* iSlot0Buffer;
+	TPtr8 iPtrToSlot0;
 	TInt iMaxMessageSize;
+	TInt iMaxSize;
 	/**
 	 * Last request opcode
 	 */

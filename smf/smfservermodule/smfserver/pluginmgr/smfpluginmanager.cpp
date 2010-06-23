@@ -18,6 +18,7 @@
  */
 
 #include <QDir>
+#include <QDebug>
 #include <QLibraryInfo>
 #include <QFileSystemWatcher>
 #include <QPluginLoader>
@@ -26,7 +27,6 @@
 #include <smfpluginutil.h>
 #include <smfprovider.h>
 
-#include "smfpluginutil.h"
 #include "smfpluginmanager.h"
 #include "smfpluginmanagerutil.h"
 #include "smftransportmanagerutil.h"
@@ -57,7 +57,7 @@ SmfPluginManager::SmfPluginManager ( SmfServer *aServer )
 	// Save the server instance
 	m_server = aServer;
 	
-	m_server->writeLog("Inside SmfPluginManager::SmfPluginManager()");
+	qDebug()<<"Inside SmfPluginManager::SmfPluginManager()";
 	
 	// initialize the file watcher to monitor plugin addition/upgradation/removal
 	initializeFileWatcher ( );
@@ -78,31 +78,38 @@ SmfPluginManager::SmfPluginManager ( SmfServer *aServer )
  */
 SmfPluginManager::~SmfPluginManager ( )
 	{
-	m_server->writeLog("Inside SmfPluginManager::~SmfPluginManager()");
+	qDebug()<<"Inside SmfPluginManager::~SmfPluginManager()";
+	
+	// delete file watcher
 	if(m_fileWatcher)
 		delete m_fileWatcher;
 	
 	if(m_tempStruct)
 		delete m_tempStruct;
 	
+	// delete the plugin information hash
 	if(m_waitingPluginHash.count() > 0)
 		{
 		foreach(SmfWaitingPluginInfoStruc *str, m_waitingPluginHash.values())
 			delete str;
 		}
 	
+	// delete the SmfPluginManagerUtil class instance
 	if(m_util)
 		delete m_util;
 	
+	// Close the database
 	if(m_pluginDataBase.isOpen())
 		{
 		m_pluginDataBase.close();
 		m_pluginDataBase.removeDatabase("SmfPluginsInfoDatabase");
+		QFile::remove("SmfPluginsInfoDatabase");
 		}
 	
 	// unload all loaded plugins
 	unload(m_pluginLoaderHash.keys());
 	
+	// Finally remove the existing singleton instance of plugin manager itself
 	if(m_myInstance)
 		delete m_myInstance;
 	}
@@ -118,25 +125,32 @@ SmfPluginManager::~SmfPluginManager ( )
  * @param aPluginID The plugin ID that need to perform this operation
  * @param aOperation The type of operation to be performed
  * @param aInputData The data required to create the web query
- * @return SmfPluginManagerResult The result of the operation
- * @see smfglobal.h
+ * @return SmfError The result of the operation. It can be :-
+ * SmfPluginNoError (if the request is sent successfully) or 
+ * SmfPluginLoadError (if plugin could not be loaded) or
+ * SmfPluginNotAuthorised (if the plugin is not authorised) or
+ * SmfPluginUnknownPluginService (if the requested service is not known or unsupported) or
+ * SmfPluginRequestCreationFailed (if request creation has failed) or
+ * SmfPluginSOPCheckFailed (if plugins request doesnot comply to the Same Origin Policy) or
+ * SmfPluginRequestSendingFailed (if request could not be sent) or 
+ * SmfPluginUnknownHttpService (if the plugin requested any unknown http 
+ * method other than get, post, put, head or delete)  
  */
-SmfPluginManagerResult SmfPluginManager::createRequest ( const quint32& aSessionID, 
+SmfError SmfPluginManager::createRequest ( const quint32& aSessionID, 
 		const QString& aPluginID, 
 		const SmfRequestTypeID& aOperation, 
 		QByteArray& aInputData )
 	{
-	m_server->writeLog("Inside SmfPluginManager::createRequest()");
+	qDebug()<<"Inside SmfPluginManager::createRequest()";
 	
-	SmfPluginManagerResult result = SmfPluginUnknownError;
+	SmfError result = SmfUnknownError;
 
 	// Load the plugin
 	QObject *plugin = load(aPluginID, result);
 	
 	// Check if plugin is loaded
-	if(plugin && (SmfPluginLoaded == result))
+	if(plugin && (SmfNoError == result))
 		{
-		m_server->writeLog("Plugin loaded");
 		SmfPluginBase* instance = qobject_cast<SmfPluginBase *>(plugin);
 		
 		if(instance)
@@ -149,50 +163,51 @@ SmfPluginManagerResult SmfPluginManager::createRequest ( const quint32& aSession
 		// check if the plugin is authorised (with CSM)
 		if( authorisePlugin(regToken, urlList ))
 			{
-			m_server->writeLog("Plugin authorised");
+			qDebug()<<"Plugin authorised";
 			
 			// call the utility method to create plugin specific request
+			result = SmfUnknownError;
 			m_util->createRequest(plugin, aOperation, aInputData, reqData, result);
 
 			// If the request is created successfully, call the TM method to send the request
-			if( SmfPluginRequestCreated == result )
+			if( SmfNoError == result )
 				{
-				m_server->writeLog("Plugin request creation successful");
+				qDebug()<<"Plugin request creation successful";
 				m_tempStruct = new SmfWaitingPluginInfoStruc();
 				m_tempStruct->iSessionID = aSessionID;
 				m_tempStruct->iPluginId = aPluginID;
 				m_tempStruct->iInstance = instance;
 				m_tempStruct->iOperation = aOperation;
 				m_tempStruct->iInputData = aInputData;
-				m_tempStruct->iUrlList = urlList;
 			
 				// send the request
 				sendRequest ( reqData, result, urlList );
 				}
+				else
+					qDebug()<<"Plugin request creation failed!!!, error = "<<result;
 			}
 		
 		else
 			{
 			// plugin not authorised, so unload
-			m_server->writeLog("Plugin not authorised!!!");
+			qDebug()<<"Plugin not authorised!!!";
 			unload(instance);
-			result = SmfPluginNotAuthorised;
+				result = SmfPMPluginNotAuthorised;
 			}
 		}
 		else
 			{
 			// plugin instance cannot be casted, so unload
-			m_server->writeLog("Plugin instance cannot be casted to SmfPluginBase*!!!");
+			qDebug()<<"Plugin instance cannot be casted to SmfPluginBase*!!!";
 			unload(instance);
-			result = SmfPluginLoadError;
+			result = SmfPMPluginLoadError;
 			}
 		}
 
 	else
 		{
 		// plugin not loaded
-		m_server->writeLog("Plugin not loaded!!!");
-		result = SmfPluginLoadError;
+		qDebug()<<"Plugin not loaded!!!";
 		}
 	
 	return result;
@@ -211,16 +226,14 @@ void SmfPluginManager::responseAvailable (
 		QNetworkReply *aReply,
 		QByteArray *aResponse )
 	{
-	m_server->writeLog("Inside SmfPluginManager::responseAvailable()");
+	qDebug()<<"Inside SmfPluginManager::responseAvailable()";
 		
-	// For request success or For request cancellation
-	if((SmfTransportOpNoError == aTransportResult) || 
-			(SmfTransportOpOperationCanceledError == aTransportResult))
+	// get the details of the plugin which made this request
+	SmfWaitingPluginInfoStruc* info = NULL;
+	info = m_waitingPluginHash.value(aReply);
+	
+	if(info)
 			{
-		m_server->writeLog("no transport error/ cancellation");
-
-			// get the details of the plugin which made this request
-			SmfWaitingPluginInfoStruc* info = m_waitingPluginHash.value(aReply);
 			quint32 sessionId = m_waitingPluginHash.value(aReply)->iSessionID;
 			QString pluginId = m_waitingPluginHash.value(aReply)->iPluginId;
 			SmfRequestTypeID operation = m_waitingPluginHash.value(aReply)->iOperation;
@@ -230,107 +243,81 @@ void SmfPluginManager::responseAvailable (
 			SmfPluginRetType retType = SmfRequestError;
 			SmfResultPage pageResult;
 			
-			m_server->writeLog("Before m_util->responseAvailable");
-			
 			// call the utility method to send response to appropriate plugins
-			SmfPluginManagerResult retValue = m_util->responseAvailable( info->iInstance, operation, 
-				aTransportResult, aResponse, &result, retType, pageResult );
+			SmfError retValue = m_util->responseAvailable( info->iInstance, operation, 
+					aTransportResult, aResponse, &result, retType, pageResult );
 			
+			qDebug()<<"m_util->responseAvailable() return = "<<retValue;
+		
 			// remove the plugin from the waiting list
 			delete m_waitingPluginHash.value(aReply);
 			m_waitingPluginHash.remove(aReply);
 		
 			QByteArray arr;
 			QDataStream stream(&arr, QIODevice::ReadWrite);
-			if( SmfPluginResponseParsed == retValue )
+		
+			if( SmfNoError == retValue )
 				{
-				m_server->writeLog("Parsing successful");
+				qDebug()<<"Parsing of response is successful";
 				
 				// serialize the response to suitable class and pass the data to server
 				serializeResult(operation, &result, stream);
 			
-				////TODO:- send error in enums-by manasij
 				// Send the response data to the server
-				m_server->resultsAvailable(sessionId, &arr, SmfNoError);
+				m_server->resultsAvailable(sessionId, &arr, retValue);
 				}
 		
 			// Send the request again
-			else if( SmfPluginSendRequestAgain == retValue )
+			else if( SmfPMPluginSendRequestAgain == retValue )
 				{
-				m_server->writeLog("Send request again");
-				
-				// create the request again (with same paramaters)
+				qDebug()<<"Send request again";
 				retValue = createRequest( sessionId, pluginId, operation, inputData );
 				}
 			
 			// Error
 			else
 				{
-				m_server->writeLog("Parsing failed!!");
+				qDebug()<<"Plugin responseAvailable() failed!!!, error = "<<retValue;
 				
 				// Error in parsing, sent to server
-				m_server->resultsAvailable(sessionId, &arr, SmfpluginResponseParseFailure);
-				}
-		
-			// delete aReply later, when event loop is re-entered
-			aReply->deleteLater();
+// ToDo :- For testing:-
+				stream<<result.toString();
+				m_server->resultsAvailable(sessionId, &arr, retValue);
 			}
-	
-	// Any other error
-	else
-		{
-		m_server->writeLog("Error in SmfPluginManager::responseAvailable, Transport failure code : ");
-		QString err = QString::number(aTransportResult);
-		m_server->writeLog(err);
-		
-		//Added by manasij, send all kind of errors to the server
-		//TODO:- to be refined by PM owner
-		quint32 sessionId = m_waitingPluginHash.value(aReply)->iSessionID;
-		QByteArray arr;
-		m_server->resultsAvailable(sessionId, &arr, SmftransportInitNetworkNotAvailable);
 		}
+	else
+		qDebug()<<"No outstanding requests for this QNetworkReply!!!";
+		
+	// delete aReply later, when event loop is re-entered
+	aReply->deleteLater();
 	}
-
+	
 
 /**
  * Method to cancel the service request
- * @param aPluginId The plugin whose current operation 
- * is to be cancelled
+ * @param aPluginId The plugin whose current operation is to be cancelled.
+ * If the plugin is not loaded currently, this method just returns true.
+ * @return Returns true if the plugin operation could be cancelled 
+ * else returns false.
  */
 bool SmfPluginManager::cancelRequest ( const QString& aPluginId )
 	{
-	bool retValue = false;
-	m_server->writeLog("Inside SmfPluginManager::cancelRequest()");
+	bool retValue = true;
+	qDebug()<<"Inside SmfPluginManager::cancelRequest()";
 	
 	// Get the plugin for which cancel is requested
 	foreach(SmfWaitingPluginInfoStruc* iPluginInfo, m_waitingPluginHash.values())
 		{
 		if( 0 == iPluginInfo->iPluginId.compare(aPluginId))
 			{
-			m_server->writeLog("Plugin to be cancelled found in the waiting list");
+			qDebug()<<"Plugin to be cancelled found in the waiting list";
 			
 			// Notify Transport Manager
 			m_transMngrUtil->cancelRequest(m_waitingPluginHash.key(iPluginInfo));
 			
-			// Notify the plugin that the request has been cancelled
-			SmfPluginRetType retType;
-			SmfResultPage pageResult;
-			SmfPluginError ret = iPluginInfo->iInstance->responseAvailable( SmfTransportOpCancelled, 
-					NULL, NULL, retType, pageResult );
-			
-			// Remove that plugin from the waiting list
-			delete (m_waitingPluginHash.value(m_waitingPluginHash.key(iPluginInfo)));
-			m_waitingPluginHash.remove(m_waitingPluginHash.key(iPluginInfo));
-			
-			if(SmfPluginErrNone == ret)
-				retValue = true;
 			}
-		//else , cancel requested for a plugin which is not loaded, do nothing
 		else
-			{
-			m_server->writeLog("Plugin to be cancelled not found in the waiting list!!! - do nothing");
-			retValue =  false;
-		}
+			retValue =  true;
 		}
 	return retValue;
 	}
@@ -342,7 +329,7 @@ bool SmfPluginManager::cancelRequest ( const QString& aPluginId )
  */
 void SmfPluginManager::initializeFileWatcher ( )
 	{
-	m_server->writeLog("Inside SmfPluginManager::initializeFileWatcher()");
+	qDebug()<<"Inside SmfPluginManager::initializeFileWatcher()";
 	
 	// Create the file watcher for the plugins in /Smf folder of the Qt plugin directory
 	m_fileWatcher = new QFileSystemWatcher(this);
@@ -363,6 +350,12 @@ void SmfPluginManager::initializeFileWatcher ( )
 		}
 	else
 		m_fileWatcher->addPath(dir.absolutePath());
+	
+	connect(m_fileWatcher, SIGNAL(directoryChanged(const QString&)), 
+			this, SLOT (directoryChanged(const QString&)));
+	
+	connect(m_fileWatcher, SIGNAL(fileChanged(const QString&)), 
+				this, SLOT (directoryChanged(const QString&)));
 	}
 
 
@@ -373,22 +366,27 @@ void SmfPluginManager::initializeFileWatcher ( )
  * the Plugin Manager is instantiated.
  * This method creates and updates m_pluginIdPathHash member 
  * of this class
+ * @return Returns true the database is successfully created and updated, 
+ * else returns false
  */
 bool SmfPluginManager::initializeSmfPluginDataBase ( )
 	{
-	m_server->writeLog("Inside SmfPluginManager::initializeSmfPluginDataBase()");
+	qDebug()<<"Inside SmfPluginManager::initializeSmfPluginDataBase()";
 	
 	// Find QSQLite driver and create a connection to database
-	m_pluginDataBase.removeDatabase("SmfPluginsInfoDatabase");
+	QFile::remove("SmfPluginsInfoDatabase");
 	m_pluginDataBase = QSqlDatabase::addDatabase("QSQLITE");
 	m_pluginDataBase.setDatabaseName("SmfPluginsInfoDatabase");
 	
 	// Open the database
 	bool opened = m_pluginDataBase.open();
 	if(!opened)
+		{
+		qDebug()<<"Database could not be opened, returning !!!";	
 		return false;
+		}
 	
-	m_server->writeLog("Database opened");
+	qDebug()<<"Database opened";
 	
 	// Create a query to create the DB table for Plugin Manager (if it doesn't exists)
 	QSqlQuery query;
@@ -401,11 +399,14 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 	// Error - table not created, Plugin Manager might not work properly
 	if(!tableCreated)
 		{
-		m_server->writeLog("Table not created, error = "+query.lastError().text());
+		qDebug()<<"Table not created!!!, error = "<<query.lastError().text();
+		
+		// Close the database
+		m_pluginDataBase.close();
 		return false;
 		}
 	
-	m_server->writeLog("Table created");
+	qDebug()<<"Table created";
 	
 	// Get the directory having the Qt plugin stubs
 	QDir dir(QLibraryInfo::location(QLibraryInfo::PluginsPath));
@@ -413,28 +414,28 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 	// If Smf folder exists
 	if(dir.cd("smf/plugin"))
 		{
-		m_server->writeLog("Smf/plugin folder exists");
+		qDebug()<<"Smf/plugin folder exists";
 		// Get each interface folders names
 		foreach(QString intfName, dir.entryList(QDir::AllDirs))
 			{
 			dir.cd(intfName);
-			m_server->writeLog("Interface name : "+dir.dirName());
+			qDebug()<<"Interface name : "<<dir.dirName();
 			
 			// Get each plugin in this folder
 			foreach(QString pluginName, dir.entryList(QDir::Files))
 				{
-				m_server->writeLog("plugins for this Interface : "+pluginName);
+				qDebug()<<"plugins for this Interface : "<<pluginName;
 				
 				// load this plugin
 				QPluginLoader pluginLoader(dir.absoluteFilePath(pluginName));
 				QObject *instance = pluginLoader.instance();
 				if (instance)
 					{
-					m_server->writeLog("instance found");
+					qDebug()<<"instance found";
 					SmfPluginBase* plugin = qobject_cast<SmfPluginBase *>(instance);
 				    if (plugin)
 				    	{
-						m_server->writeLog("SmfPluginBase found");
+						qDebug()<<"SmfPluginBase found";
 						plugin->initialize(SmfPluginUtil::getInstance());
 				    
 						// get the plugin id
@@ -443,8 +444,7 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 						// get the interface implemented by the plugin
 						QString intfImplemented = dir.dirName();
 						intfImplemented.prepend("org.symbian.smf.plugin.");
-						m_server->writeLog("intfImplemented=");
-						m_server->writeLog(intfImplemented);
+						qDebug()<<"intfImplemented = "<<intfImplemented;
 						
 						// get the service provider
 						QString serProv = plugin->getProviderInfo()->serviceName();
@@ -472,14 +472,15 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 								.arg(desc).arg(servURL).arg(authAppId));
 						
 						if(rowInserted)
-							m_server->writeLog("This Plugin's information is added to database : "+id+""
-									", "+intfImplemented+", "+serProv);
+							qDebug()<<QString("This Plugin's information is added to database : '%1' '%2' '%3'")
+											.arg(id).arg(intfImplemented).arg(serProv);
 						else
-							m_server->writeLog("plugins data not written to database, error = "+query.lastError().text());
+							if(0 != query.lastError().text().size())
+								qDebug()<<"plugins data not written to database!!!, error = "<<query.lastError().text();
 				    	}
 				    else
 				    	{
-						m_server->writeLog("Plugin could not be converted to SmfpluginBase* - returning");
+						qDebug()<<"Plugin could not be converted to SmfpluginBase* - returning!!!";
 						
 						// Close the database
 						m_pluginDataBase.close();
@@ -491,19 +492,19 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 					}
 				else
 					{
-					m_server->writeLog("Plugin could not be loaded - returning");
+					qDebug()<<"Plugin could not be loaded - returning!!!, error = "<<pluginLoader.errorString();
 					
 					// Close the database
 					m_pluginDataBase.close();
 										
 					return false;
-				}
+					}
 				}
 			dir.cdUp();
 			}
 		}
 	else
-		m_server->writeLog("No Smf plugins installed!!!");
+		qDebug()<<"No Smf plugins installed!!!";
 	
 	// Close the database
 	m_pluginDataBase.close();
@@ -517,15 +518,16 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
  * Method to load a plugin using its Plugin Id.
  * @param aPluginId The unique ID of the plugin 
  * @param aLoadResult [out] Output paramater indicating the result 
- * of the loading
+ * of the loading. It can be:-
+ * SmfPluginNoError (if plugin was loaded successfully) or
+ * SmfPluginNotFound (if plugin with the given id could not be found) 
+ * SmfPluginNotLoaded (if plugin could not be loaded) or 
  * @return The instance of the loaded plugin if loaded, else NULL
  */
 QObject* SmfPluginManager::load ( const QString &aPluginId,
-		SmfPluginManagerResult &aLoadResult)
+		SmfError &aLoadResult)
 	{
-	m_server->writeLog("Inside SmfPluginManager::load()");
-	
-	QPluginLoader *pluginLoader = 0;
+	qDebug()<<"Inside SmfPluginManager::load()";
 	
 	// Find the plugin Path
 	QString pluginPath = m_pluginIdPathHash.value(aPluginId);
@@ -533,7 +535,16 @@ QObject* SmfPluginManager::load ( const QString &aPluginId,
 	if(!pluginPath.isEmpty())
 		{
 		// create the plugin loader and load the plugin
+		QPluginLoader *pluginLoader = NULL;
 		pluginLoader = new QPluginLoader(pluginPath);
+		if(!pluginLoader)
+			{
+			// Plugin loader could not be created, error
+			qDebug()<<"QPluginLoader allocation failed!!!";
+			aLoadResult = SmfPMPluginNotLoaded;
+			return NULL;
+			}
+		
 		SmfPluginBase *plugin = qobject_cast<SmfPluginBase *>(pluginLoader->instance());
 		
 		// If the plugin is loaded
@@ -544,26 +555,25 @@ QObject* SmfPluginManager::load ( const QString &aPluginId,
 			
 			// update the plugin loader and the loaded plugin lists
 			m_pluginLoaderHash.insertMulti(plugin, pluginLoader);
-			aLoadResult = SmfPluginLoaded;
-			m_server->writeLog("Plugin loaded");
+			aLoadResult = SmfNoError;
+			qDebug()<<"Plugin loaded";
+			return pluginLoader->instance();
 			}
 		else
 			{
-			m_server->writeLog("Plugin not loaded");
-		
 			// Plugin could not be loaded, error
-			aLoadResult = SmfPluginNotLoaded;
+			qDebug()<<"Plugin not loaded!!!, error = "<<pluginLoader->errorString();
+			aLoadResult = SmfPMPluginNotLoaded;
+			return NULL;
 		}
 		}
 	else
 		{
-		m_server->writeLog("Plugin not found");
-		
-		// plugin not found in hash
-		aLoadResult = SmfPluginNotFound;
+		// plugin could not be found in the hash maintained by PM
+		qDebug()<<"Plugin not found!!!";
+		aLoadResult = SmfPMPluginNotFound;
+		return NULL;
 		}
-	
-	return pluginLoader->instance();
 	}
 
 
@@ -571,54 +581,70 @@ QObject* SmfPluginManager::load ( const QString &aPluginId,
  * Method to unload a loaded plugin. Returns true if success, else 
  * returns false.
  * @param aPlugin The plugin instance to be unloaded
- * @return Returns true if success, else returns false
+ * @return Returns true if the mentioned plugin could be unloaded. Returns 
+ * false, if the plugin instance is NULL, or if it could not be unloaded.
  */
 bool SmfPluginManager::unload ( SmfPluginBase *aPlugin )
 	{
-	m_server->writeLog("Inside SmfPluginManager::unload()");
+	qDebug()<<"Inside SmfPluginManager::unload()";
+	bool unloadResult = true;
 	
-	// Get all the loaders for this plugin
-	QList<QPluginLoader*> loaderList = m_pluginLoaderHash.values(aPlugin);
-	bool unloaded = false;
-
-	foreach(QPluginLoader *loader, loaderList)
+	if(aPlugin)
 		{
-		// for each loader unload the plugin
-		unloaded = loader->unload();
-		
-		// delete the instance of the loader
-		delete loader;
-		loader = NULL;
+		// Get all the loaders for this plugin
+		QList<QPluginLoader*> loaderList = m_pluginLoaderHash.values(aPlugin);
+		if(loaderList.size())
+			{
+			foreach(QPluginLoader *loader, loaderList)
+				{
+				// for each loader unload the plugin
+				unloadResult = loader->unload();
+				
+				// delete the instance of the loader
+				delete loader;
+				loader = NULL;
+				}
+			
+			// Remove the plugin and its associated loaders from the Hash
+			m_pluginLoaderHash.remove(aPlugin);
+			return unloadResult;
+			}
+		}
+	else
+		{
+		qDebug()<<"Plugin  instance is NULL!!!";
+		unloadResult = false;
 		}
 	
-	// Remove the plugin and its associated loaders from the Hash
-	m_pluginLoaderHash.remove(aPlugin);
-	return unloaded;
+	return unloadResult;
 	}
 
 
 /**
- * Method to unload the list of loaded plugins. Returns true if all are 
- * success, else returns false if any one fails.
+ * Method to unload the list of loaded plugins. Returns true if all unload 
+ * are success, else returns false if any one fails.
  * @param aPluginList The list of instances for all plugins that are 
- * to be unloaded
+ * to be unloaded. This method does nothing and returns false if the list is empty.
  * @return Returns true if all are success, else returns false if any 
- * one fails.
+ * one fails. Also returns false if the input list is empty.
  */
 bool SmfPluginManager::unload ( const QList<SmfPluginBase *> &aPluginList)
 	{
-	m_server->writeLog("Inside SmfPluginManager::unload() - overloaded fn");
-	//unload all the required plugins
-	bool unloaded = true;
+	qDebug()<<"Inside SmfPluginManager::unload() - overloaded fn";
+	bool unloaded = false;
 	
-	foreach(SmfPluginBase *plugin, aPluginList)
+	if(aPluginList.size())
 		{
-		// unload individual plugins in the list
-		bool ret = unload(plugin);
-		
-		// indicate error if any one of the plugin failed to unload
-		if(!ret)
-			unloaded = ret;
+		//unload all the required plugins
+		foreach(SmfPluginBase *plugin, aPluginList)
+			{
+			// unload individual plugins in the list
+			bool ret = unload(plugin);
+			
+			// indicate error if any one of the plugin failed to unload
+			if(!ret)
+				unloaded = ret;
+			}
 		}
 	return unloaded;
 	}
@@ -629,15 +655,20 @@ bool SmfPluginManager::unload ( const QList<SmfPluginBase *> &aPluginList)
  * send the request created by the plugins over the network
  * @param aReqData The request data created by the plugin
  * @param aResult [out] The output parameter indicating the result 
- * of this method
+ * of this method. This can be :-
+ * SmfPluginNoError (if the request is sent successfully) or 
+ * SmfPluginSOPCheckFailed (if plugins request doesnot comply to 
+ * the Same Origin Policy) or 
+ * SmfPluginRequestSendingFailed (if request could not be sent) or 
+ * SmfPluginUnknownHttpService (if the plugin requested any unknown http 
+ * method other than get, post, put, head or delete)  
  * @param aUrlList The list of accessible Urls for this plugin
- * @see smfglobal.h
  */
 void SmfPluginManager::sendRequest ( SmfPluginRequestData &aReqData, 
-		SmfPluginManagerResult &aResult,
+		SmfError &aResult,
 		const QList<QUrl> &aUrlList )
 	{
-	m_server->writeLog("Inside SmfPluginManager::sendRequest()");
+	qDebug()<<"Inside SmfPluginManager::sendRequest()";
 	
 	QNetworkReply* reply;
 	bool sopCompliant = false;
@@ -647,31 +678,39 @@ void SmfPluginManager::sendRequest ( SmfPluginRequestData &aReqData,
 		{
 		// Http HEAD
 		case QNetworkAccessManager::HeadOperation:
+			qDebug()<<"http::head Operation requested";
 			reply = m_transMngrUtil->head(aReqData.iNetworkRequest, aUrlList, sopCompliant);
 			break;
 		
 		// Http GET
 		case QNetworkAccessManager::GetOperation:
+			qDebug()<<"http::get Operation requested";
 			reply = m_transMngrUtil->get(aReqData.iNetworkRequest, aUrlList, sopCompliant);
 			break;
 			
 		// Http PUT	
 		case QNetworkAccessManager::PutOperation:
+			qDebug()<<"http::put Operation requested";
 			reply = m_transMngrUtil->put(aReqData.iNetworkRequest, aReqData.iPostData->buffer(), aUrlList, sopCompliant);
+			delete aReqData.iPostData;
 			break;
 			
 		// Http POST
 		case QNetworkAccessManager::PostOperation:
+			qDebug()<<"http::post Operation requested";
 			reply = m_transMngrUtil->post(aReqData.iNetworkRequest, aReqData.iPostData->buffer(), aUrlList, sopCompliant);
+			delete aReqData.iPostData;
 			break;
 			
 		// Http DELETE
 		case QNetworkAccessManager::DeleteOperation:
+			qDebug()<<"http::delete Operation requested";
 			reply = m_transMngrUtil->deleteResource(aReqData.iNetworkRequest, aUrlList, sopCompliant);
 			break;
 			
 		default:
-			aResult = SmfPluginUnknownService;
+			qDebug()<<"unknown http Operation requested!!!";
+			aResult = SmfPMPluginUnknownHttpService;
 			return;
 		}
 	
@@ -680,27 +719,25 @@ void SmfPluginManager::sendRequest ( SmfPluginRequestData &aReqData,
 		if( reply )
 			{
 			// SOP compliant, sending successful
+			qDebug()<<"No error, request sent";
 			m_waitingPluginHash.insert(reply, m_tempStruct);
 			m_tempStruct = NULL;
-			aResult = SmfPluginNoError;
-			
-			m_server->writeLog("No error, request sent");
-			
+			aResult = SmfNoError;
 			}
-		// reply is NULL, sending failed
 		else
 			{
-			m_server->writeLog("QNEtrworkReply returned error - not sent");
-			aResult = SmfPluginRequestSendingFailed;
-		}
+			// reply is NULL, sending failed
+			qDebug()<<"QNetworkReply returned NULL - request not sent";
+			aResult = SmfPMPluginRequestSendingFailed;
+			}
 		}
 	
-	// SOP violation
 	else
 		{
-		m_server->writeLog("SOP checking failed");
-		aResult = SmfPluginSOPCheckFailed;
-	}
+		// SOP violation
+		qDebug()<<"SOP checking failed";
+		aResult = SmfPMPluginSOPCheckFailed;
+		}
 	}
 
 
@@ -711,23 +748,27 @@ void SmfPluginManager::sendRequest ( SmfPluginRequestData &aReqData,
  * the valid url list if available for this plugin.
  * @param aRegToken The registration token given by the plugin
  * @param aUrlList [out] The list of Urls that the plugin can send 
- * request to (to be filled by CSM)
+ * request to (to be filled by CSM). This list will be empty if 
+ * aRegToken is empty
  * @return Returns true if plugin is authorised, else returns false.
+ * Also returns false if aRegToken is empty.
  */
 bool SmfPluginManager::authorisePlugin( const QString &aRegToken, 
 		QList<QUrl> &aUrlList )
 	{
 	Q_UNUSED(aRegToken)
-	m_server->writeLog("Inside SmfPluginManager::authorisePlugin()");
+	qDebug()<<"Inside SmfPluginManager::authorisePlugin()";
 	
 #ifdef CSM_INTEGRATED
+	aUrlList.clear();
+	
 // Get the valid URL list from CSM, giving the reg token
-	if(m_server->authorisePlugin(aRegToken, aUrlList))
-		return true;
+	if(aRegToken.size())
+		return m_server->authorisePlugin(aRegToken, aUrlList);
 	else
 		return false;
-	
 #else
+	
 // CSM STUBBING - start
 	QUrl url1 ("http://www.example.com");
 	QUrl url2 ("http://api.facebook.com");
@@ -748,15 +789,15 @@ bool SmfPluginManager::authorisePlugin( const QString &aRegToken,
  * Method to serialize the result of parsing (which is done by the 
  * plugins) to QByteArray to be sent to Smf server.
  * @param aOperation The type of operation to be performed
- * @param aResult The data to be serialized
- * @param aDataStream Stream to be written
+ * @param aResult The data to be serialized (should not be NULL)
+ * @param aDataStream Stream to be written to
  */
 void SmfPluginManager::serializeResult ( 
 		const SmfRequestTypeID &aOperation, 
 		QVariant* aResult,
 		QDataStream &aDataStream )
 	{
-	m_server->writeLog("Inside SmfPluginManager::serializeResult()");
+	qDebug()<<"Inside SmfPluginManager::serializeResult()";
 	
 	// Call the utlity class method to serialize the result
 	m_util->serializeResult(aOperation, aResult, aDataStream);
@@ -771,7 +812,8 @@ void SmfPluginManager::serializeResult (
  */
 void SmfPluginManager::directoryChanged ( const QString &aPath )
 	{
-	m_server->writeLog("Inside SmfPluginManager::directoryChanged()");
+	qDebug()<<"Inside SmfPluginManager::directoryChanged()";
+	qDebug()<<"Changed path = "<<aPath;
 	
 	// Create a QDir instance with the given path
 	QDir dir(aPath);
@@ -785,19 +827,26 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 	QStringList newPlugins = dir.entryList(QDir::Files, QDir::Name);
 	QStringList::const_iterator newListIterator = newPlugins.constBegin();
 	
+	foreach(QString name, newPlugins)
+		qDebug()<<"New plugin = "<<name;
+	
 	// Get all plugins who were in this path, before this directory was changed
 	QStringList availablePlugins = m_pluginIdPathHash.keys(aPath);
 	availablePlugins.sort();
 	QStringList::const_iterator oldListIterator = availablePlugins.constBegin();
 	
+	foreach(QString name, availablePlugins)
+		qDebug()<<"Old plugin = "<<name;
+	
 	// Open the database
 	bool opened = m_pluginDataBase.open();
 	if(!opened)
-        {}//return;
+		return;
 	
 	// If plugin is changed
 	if( newPlugins.count() == availablePlugins.count() )
 		{
+		qDebug()<<"Plugin upgraded...";
 		// Check for equality
 		while( newListIterator != newPlugins.constEnd() )
 			{
@@ -820,18 +869,18 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 	    bool updated = updateQuery.exec(QString("UPDATE pluginDetails SET pluginId = '%1' "
 	    		"WHERE pluginId = '%2'").arg(*newListIterator).arg(*oldListIterator));
 	    if (!updated)
-	    	m_server->writeLog("Database table not updated, error = "+updateQuery.lastError().text());
-		
+	    	if(0 != updateQuery.lastError().text().size())
+	    		qDebug()<<"Database table not updated, error = "<<updateQuery.lastError().text();
 		
 		// Get the new and old plugin Ids
 		pluginId = *newListIterator;
 		oldpluginId = *oldListIterator;
 		
 		// Load the plugin and get its service provider name
-		SmfPluginManagerResult result;
+		SmfError result;
 		SmfPluginBase* instance = qobject_cast<SmfPluginBase *>(load(pluginId, result));
 		
-		if(instance && (SmfPluginLoaded == result))
+		if(instance && (SmfNoError == result))
 			{
 			instance->initialize(SmfPluginUtil::getInstance());
 			serviceProv = instance->getProviderInfo()->serviceName();
@@ -839,16 +888,21 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 			}
 		
 		unload(instance);
+		
+		qDebug()<<QString("Upgraded plugin details are : '%1' '%2' '%3' '%4'").arg(oldpluginId)
+				.arg(pluginId).arg(interfaceName).arg(serviceProv);
+		
 		// Inform server that plugin has been changed
 #ifdef CSM_INTEGRATED
 		//Remove after Server Integration
-		m_server->pluginChanged(oldPluginId, newPluginId, interfaceName, serviceProv);
+		m_server->pluginChanged(oldPluginId, pluginId, interfaceName, serviceProv);
 #endif
 		}
 		
 	// If plugin is added
 	else if(newPlugins.count() > availablePlugins.count())
 		{
+		qDebug()<<"Plugin Added...";
 		// Check for equality
 		while( oldListIterator != availablePlugins.constEnd() )
 			{
@@ -867,10 +921,10 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 		pluginId = *newListIterator;
 		
 		// Load the plugin and get its service provider name
-		SmfPluginManagerResult result;
+		SmfError result;
 		SmfPluginBase* instance = qobject_cast<SmfPluginBase *>(load(pluginId, result));
 		
-		if(instance && (SmfPluginLoaded == result))
+		if(instance && (SmfNoError == result))
 			{
 			instance->initialize(SmfPluginUtil::getInstance());
 			serviceProv = instance->getProviderInfo()->serviceName();
@@ -890,7 +944,10 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 
 		 // Error
 		if (!rowInserted)
-			m_server->writeLog("Database table not inserted, error = "+insertRowQuery.lastError().text());
+			qDebug()<<"Database table not inserted, error = "<<insertRowQuery.lastError().text();
+		
+		qDebug()<<QString("Added plugin detailes are : '%1' '%2' '%3'").arg(pluginId)
+				.arg(interfaceName).arg(serviceProv);
 		
 		// Inform server that plugin has been added
 #ifdef CSM_INTEGRATED
@@ -902,6 +959,8 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 	// If plugin is removed
 	else //for newPlugins.count() < availablePlugins.count()
 		{
+		qDebug()<<"Plugin removed...";
+		
 		// Check for equality
 		while( newListIterator != newPlugins.constEnd() )
 			{
@@ -923,16 +982,16 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 		 
 		// Error
 		if (!rowDeleted)
-			m_server->writeLog("Database table row not deleted, error = "+deleteRowQuery.lastError().text());
+			qDebug()<<"Database table row not deleted, error = "<<deleteRowQuery.lastError().text();
 		
 		// Get the plugin Id
 		pluginId = *oldListIterator;
 		
 		// Load the plugin and get its service provider name
-		SmfPluginManagerResult result;
+		SmfError result;
 		SmfPluginBase* instance = qobject_cast<SmfPluginBase *>(load(pluginId, result));
 		
-		if(instance && (SmfPluginLoaded == result))
+		if(instance && (SmfNoError == result))
 			{
 			instance->initialize(SmfPluginUtil::getInstance());
 			serviceProv = instance->getProviderInfo()->serviceName();
@@ -940,6 +999,10 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 			}
 		
 		unload(instance);
+		
+		qDebug()<<QString("Added plugin detailes are : '%1' '%2' '%3'").arg(pluginId)
+				.arg(interfaceName).arg(serviceProv);
+		
 		// Inform server that plugin has removed
 #ifdef CSM_INTEGRATED
 		//Remove after Server Integration
@@ -955,56 +1018,76 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
  * Method to get the list of the SmfProvider for all the plugins that implement 
  * the mentioned Interface 
  * @param aInterface The interface for which list of plugins is required 
- * @param aMap The map of pluginID and its corresponding SmfProvider
+ * @param aMap The map of pluginID and its corresponding SmfProvider. The Map 
+ * will be empty if no plugins for the given interface could be found.
  */
 void SmfPluginManager::getPlugins(const QString& aInterface, QMap<QString,SmfProvider>& aMap)
 	{
-	m_server->writeLog("Inside SmfPluginManager::getPlugins()");
+	qDebug()<<"Inside SmfPluginManager::getPlugins()";
+	qDebug()<<"Argument, intf name = "<<aInterface;
+	
+	aMap.clear();
+	
+	if(aInterface.isEmpty())
+		{
+		qDebug()<<"Interface name is empty!!!";
+		return;
+		}
 	
 	// Open the database
 	bool opened = m_pluginDataBase.open();
 	if(!opened)
 		{
-		m_server->writeLog("Data base not opened, exiting getplugins()");
+		qDebug()<<"Data base not opened, exiting getplugins()!!!";
 		return;
 		}
 	
-	m_server->writeLog("Data base opened");
+	qDebug()<<"Data base opened";
 	
 	// Query the database for all pluginIDs that implement the given interface
 	QSqlQuery query(QString("SELECT pluginId, interfaceName, serviceProvider, description, "
 			"serviceUrl FROM pluginDetails where interfaceName = '%1'").arg(aInterface));
 	
-	if (query.next())
+	while(query.next())
 		{
-		m_server->writeLog("Query is success");
+		qDebug()<<"Query is success";
 
 		SmfProvider prov;
 		
 		// get the pluginId
 		QString pluginId = query.value(0).toString();
+		qDebug()<<"Found Plugin Id = "<<pluginId;
 		
 		// get the service type / interface name
 		QStringList servicetypes;
 		servicetypes.insert(0, query.value(1).toString());
-		prov.serviceTypes(servicetypes);
+		prov.setSupportedInterfaces(servicetypes);
+		qDebug()<<"  Its interface = "<<servicetypes.at(0);
 		
 		// Get the serv provider
 		QString servName = query.value(2).toString();
-		prov.serviceName(servName);
+		prov.setServiceName(servName);
+		qDebug()<<"  Its serv prov = "<<servName;
 		
 		// Get the description
 		QString desc = query.value(3).toString();
-		prov.description(desc);
+		prov.setDescription(desc);
+		qDebug()<<"  Its description = "<<desc;
 		
 		// Get the service URL
 		QUrl url(query.value(4).toString());
-	prov.serviceUrl(url);
+		prov.setServiceUrl(url);
+		qDebug()<<"  Its url = "<<url.toString();
 
 		aMap.insert(pluginId, prov);
 		}
+	
+	if(0 != query.lastError().text().size())
+		qDebug()<<"Data base query->next() exited, error = "<<query.lastError().text();
 	else
-		m_server->writeLog("Data base query->next() returned false, error = "+query.lastError().text());
+		qDebug()<<"Data base query->next() exited";
+	
+	qDebug()<<"Count of SmfProvider returned = "<<aMap.count();
 	
 	// Close the database
 	m_pluginDataBase.close();
@@ -1015,21 +1098,29 @@ void SmfPluginManager::getPlugins(const QString& aInterface, QMap<QString,SmfPro
  * Method to get the pluginID for the mentioned interface and service provider 
  * @param aInterface The interface implemented by the plugin
  * @param aProv The plugin's service provider
- * @param aPluginId The required pluginID
+ * @param aPluginId The required pluginID. This argument will be empty if no plugin
+ * for the given interface and service provider could be found.
  */
 void SmfPluginManager::getPluginId(const QString& aInterface, const SmfProvider& aProv, QString& aPluginId)
 	{
-	m_server->writeLog("SmfPluginManager::getPluginId");
+	qDebug()<<"SmfPluginManager::getPluginId()";
+	aPluginId.clear();
+	
+	if(aInterface.isEmpty())
+		{
+		qDebug()<<"Interface name is empty!!!";
+		return;
+		}
 	
 	// Open the database
 	bool opened = m_pluginDataBase.open();
 	if(!opened)
 		{
-		m_server->writeLog("Data base not opened, exiting");
+		qDebug()<<"Data base not opened, exiting!!!";
 		return;
 		}
 	
-	m_server->writeLog("Data base opened");
+	qDebug()<<"Data base opened";
 
 	// Query the database for a pluginID with given interface name and service provider
 	QSqlQuery query(QString("SELECT pluginId FROM pluginDetails where interfaceName = '%1' AND "
@@ -1037,15 +1128,19 @@ void SmfPluginManager::getPluginId(const QString& aInterface, const SmfProvider&
 	
 	if (query.next())
 		{
-		m_server->writeLog("Query is success");
+		qDebug()<<"Query is success";
 		
 		// get the pluginId
 		aPluginId = query.value(0).toString();
+		qDebug()<<"returned pluginID = "<<aPluginId;
 		}
 	else
-		m_server->writeLog("Data base query->next() returned false, error = "+query.lastError().text());
-	
-	m_server->writeLog("returned pluginID = "+aPluginId);
+		{		
+		if(0 != query.lastError().text().size())
+			qDebug()<<"Data base query->next() returned false, error = "<<query.lastError().text();
+		else
+			qDebug()<<"Data base query->next() returned false";
+		}
 	
 	// Close the database
 	m_pluginDataBase.close();

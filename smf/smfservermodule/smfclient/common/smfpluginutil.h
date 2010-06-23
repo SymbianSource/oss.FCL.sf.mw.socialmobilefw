@@ -23,6 +23,7 @@
 
 #include <QNetworkAccessManager>
 #include <QMap>
+#include <QVariant>
 #include <parser.h>
 #include <smfclientglobal.h>
 
@@ -60,10 +61,34 @@ public:
 	~SmfPluginUtil ( );
 	
 	/**
-	 * Method called by plugins to get the handle to QJson library 
-	 * @return The QJson handle
+    * Read JSON string from the I/O Device and converts it to a QVariant object
+    * @param io Input output device
+    * @param ok if a conversion error occurs, *ok is set to false; otherwise *ok is set to true.
+    * @returns a QVariant object generated from the JSON string
 	 */
-	QJson::Parser* getJsonHandle( void );
+    QVariant parse ( QIODevice* io, bool* ok = 0 );
+
+    /**
+    * This is a method provided for convenience.
+    * @param jsonData data containing the JSON object representation
+    * @param ok if a conversion error occurs, *ok is set to false; otherwise *ok is set to true.
+    * @returns a QVariant object generated from the JSON string
+    * @sa errorString
+    * @sa errorLine
+    */
+    QVariant parse ( const QByteArray& jsonData, bool* ok = 0 );
+    
+    /**
+    * This method returns the error message tha ocuured during last parsing
+    * @returns a QString object containing the error message of the last parse operation
+    */
+    QString errorString ( ) const;
+
+    /**
+    * This method returns line number where the last QJson parsing error occurred
+    * @returns the line number where the error occurred
+    */
+    int errorLine ( ) const;
 	
 	/**
 	 * Method called by plugins to get the OAuth Keys. The PM sends the 

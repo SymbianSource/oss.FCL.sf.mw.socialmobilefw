@@ -185,14 +185,22 @@ private:
 			SmfTransportResult &aResult );
 	
 	/**
-	 * Method to deflate a gzipped network response. Once this method is called, 
-	 * QNetworkReply internal buffer for holding network response is emptied.
-	 * @param aResponse The QByteArray instance holding the gzip encoded data
+	 * Method to inflate a gzipped network response.
+	 * @param aResponse The QByteArray holding the gzip encoded data
 	 * @param aError Argument indicating error
-	 * @return a QByteArray* containing the deflated data. If deflating fails, 
-	 * the encoded data itself without deflation is returned.
+	 * @return a QByteArray* containing the inflated data. If inflation fails, 
+	 * NULL is returned
 	 */
-	QByteArray* inflateResponse ( QByteArray &aResponse, int& aError );
+	QByteArray* inflateResponse ( QByteArray &aResponse, SmfError& aError );
+	
+	/**
+	 * Method to deflate a network request to gzip format.
+	 * @param aResponse The QByteArray that has to be gzipped
+	 * @param aError Argument indicating error
+	 * @return a QByteArray* containing the deflated data. If deflation fails, 
+	 * NULL is returned
+	 */
+	QByteArray* deflateRequest( QByteArray &aResponse, SmfError& aError );
 	
 private:
 	/**

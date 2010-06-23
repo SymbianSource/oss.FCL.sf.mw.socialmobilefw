@@ -34,9 +34,42 @@
 #include <QtGui>
 #include <QApplication>
 
+void debugOutput(QtMsgType type, const char *msg)
+	{
+	QFile logFile("c:\\data\\SmfLog.txt");
+	Q_ASSERT(logFile.open( QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append ));
+	QTextStream stream(&logFile);
+	
+	switch (type)
+		{
+		case QtDebugMsg:
+			stream<<msg<<"\n";
+			break;
+
+		case QtWarningMsg:
+			stream<<"Warning: ";
+			stream<<msg<<"\n";
+			break;
+			
+		case QtCriticalMsg:
+			stream<<"Critical: ";
+			stream<<msg<<"\n";
+			break;
+			
+		case QtFatalMsg:
+			stream<<"Fatal: ";
+			stream<<msg<<"\n";
+			break;
+			
+		default:;
+		}
+	}
+
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+//	QApplication::setAttribute(Qt::AA_S60DontConstructApplicationPanes);
+	qInstallMsgHandler(debugOutput);
+	QApplication a(argc, argv);
     DisplayWidget screen;
     //TestScreen screen;
     screen.showMaximized();

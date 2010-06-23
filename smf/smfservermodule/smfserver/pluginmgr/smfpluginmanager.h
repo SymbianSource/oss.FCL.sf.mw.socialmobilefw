@@ -22,7 +22,7 @@
 
 #include <QtSql>
 #include <smfglobal.h>
-#include <smfserverglobal.h>
+#include "smfserverglobal.h"
 #include "smfserver.h"
 
 // Forward declaration
@@ -64,11 +64,6 @@ struct SmfWaitingPluginInfoStruc
 	 */
 	QByteArray iInputData;
 	
-	/**
-	 * The list of valid Urls accessible for this plugin
-	 */
-	QList<QUrl> iUrlList;
-
 	};
 
 
@@ -108,21 +103,28 @@ public:
 	 * @param aPluginID The plugin ID that need to perform this operation
 	 * @param aOperation The type of operation to be performed
 	 * @param aInputData The data required to create the web query
-	 * @return SmfPluginManagerResult The result of the operation
-	 * @see smfglobal.h
+	 * @return SmfError The result of the operation. It can be :-
+	 * SmfPluginNoError (if the request is sent successfully) or 
+	 * SmfPluginLoadError (if plugin could not be loaded) or
+	 * SmfPluginNotAuthorised (if the plugin is not authorised) or
+	 * SmfPluginUnknownPluginService (if the requested service is not known or unsupported) or
+	 * SmfPluginRequestCreationFailed (if request creation has failed) or
+	 * SmfPluginSOPCheckFailed (if plugins request doesnot comply to the Same Origin Policy) or
+	 * SmfPluginRequestSendingFailed (if request could not be sent) or 
+	 * SmfPluginUnknownHttpService (if the plugin requested any unknown http 
+	 * method other than get, post, put, head or delete)  
 	 */
-	SmfPluginManagerResult createRequest ( const quint32& aSessionID, 
+	SmfError createRequest ( const quint32& aSessionID, 
 			const QString& aPluginID, 
 			const SmfRequestTypeID& aOperation, 
 			QByteArray& aInputData );
 	
 	/**
-	 * Method called by Transport Manager when network response 
-	 * is available
+	 * Method called by Transport Manager when network response is available
 	 * @param aTransportResult The result of Transport Operation
 	 * @param aReply The QNetworkReply instance that requested 
 	 * this transaction
-	 * @param aResponse The network response data
+	 * @param aResponse The network response data, may be NULL for error
 	 */
 	void responseAvailable ( const SmfTransportResult &aTransportResult, 
 			QNetworkReply *aReply,
@@ -130,8 +132,10 @@ public:
 	
 	/**
 	 * Method to cancel the service request
-	 * @param aPluginId The plugin whose current operation 
-	 * is to be cancelled
+	 * @param aPluginId The plugin whose current operation is to be cancelled.
+	 * If the plugin is not loaded currently, this method just returns true.
+	 * @return Returns true if the plugin operation could be cancelled 
+	 * else returns false.
 	 */
 	bool cancelRequest ( const QString& aPluginId );
 	
@@ -139,7 +143,8 @@ public:
 	 * Method to get the list of the SmfProvider for all the plugins that implement 
 	 * the mentioned Interface 
 	 * @param aInterface The interface for which list of plugins is required 
-	 * @param aMap The map of pluginID and its corresponding SmfProvider
+	 * @param aMap The map of pluginID and its corresponding SmfProvider. The Map 
+	 * will be empty if no plugins for the given interface could be found.
 	 */
 	void getPlugins ( const QString& aInterface, 
 			QMap<QString,SmfProvider>& aMap );
@@ -148,7 +153,8 @@ public:
 	 * Method to get the pluginID for the mentioned interface and service provider 
 	 * @param aInterface The interface implemented by the plugin
 	 * @param aProv The plugin's service provider
-	 * @param aPluginId The required pluginID
+	 * @param aPluginId The required pluginID. This argument will be empty if no plugin
+	 * for the given interface and service provider could be found.
 	 */
 	void getPluginId ( const QString& aInterface, 
 			const SmfProvider& aProv, QString& aPluginId );
@@ -164,9 +170,10 @@ private:
 	 * Method called to initialize the database holding the plugin 
 	 * directory sructure information. This is called only once when 
 	 * the Plugin Manager is instantiated.
-	 * This method creates and updates iPluginIdPathHash member 
+	 * This method creates and updates m_pluginIdPathHash member 
 	 * of this class
-	 * @return Retuns true if success else false
+	 * @return Returns true the database is successfully created and updated, 
+	 * else returns false
 	 */
 	bool initializeSmfPluginDataBase ( );
 	
@@ -174,27 +181,31 @@ private:
 	 * Method to load a plugin using its Plugin Id.
 	 * @param aPluginId The unique ID of the plugin 
 	 * @param aLoadResult [out] Output paramater indicating the result 
-	 * of the loading
+	 * of the loading. It can be:-
+	 * SmfPluginNoError (if plugin was loaded successfully) or 
+	 * SmfPluginNotLoaded (if plugin could not be loaded) or 
+	 * SmfPluginNotFound (if plugin with the given id could not be found)
 	 * @return The instance of the loaded plugin if loaded, else NULL
 	 */
 	QObject* load ( const QString &aPluginId, 
-			SmfPluginManagerResult &aLoadResult);
+			SmfError &aLoadResult);
 	
 	/**
 	 * Method to unload a loaded plugin. Returns true if success, else 
 	 * returns false.
 	 * @param aPlugin The plugin instance to be unloaded
-	 * @return Returns true if success, else returns false
+	 * @return Returns true if the mentioned plugin could be unloaded. Returns 
+	 * false, if the plugin instance is NULL, or if it could not be unloaded.
 	 */
 	bool unload ( SmfPluginBase *aPlugin ); 
 	
 	/**
-	 * Method to unload the list of loaded plugins. Returns true if all are 
-	 * success, else returns false if any one fails.
+	 * Method to unload the list of loaded plugins. Returns true if all unload 
+	 * are success, else returns false if any one fails.
 	 * @param aPluginList The list of instances for all plugins that are 
-	 * to be unloaded
+	 * to be unloaded. This method does nothing and returns false if the list is empty.
 	 * @return Returns true if all are success, else returns false if any 
-	 * one fails.
+	 * one fails. Also returns false if the input list is empty.
 	 */
 	bool unload ( const QList<SmfPluginBase*> &aPluginList);
 	
@@ -203,12 +214,17 @@ private:
 	 * send the request created by the plugins over the network
 	 * @param aReqData The request data created by the plugin
 	 * @param aResult [out] The output parameter indicating the result 
-	 * of this method
+	 * of this method. This can be :-
+	 * SmfPluginNoError (if the request is sent successfully) or 
+	 * SmfPluginSOPCheckFailed (if plugins request doesnot comply to 
+	 * the Same Origin Policy) or 
+	 * SmfPluginRequestSendingFailed (if request could not be sent) or 
+	 * SmfPluginUnknownHttpService (if the plugin requested any unknown http 
+	 * method other than get, post, put, head or delete)  
 	 * @param aUrlList The list of accessible Urls for this plugin
-	 * @see smfglobal.h
 	 */
 	void sendRequest ( SmfPluginRequestData &aReqData, 
-			SmfPluginManagerResult &aResult,
+			SmfError &aResult,
 			const QList<QUrl> &aUrlList );
 	
 	/**
@@ -218,8 +234,10 @@ private:
 	 * the valid url list if available for this plugin.
 	 * @param aRegToken The registration token given by the plugin
 	 * @param aUrlList [out] The list of Urls that the plugin can send 
-	 * request to (to be filled by CSM)
+	 * request to (to be filled by CSM). This list will be empty if 
+	 * aRegToken is empty
 	 * @return Returns true if plugin is authorised, else returns false.
+	 * Also returns false if aRegToken is empty.
 	 */
 	bool authorisePlugin( const QString &aRegToken, 
 			QList<QUrl> &aUrlList );
@@ -228,8 +246,8 @@ private:
 	 * Method to serialize the result of parsing (which is done by the 
 	 * plugins) to QByteArray to be sent to Smf server.
 	 * @param aOperation The type of operation to be performed
-	 * @param aResult The data to be serialized
-	 * @param aDataStream Stream to be written
+	 * @param aResult The data to be serialized (should not be NULL)
+	 * @param aDataStream Stream to be written to
 	 */
 	void serializeResult ( const SmfRequestTypeID &aOperation, 
 			QVariant* aResult,

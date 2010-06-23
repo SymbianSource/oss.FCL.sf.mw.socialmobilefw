@@ -54,13 +54,47 @@ SmfPluginUtil::~SmfPluginUtil ( )
 		delete m_myInstance;
 	}
 	
+
 /**
- * Method called by plugins to get the handle to QJson library 
- * @return The QJson handle
- */
-QJson::Parser* SmfPluginUtil::getJsonHandle( void )
+* Read JSON string from the I/O Device and converts it to a QVariant object
+* @param io Input output device
+* @param ok if a conversion error occurs, *ok is set to false; otherwise *ok is set to true.
+* @returns a QVariant object generated from the JSON string
+*/
+QVariant SmfPluginUtil::parse ( QIODevice* io, bool* ok )
 	{
-	return m_jsonParser;
+	return m_jsonParser->parse(io, ok);
+	}
+
+/**
+* This is a method provided for convenience.
+* @param jsonData data containing the JSON object representation
+* @param ok if a conversion error occurs, *ok is set to false; otherwise *ok is set to true.
+* @returns a QVariant object generated from the JSON string
+* @sa errorString
+* @sa errorLine
+*/
+QVariant SmfPluginUtil::parse ( const QByteArray& jsonData, bool* ok )
+	{
+	return m_jsonParser->parse(jsonData, ok);
+	}
+
+/**
+* This method returns the error message tha ocuured during last parsing
+* @returns a QString object containing the error message of the last parse operation
+*/
+QString SmfPluginUtil::errorString ( ) const
+	{
+	return m_jsonParser->errorString();
+	}
+
+/**
+* This method returns line number where the last QJson parsing error occurred
+* @returns the line number where the error occurred
+ */
+int SmfPluginUtil::errorLine ( ) const
+	{
+	return m_jsonParser->errorLine();
 	}
 
 /**
@@ -75,6 +109,9 @@ void SmfPluginUtil::getAuthKeys( QMap<QString, QString> &aKeys,
 		const QString aRegToken, 
 		const QString aPluginID )
 	{
+	Q_UNUSED(aKeys)
+	Q_UNUSED(aRegToken)
+	Q_UNUSED(aPluginID)
 	//// Call Credential manager function to get the keys passing the 
 	//// registration token and the plugin
 	}
@@ -85,6 +122,7 @@ void SmfPluginUtil::getAuthKeys( QMap<QString, QString> &aKeys,
  */
 void SmfPluginUtil::getNonce( QString &aNonceString )
 	{
+	Q_UNUSED(aNonceString)
 	//// Call Credential manager function to get the nonce string
 	}
 
@@ -108,6 +146,14 @@ QByteArray SmfPluginUtil::createParameterString( const QString &aRequestUrl,
 		const QMultiMap<QByteArray, QByteArray> &aParams, 
 		const SmfParsingMode aMode)
 	{
+	Q_UNUSED(aRequestUrl)
+	Q_UNUSED(aOperation)
+	Q_UNUSED(aToken)
+	Q_UNUSED(aTokenSecret)
+	Q_UNUSED(aSignatureMethod)
+	Q_UNUSED(aParams)
+	Q_UNUSED(aMode)
+	return QByteArray();
 	//// Call Credential manager function to create and sign the parameter string
 	}
 

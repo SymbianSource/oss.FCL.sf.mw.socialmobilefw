@@ -1,7 +1,8 @@
 TEMPLATE = app
 TARGET = smfserver 
 
-DEFINES += NO_OTHER_MODULES
+DEFINES += NO_OTHER_MODULES \
+		   CLIENT_SERVER_TEST
 QT += core \
     gui \
     network \
@@ -15,7 +16,7 @@ MOBILITY = contacts \
     bearer \
     systeminfo
     
-#include(datastoremgr/datastoremgr.pri)
+include(datastoremgr/datastoremgr.pri)
 include(pluginmgr/pluginmgr.pri)
 include(server/server.pri)
 include(smfplugins/smfplugins.pri)
@@ -36,18 +37,19 @@ HEADERS += \
     $$PRIVATE_HEADERS
     
 SOURCES += \
-	main.cpp
+	main.cpp \
+	smfserver_reg.rss
 
 symbian: { 
     TARGET.UID3 = 0xE5027327
-
-    TARGET.CAPABILITY = ReadUserData \
+	TARGET.CAPABILITY = NetworkServices \
+    	ReadUserData \
         WriteUserData \
         LocalServices \
-        NetworkServices \
-        UserEnvironment
-
-    LIBS += -lsmfclient.dll
-    
-    SOURCES += smfserver_reg.rss
+        UserEnvironment \
+    ReadDeviceData \
+    WriteDeviceData
+	LIBS += -lsmfclient.dll \
+	        -lsmfcredmgrclient.dll \
+	        -lcentralrepository 
 }

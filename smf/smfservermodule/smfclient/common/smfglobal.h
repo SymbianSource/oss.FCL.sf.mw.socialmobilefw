@@ -47,11 +47,11 @@ const int SMF_FIRST_PAGE=0;
  * Default value for per page item for web queries
  */
 const int SMF_ITEMS_PER_PAGE=10;
-
-
+#ifdef Q_OS_SYMBIAN
 class SmfServerSymbianSession;
+#else
 class SmfServerQtSession;
-
+#endif
 
 /**
  * The enumeration used to denote errors reported by plugin
@@ -71,7 +71,12 @@ enum SmfPluginError
 	SmfPluginErrServiceTemporaryUnavailable,
 	SmfPluginErrFormatNotSupported, 
 	SmfPluginErrDataSizeExceeded,
-	SmfPluginErrParsingFailed
+	SmfPluginErrServiceNotSupported,
+	SmfPluginErrInvalidArguments,
+	SmfPluginErrRequestNotCreated,
+	SmfPluginErrParsingFailed,
+	SmfPluginErrNetworkError,
+	SmfPluginErrCancelComplete
 	};
 
 /**
@@ -100,6 +105,7 @@ enum SmfRequestTypeID
 	SmfContactSearchNear,
 	SmfContactGetGroups,
 	SmfContactSearchInGroup,
+	SmfContactCustomRequest,
 	SmfContactRetrievePosts,
 	SmfContactPost,
 	SmfContactUpdatePost,
@@ -107,28 +113,42 @@ enum SmfRequestTypeID
 	SmfContactCommentOnAPost,
 	SmfContactPostAppearence,
 	SmfContactSharePost,
+	SmfContactPostCustomRequest,
 	SmfMusicGetLyrics,
 	SmfMusicGetSubtitle,
+	SmfMusicLyricsCustomRequest,
 	SmfMusicGetEventsOnLoc,
 	SmfMusicGetVenueOnLoc,
 	SmfMusicGetEventsOnVenue,
 	SmfMusicPostEvents,
+	SmfMusicEventsCustomRequest,
 	SmfMusicGetRecommendations,
 	SmfMusicGetTracks,
 	SmfMusicGetTrackInfo,
 	SmfMusicGetStores,
 	SmfMusicPostCurrentPlaying,
+	SmfMusicPostRating,
+	SmfMusicPostComment,
+	SmfMusicSearchCustomRequest,
 	SmfMusicGetUserInfo,
 	SmfMusicSearchUser,
+	SmfMusicServiceCustomRequest,
 	SmfMusicGetPlaylists,
 	SmfMusicGetPlaylistsOfUser,
 	SmfMusicAddToPlaylist,
 	SmfMusicPostCurrentPlayingPlaylist,
+	SmfMusicPlaylistCustomRequest,
+	SmfPictureGetAlbums,
 	SmfPictureGetPictures,
 	SmfPictureDescription,
 	SmfPictureUpload,
 	SmfPictureMultiUpload,
 	SmfPicturePostComment,
+	SmfPictureCustomRequest,
+	SmfActivityFriendsActivities, //SmfActivityFetcher start
+	SmfActivityFiltered,
+	SmfActivitySelfActivity,
+	SmfActivityCustomRequest,//SmfActivityFetcher end
 	SmfContactGetFriendsComplete,
 	SmfContactGetFollowersComplete,
 	SmfContactSearchComplete,
@@ -163,7 +183,16 @@ enum SmfRequestTypeID
 	SmfPictureDescriptionComplete,
 	SmfPictureUploadComplete,
 	SmfPictureMultiUploadComplete,
-	SmfPicturePostCommentComplete
+	SmfPicturePostCommentComplete,
+	SmfRelationCreate,//SmfRelationMngr start
+	SmfRelationAssociate,
+	SmfRelationRemove,
+	SmfRelationSearchById,
+	SmfRelationSearchByContact,
+	SmfRelationCount,
+	SmfRelationGet,
+	SmfRelationGetAll,
+	SmfRelationGetAllRelations//SmfRelationMngr end
 	
 	};
 
@@ -197,7 +226,9 @@ enum SmfTransportResult
 	SmfTransportOpProtocolFailure,
 	SmfTransportOpUnknownError,
 	SmfTransportOpIAPChanged,
-	SmfTransportOpCancelled
+	SmfTransportOpCancelled,
+	SmfTransportOpUnsupportedContentEncodingFormat,
+	SmfTransportOpGzipError
 	};
 
 /**
@@ -267,120 +298,79 @@ struct SmfClientAuthID
 	
 	};
 
-/*enum SmfRequestTypeID
-	{
-	ESmfTest,
-	ESmfTestComplete,
-	ESmfGetService,
-	ESmfGetServiceComplete,
-	ESmfGetContact,
-	ESmfGetContactComplete,
-	ESmfGetFriend,
-	ESmfGetFriendComplete,
-	ESmfGetFollower,
-	ESmfGetFollowerComplete,
-	ESmfSearchFriend,
-	ESmfSearchFriendComplete,
-	ESmfGetGroup,
-	ESmfGetGroupComplete,
-	ESmfSearchGroup,
-	ESmfSearchGroupComplete,
-	ESmfGetPost,
-	ESmfGetPostComplete,
-	ESmfGetPicture,	//required for SmfGallery interface implementation
-	ESmfGetPictureComplete,
-	ESmfUploadPicture,
-	ESmfUploadPictureComplete,
-	ESmfPostComments,
-	ESmfPostCommentsComplete,
-	ESmfGetLyrics,	//required for music related implementations
-	ESmfGetLyricsComplete,
-	ESmfGetSubtitles,
-	ESmfGetSubtitlesComplete,
-	ESmfGetPlayList,
-	ESmfGetPlayListComplete,
-	ESmfaddToPlayList,
-	ESmfaddToPlayListComplete,
-	ESmfGetEvents,
-	ESmfGetEventsComplete,
-	ESmfGetVenues,
-	ESmfGetVenuesComplete,
-	ESmfPostEvent,
-	ESmfPostEventComplete,
-	ESmfGetMusicRecommendation,
-	ESmfGetMusicRecommendationComplete,
-	ESmfGetTrack,
-	ESmfGetTrackComplete,
-	ESmfSearchMusicUser,
-	ESmfSearchMusicUserComplete,
-	ESmfQueryAuthKeys,
-	ESmfQueryAuthKeysComplete,
-	ESmfAuthKeyExpired,
-	ESmfAuthKeyExpiredComplete
-	};*/
 /**
  * Smf wide errors
  */
 enum SmfError
 	{
-	SmfNoError,
-	SmfInvalidInterface,
-	SmfNoAuthorizedPlugin,
-	SmfClientAuthFailed,
-	SmfPluginErrorTooManyRequest,
-	SmfPluginErrorRequestQuotaExceeded,
-	SmfPluginErrorInvalidRequest,
-	SmfPluginErrorUserNotLoggedIn,
-	SmfPluginErrorAuthenticationExpired,
-	SmfPluginErrorPermissionDenied,
-	SmfPluginErrorInvalidApplication,
-	SmfPluginErrorServiceUnavailable,
-	SmfPluginErrorServiceTemporaryUnavailable,
-	SmfPluginErrorFormatNotSupported, 
-	SmfPluginErrorDataSizeExceeded ,
-	SmfpluginNotFound,
-	SmfpluginNotLoaded,
-	SmfpluginLoaded,
-	SmfpluginLoadError,
-	SmfpluginAuthorised,
-	SmfpluginNotAuthorised,
-	SmfpluginRequestCreated,
-	SmfpluginRequestCreationFailed,
-	SmfpluginUnknownService,
-	SmfpluginRequestSendingFailed,
-	SmfpluginSOPCheckFailed,
-	SmfpluginServiceError,
-	SmfpluginResponseParsed,
-	SmfpluginResponseParseFailure,
-	SmfpluginSendRequestAgain,
-	SmfpluginUnknownError,
-	SmftransportOpConnectionRefusedError,
-	SmftransportOpRemoteHostClosedError,
-	SmftransportOpHostNotFoundError,
-	SmftransportOpTimeoutError,
-	SmftransportOpOperationCanceledError,
-	SmftransportOpSslHandshakeFailedError,
-	SmftransportOpProxyConnectionRefusedError,
-	SmftransportOpProxyConnectionClosedError,
-	SmftransportOpProxyNotFoundError,
-	SmftransportOpProxyTimeoutError,
-	SmftransportOpProxyAuthenticationRequiredError,
-	SmftransportOpContentAccessDenied,
-	SmftransportOpContentOperationNotPermittedError,
-	SmftransportOpContentNotFoundError,
-	SmftransportOpAuthenticationRequiredError,
-	SmftransportOpContentReSendError,
-	SmftransportOpProtocolUnknownError,
-	SmftransportOpProtocolInvalidOperationError,
-	SmftransportOpUnknownNetworkError,
-	SmftransportOpUnknownProxyError,
-	SmftransportOpUnknownContentError,
-	SmftransportOpProtocolFailure,
-	SmftransportOpUnknownError,
-	SmftransportOpIAPChanged,
-	SmftransportOpCancelled,
-	SmftransportInitNetworkNotAvailable ,
-	SmftransportInitRoamingNetworkUsageNotEnabled	
+	SmfNoError = 0,
+	SmfInvalidInterface,						//1
+	SmfNoAuthorizedPlugin,						//2
+	SmfClientAuthFailed,						//3
+	SmfPMPluginNotFound,						//4
+	SmfPMPluginNotLoaded,						//5
+	SmfPMPluginLoadError,						//6
+	SmfPMPluginNotAuthorised,					//7
+	SmfPMPluginRequestCreationFailed,			//8
+	SmfPMPluginUnknownPluginService,			//9
+	SmfPMPluginUnknownHttpService,				//10
+	SmfPMPluginRequestSendingFailed,			//11
+	SmfPMPluginSOPCheckFailed,					//12
+	SmfPMPluginSendRequestAgain,				//13
+	SmfPluginErrorTooManyRequest,				//14
+	SmfPluginErrorRequestQuotaExceeded,			//15
+	SmfPluginErrorInvalidRequest,				//16
+	SmfPluginErrorUserNotLoggedIn,				//17
+	SmfPluginErrorAuthenticationExpired,		//18
+	SmfPluginErrorPermissionDenied,				//19
+	SmfPluginErrorInvalidApplication,			//20
+	SmfPluginErrorServiceUnavailable,			//21
+	SmfPluginErrorServiceTemporaryUnavailable,	//22
+	SmfPluginErrorFormatNotSupported, 			//23
+	SmfPluginErrorDataSizeExceeded ,			//24
+	SmfPluginErrorInvalidArguments,				//25
+	SmfPluginErrorParsingFailed,				//26
+	SmfPluginErrorNetworkError,					//27
+	SmfPluginErrorCancelComplete,				//28
+	SmfTMConnectionRefusedError,				//29
+	SmfTMRemoteHostClosedError,					//30
+	SmfTMHostNotFoundError,						//31
+	SmfTMTimeoutError,							//32
+	SmfTMOperationCanceledError,				//33
+	SmfTMSslHandshakeFailedError,				//34
+	SmfTMProxyConnectionRefusedError,			//35
+	SmfTMProxyConnectionClosedError,			//36
+	SmfTMProxyNotFoundError,					//37
+	SmfTMProxyTimeoutError,						//38
+	SmfTMProxyAuthenticationRequiredError,		//39
+	SmfTMContentAccessDenied,					//40
+	SmfTMContentOperationNotPermittedError,		//41
+	SmfTMContentNotFoundError,					//42
+	SmfTMAuthenticationRequiredError,			//43
+	SmfTMContentReSendError,					//44
+	SmfTMProtocolUnknownError,					//45
+	SmfTMProtocolInvalidOperationError,			//46
+	SmfTMUnknownNetworkError,					//47
+	SmfTMUnknownProxyError,						//48
+	SmfTMUnknownContentError,					//49
+	SmfTMProtocolFailure,						//50
+	SmfTMUnknownError,							//51
+	SmfTMIAPChanged,							//52
+	SmfTMCancelled,								//53
+	SmfTMUnsupportedContentEncodingFormat,		//54
+	SmfTMInitNetworkNotAvailable ,				//55
+	SmfTMInitRoamingNetworkUsageNotEnabled,		//56
+	SmfTMGzipMemoryError,						//57
+	SmfTMGzipStreamError,						//58
+	SmfTMGzipDataError,							//59
+	SmfMemoryAllocationFailure,					//60
+	SmfDbOpeningError,                          //61
+	SmfDbQueryExecutonError,					//61
+	SmfDbContactNotExist,						//63
+	SmfErrItemNotInRelation,                    //64
+	SmfErrInvalidRelation,                      //65  
+	SmfUnknownError								//66
+
 	};
 
 /**
@@ -390,13 +380,16 @@ enum SmfPanic
 	{
 	SmfRequestPending//to allow one outstanding request per session
 	};
+
 //interface names
-const QString contactFetcherInterface("org.symbian.smf.client.contact.fetcher");
-//TODO:- changed to match PM for the time being, PM must change later
-const QString postProviderInterface("posts");
-//const QString postProviderInterface("org.symbian.smf.client.contact.posts");
-const QString galleryInterface("org.symbian.smf.client.gallery");
-
-
+const QString contactFetcherInterface("org.symbian.smf.plugin.contact.fetcher\0.2");
+const QString postProviderInterface("org.symbian.smf.plugin.contact.posts\0.2");
+const QString galleryInterface("org.symbian.smf.plugin.gallery\0.2");
+const QString musicServiceInterface("org.symbian.smf.plugin.music.service\0.2");
+const QString musicSearchInterface("org.symbian.smf.client.music.search\0.2");
+const QString playlistServiceInterface("org.symbian.smf.plugin.music.playlist\0.2");
+const QString musicEventServiceInterface("org.symbian.smf.plugin.music.events\0.2");
+const QString lyricsServiceInterface("org.symbian.smf.plugin.music.lyrics\0.2");
+const QString activityFetcherInterface("org.symbian.smf.plugin.activity.fetcher\0.2");
 
 #endif /* SMFGLOBAL_H_ */

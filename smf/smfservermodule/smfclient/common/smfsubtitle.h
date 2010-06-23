@@ -23,7 +23,7 @@
 #include <qdatastream.h>
 #include <QDateTime>
 #include <QSharedData>
-#include <smfclientglobal.h>
+#include "smfclientglobal.h"
 #include <QMetaType>
 
 enum SmfSubtitleSearchFilter

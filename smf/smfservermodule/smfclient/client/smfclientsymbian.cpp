@@ -27,7 +27,7 @@
 #include <QFile>
 //testing end
 // For starting the server process
-static TInt StartServerL();
+static TInt StartServer();
 static TInt CreateServerProcessL();
 
 CSmfClientSymbian::CSmfClientSymbian(smfObserver* aObserver)
@@ -102,59 +102,66 @@ void CSmfClientSymbian::RunL()
 
         default:
         	{
-        	writeLog("RunL:-SmfContactRetrievePostsComplete");
+        	writeLog("RunL:-default");
         	//This contains error followed by actual data
         	QByteArray receivedData(reinterpret_cast<const char*>(iSession.iDataPtr.Ptr()),iSession.iDataPtr.Length());
-        	QString errStr;
+        	writeLog("receivedData size=");
+        	writeLog(QString::number(receivedData.size()));
         	SmfError errVal;
         	int errInt;
         	QByteArray data;
         	QDataStream reader(&receivedData,QIODevice::ReadOnly);
         	reader>>errInt;
+        	writeLog("errInt=");
+        	writeLog(QString::number(errInt));
         	errVal = (SmfError)errInt;
         	reader>>data;
+        	writeLog("data size=");
+        	writeLog(QString::number(data.size()));
         	SmfRequestTypeID opcode = (SmfRequestTypeID)iSession.getLastRequest();
-        	iObserver->resultsAvailable(data,opcode,errVal);
+        	if(iObserver)
+        		{
+				iObserver->resultsAvailable(data,opcode,errVal);
+        		}
         	}
         	break;
         }
 	}
 
 QByteArray CSmfClientSymbian::sendRequest(QString aInterfaceName,
-		 SmfRequestTypeID requestType)
+		 SmfRequestTypeID requestType,TInt maxSize)
 	{
 	//This will be a synchronous request
 	//note session is opened in ctor and closed in dtor
 	writeLog("CSmfClientSymbian::sendRequest=");
 	writeLog(aInterfaceName);
 	//Gets data synchronously from the server
-    TPtr8 symbianBuf(iSession.sendSyncRequest(aInterfaceName,requestType));
+    TPtr8 symbianBuf(iSession.sendSyncRequest(aInterfaceName,requestType,maxSize));
     //convert this into bytearray
     QByteArray receivedData(reinterpret_cast<const char*>(symbianBuf.Ptr()),symbianBuf.Length());
     return receivedData;
     //
 	}
-
+QByteArray CSmfClientSymbian::sendDSMSyncRequest(SmfRequestTypeID requestType,QByteArray& aSerializedData,SmfError& aErr,TInt maxSize)
+	{
+	writeLog("CSmfClientSymbian::sendDSMSyncRequest=");
+	writeLog(QString::number(requestType));
+	SmfError err;
+	//Gets data synchronously from the server
+    TPtr8 symbianBuf(iSession.sendDSMSyncRequest(requestType,aSerializedData,err,maxSize));
+    //convert this into bytearray
+    QByteArray receivedData(reinterpret_cast<const char*>(symbianBuf.Ptr()),symbianBuf.Length());
+    writeLog("receivedData size=");
+    writeLog(QString::number(receivedData.size()));
+    return receivedData;
+	}
 TInt CSmfClientSymbian::sendRequest(QByteArray& aSerializedData,
 		 QString aInterfaceName,
-		 SmfRequestTypeID requestType)
+		 SmfRequestTypeID requestType,TInt aMaxAllocation,QByteArray xtraInfo)
 	{
-	//TODO:-testing puspose only, should be removed in the release
-	if(requestType == SmfTest)
-		{
-		QString log("Before iSesson.SendAsync");
-		writeLog(log);
-		iSession.sendAsyncRequest(aSerializedData,aInterfaceName,requestType,iStatus);
-		SetActive();
-		QString log2("After setactive");
-		writeLog(log2);
-		}
-	else
-		{
 		//RSessionBase objects sendreceive is called
-		iSession.sendAsyncRequest(aSerializedData,aInterfaceName,requestType,iStatus);
+		iSession.sendAsyncRequest(aSerializedData,aInterfaceName,requestType,iStatus,aMaxAllocation,xtraInfo);
 		SetActive();
-		}
 	}
 
 TInt CSmfClientSymbian::sendDummyRequest(QByteArray* provider,QString aInterfaceName,
@@ -181,7 +188,9 @@ CSmfClientSymbian::~CSmfClientSymbian()
 	}
 
 RSmfClientSymbianSession::RSmfClientSymbianSession()
-:iDataPtr(NULL, 0, 0),iDataPtr16(NULL,0),iIntfNamePtr(NULL,0),iIntfNamePtr8(NULL,0),iPtrProvider(NULL,0)
+:iDataPtr(NULL, 0, 0),iDataPtr16(NULL,0),
+ iIntfNamePtr(NULL,0),iIntfNamePtr8(NULL,0),
+ iPtrProvider(NULL,0),iPtrToSlot0(NULL,0)
     {
     // No implementation required
     }
@@ -189,14 +198,14 @@ RSmfClientSymbianSession::RSmfClientSymbianSession()
 TInt RSmfClientSymbianSession::connectToServer()
     {
 	writeLog("RSmfClientSymbianSession::connectToServer");
-    TInt error = ::StartServerL();
+    TInt error = ::StartServer();
     writeLog("StartServerL=");
     QString err = QString::number(error);
     writeLog(err);
     if ( KErrNone == error )
         {
 		
-        error = CreateSession( KSmfServerName,
+        error = CreateSession(KSmfServerName,
                                Version(),
                                4 );
         QString crtSessionErr = QString::number(error);
@@ -217,9 +226,55 @@ void RSmfClientSymbianSession::writeLog(QString log) const
     file.close();
 #endif
 	}
+/**
+ * Sends sync request to the Smf server
+ */
+TPtr8 RSmfClientSymbianSession::sendDSMSyncRequest(SmfRequestTypeID aRequestType,
+		QByteArray& aSerializedData,SmfError aErr,
+		TInt maxSize)
+	{
+	/**
+	 * Slot 0:- Data to be passed to DSM
+	 * Slot 1:- Data returned from DSM
+	 * Slot 2:- Error
+	 */
+	writeLog("RSmfClientSymbianSession::sendDSMSyncRequest");
+	iLastRequest = aRequestType;
+	if(iSlot0Buffer)
+		{
+		delete iSlot0Buffer;
+		iSlot0Buffer = NULL;
+		}
+	iSlot0Buffer = HBufC8::NewL(aSerializedData.size());
+	iPtrToSlot0.Set(iSlot0Buffer->Des());
+	if(iBuffer)
+		{
+		delete iBuffer;
+		iBuffer = NULL;
+		}
+    iBuffer = HBufC8::NewL(maxSize);
+    iDataPtr.Set(iBuffer->Des());
+    
+    TIpcArgs args;
 
+    args.Set(0, &iPtrToSlot0);
+    args.Set(1, &iDataPtr);
+    iDSMErr.Zero();
+    args.Set(2,&iDSMErr);
+    
+    TInt sendErr = SendReceive(aRequestType,args);
+    writeLog("SendReceive=");
+    writeLog(QString::number(sendErr));
+    TInt numIndex;
+    TLex iLex(iDSMErr);
+    
+    iLex.Val(numIndex);
+    aErr = (SmfError)numIndex;
+    return iDataPtr;
+	}
 TPtr8 RSmfClientSymbianSession::sendSyncRequest(QString aInterfaceName,
-		SmfRequestTypeID aRequestType)
+		SmfRequestTypeID aRequestType,
+		TInt maxSize)
 	{
 	iLastRequest = aRequestType;
 	/**
@@ -267,8 +322,14 @@ TPtr8 RSmfClientSymbianSession::sendSyncRequest(QString aInterfaceName,
 		delete iBuffer;
 		iBuffer = NULL;
 		}
-	iMaxMessageSize = 1000 ;
-    iBuffer = HBufC8::NewL(iMaxMessageSize);
+	writeLog("Allocated for SmfProviderList=");
+	writeLog(QString::number(maxSize));
+	if(iBuffer)
+		{
+		delete iBuffer;
+		iBuffer = NULL;
+		}
+    iBuffer = HBufC8::NewL(maxSize);
     iDataPtr.Set(iBuffer->Des());
     log.clear();
     log = QString("After iDataPtr.Set");
@@ -279,7 +340,11 @@ TPtr8 RSmfClientSymbianSession::sendSyncRequest(QString aInterfaceName,
 
     args.Set(0, &iInterfaceSymbian8);
     args.Set(1, &iDataPtr);
-    
+    if(maxSize)
+    	{
+		iMaxSize = maxSize;
+		args.Set(2,iMaxSize);
+    	}
     TInt err(KErrBadHandle);
     writeLog("Before handle");
 	log.clear();
@@ -310,131 +375,90 @@ TPtr8 RSmfClientSymbianSession::sendSyncRequest(QString aInterfaceName,
 void RSmfClientSymbianSession::sendAsyncRequest(QByteArray& aSerializedData,
 		QString aInterfaceName,
 		SmfRequestTypeID aRequestType,
-		TRequestStatus& aStatus)
+		TRequestStatus& aStatus,
+		TInt aMaxAllocation,
+		QByteArray aXtraInfo)
 	{
-	iLastRequest = aRequestType;
 	/**
 	 * The message body consists of.- 
-	 * 1. Provider Info(SmfProvider*)+ Other common class data
-	 *  (when applicable)-serialized
-	 * 2. Interface name as string ("org.symbian.smf.client.gallery")
-	 * 3. Data pointer to be filled by serialized data
+	 * Modified,-
+	 * slot 0 = SmfProvider +PageInfo flag+ aPageNum + aPerPage + XtraInfo flag(size of xtra data) Serialized
+	 * slot 1 = Interface name serialized
+	 * slot 2 = Data pointer to filled by server
+	 * slot 3= Xtra info when required by server else empty buffer
 	 */
-	QString log("RSmfClientSymbianSession::sendAsyncRequest-start-");
-	writeLog(log);
+	writeLog("RSmfClientSymbianSession::sendAsyncRequest-start-");
+	iLastRequest = aRequestType;
 	
-	iBaseProvider= aSerializedData;
-	iInterfaceName = aInterfaceName ;
 	
-    int size = aSerializedData.size();
-    log.clear();
-    log = QString("aSerializedData size=")+ QString::number(size);
-    
-    writeLog(log);
-    if(iProviderBuf)
-    	{
+	
+	
+	if(iProviderBuf)
+		{
 		delete iProviderBuf;
 		iProviderBuf = NULL;
-    	}
-    //TODO:- KSmfProviderMaxSize
-    iProviderBuf = HBufC8::NewL(iBaseProvider.size()*2);
-    iPtrProvider.Set(iProviderBuf->Des());
-	//convert the QByteArray into TPtr
-    iPtrProvider.Copy(reinterpret_cast<const TText8*>(iBaseProvider.constData()),iBaseProvider.length());
-    
+		}
+	iProviderBuf = HBufC8::NewL(aSerializedData.size());
+	iPtrProvider.Set(iProviderBuf->Des());
+	iPtrProvider.Copy(reinterpret_cast<const TText8*>(aSerializedData.constData()),aSerializedData.length());
 	
-    log.clear();
-    log = QString("iPtrProvider.Copy");
-    writeLog(log);
-    
-	//Convert the interface name into TPtr////////////////////////
+	
+	
+	
+	//convert the QByteArray into TPtr
+    TPtrC8 ptrSlot0(reinterpret_cast<const TText8*>(aSerializedData.constData()),aSerializedData.length());
+    writeLog("ptrSlot0 size=");
+    writeLog(QString::number(ptrSlot0.Size()));
+	//Convert the interface name into TPtr
 	iInterfaceName.clear();
-	iInterfaceName = aInterfaceName ;
+	iInterfaceName.append(aInterfaceName) ;
 	writeLog(QString("iInterfaceName=")+iInterfaceName);
+	iInterfaceNamebyte.clear();
 	//Pass serialized QString for interface name
 	QDataStream intfNameStream(&iInterfaceNamebyte,QIODevice::WriteOnly);
 	intfNameStream<<iInterfaceName;
-	log.clear();
-    log = QString("iInterfaceNamebyte size=");
-    log += QString::number(iInterfaceNamebyte.size());
-    writeLog(log);
+	writeLog("iInterfaceNamebyte size=");
+	writeLog(QString::number(iInterfaceNamebyte.size()));
 	if(iIntfNameBuffer8)
 		{
 		delete iIntfNameBuffer8;
-		iIntfNameBuffer8 =NULL;
+		iIntfNameBuffer8 = NULL;
 		}
-	iIntfNameBuffer8 = HBufC8::NewL(aInterfaceName.size()*2);
+	iIntfNameBuffer8 = HBufC8::NewL(iInterfaceNamebyte.size());
 	iIntfNamePtr8.Set(iIntfNameBuffer8->Des());
-	//Convert into symbian data type
-	iIntfNamePtr8.Copy(reinterpret_cast<TUint8*>(iInterfaceNamebyte.data()),iInterfaceNamebyte.length());
-	log.clear();
-    log = QString("iIntfNamePtr8 size=")+QString::number(iIntfNamePtr8.Size());
-    writeLog(log);
-	
-
+	iIntfNamePtr8.Copy(reinterpret_cast<const TText8*>(iInterfaceNamebyte.constData()),iInterfaceNamebyte.length());
+	writeLog("After iIntfNamePtr8.Copy");
 	if(iBuffer)
 		{
 		delete iBuffer;
 		iBuffer = NULL;
 		}
-	//TODO:-KSmfMaxDataSize
-	iMaxMessageSize = 2000 ;
-    iBuffer = HBufC8::NewL(iMaxMessageSize);
+    iBuffer = HBufC8::NewL(aMaxAllocation);
     iDataPtr.Set(iBuffer->Des());
-    log.clear();
-    log = QString("After iDataPtr.Set");
-    writeLog(log);
-	
-	
+    writeLog("After iDataPtr.Set");
     TIpcArgs args;
     
-
+    //filling the slots
     args.Set(0, &iPtrProvider);
     args.Set(1, &iIntfNamePtr8);
     args.Set(2, &iDataPtr);
-    
+    writeLog("After setting 0,1,2 slots");
+    if(aXtraInfo.size())
+    	{
+		TPtrC8 ptrToXtraInfo(reinterpret_cast<const TText8*>(aXtraInfo.constData()),aXtraInfo.length());
+		writeLog("ptrToXtraInfo size=");
+		writeLog(QString::number(ptrToXtraInfo.Size()));
+		args.Set(3, &ptrToXtraInfo);
+    	}
     TInt err(KErrBadHandle);
-    log.clear();
-    log = QString("Before Handle()");
-    writeLog("Before handle");
+    writeLog("Before Handle()");
     if (Handle()) 
     	{
         err = KErrNone;
-        log.clear();
-        log = QString("Before sendreceive");
-        writeLog(log);
-       SendReceive(aRequestType, args, aStatus);
-
+        writeLog("Before sendreceive");
+        SendReceive(aRequestType, args, aStatus);
         }
 	}
-
-// -----------------------------------------------------------------------------
-// StartServerL()
-// Starts the server if it is not already running
-// -----------------------------------------------------------------------------
-//
-static TInt StartServerL()
-    {
-    TInt result;
-
-    TFindServer findSmfServer( KSmfServerName );
-    TFullName name;
-
-    result = findSmfServer.Next( name );
-    if ( result == KErrNone )
-        {
-        // Server already running
-        return KErrNone;
-        }
-
-    result = CreateServerProcessL();
-    if ( result != KErrNone )
-        {
-        return  result;
-        }
-
-    return KErrNone;
-    }
 
 // -----------------------------------------------------------------------------
 // CreateServerProcessL()
@@ -444,28 +468,79 @@ static TInt StartServerL()
 static TInt CreateServerProcessL()
     {
     TInt result;
-    //SmfServer SID
     TUid KSmfServerUID3 = { 0xE5027327 };
     const TUidType serverUid( KNullUid, KNullUid, KSmfServerUID3 );
 
     RProcess server;
 
     result = server.Create( KSmfServerFilename, KNullDesC, serverUid );
-    User::LeaveIfError(result);
-    if (KErrNone != result) {
-        return  result; 
+
+    if ( result != KErrNone )
+        {
+        return  result;
+        }
+
+    server.Resume();
+    server.Close();
+
+    return  KErrNone;
     }
-    else {
-		//User::WaitForRequest going for infinite loop, temporary work-around
-        //TRequestStatus status;
-        //server.Rendezvous(status);
-        server.Resume(); // logon OK - start the server
-        //Going for infinite loop
-        //User::WaitForRequest(status);// wait for start or death
-        User::After(700000);
-        server.Close();
+static TInt StartServer()
+    {
+    TInt result;
+
+    TFindServer findSmfServer( KSmfServerFilename );
+    TFullName name;
+
+    result = findSmfServer.Next( name );
+    if ( result == KErrNone )
+        {
+        // Server already running
         return KErrNone;
-        //return status.Int(); // return the error
+        }
+
+    RSemaphore semaphore;
+    result = semaphore.CreateGlobal( KSmfServerSemaphoreName, 0 );
+    if ( result != KErrNone )
+        {
+        return  result;
+        }
+
+    result = CreateServerProcessL();
+    if ( result != KErrNone )
+        {
+        return  result;
+        }
+
+    semaphore.Wait();
+    semaphore.Close();
+
+    return KErrNone;
     }
+
+// -----------------------------------------------------------------------------
+// CreateServerProcess()
+// Creates a server process
+// -----------------------------------------------------------------------------
+//
+static TInt CreateServerProcess()
+    {
+    TInt result;
+    //SmfServer SID
+    TUid KSmfServerUID3 = { 0xE5027327 };
+    const TUidType serverUid( KNullUid, KNullUid, KSmfServerUID3 );
+
+    RProcess server;
+
+    result = server.Create( KSmfServerName, KNullDesC, serverUid );
+
+    if ( result != KErrNone )
+        {
+        return  result;
+        }
+
+    server.Resume();
+    server.Close();
+
     return  KErrNone;
     }

@@ -36,7 +36,8 @@ QList<SmfProvider>* SmfClientPrivate::GetServices(const QString serviceName)
 	m_providerSerialized.clear();
 	m_client->writeLog("Before m_SmfClientPrivate->sendRequest");
 	//Getting the serialized list of SmfProvider synchronously
-	m_providerSerialized = m_SmfClientPrivate->sendRequest(intfName,SmfGetService);;
+	//TODO:- Max size for SmfProviderList 1000
+	m_providerSerialized = m_SmfClientPrivate->sendRequest(intfName,SmfGetService,1000);
 	if(m_baseProvider)
 		{
 		delete m_baseProvider;

@@ -29,7 +29,7 @@
 #include <smfclientglobal.h>
 
 #include "smfpost_p.h"
-
+const int MaxSmfPostSize=1000;
 /**
  *  Presence info of the user
  */
@@ -60,11 +60,12 @@ public:
 	
 	/**
 	 * Constructor
+	 * @param aOwner Owner of the post(who posted this message) of type SmfContact
 	 * @param aText The post's text
 	 * @param aImage The post's image
 	 * @param aUrl The post's url
 	 */
-	SmfPost( QString aTitle, QString aDesc, QImage aImage, QUrl aUrl );
+	SmfPost(SmfContact aOwner, QString aTitle, QString aDesc, QImage aImage, QUrl aUrl );
 
 	/**
 	 * Copy Constructor
@@ -83,7 +84,10 @@ public:
 	 * Destructor
 	 */
 	~SmfPost( );
-	
+	/**
+	 * Returns the owner(who posted this message)
+	 */
+	SmfContact owner() const;
 	/**
 	 * Method to get the title of the post
 	 * @return The post's title
@@ -113,7 +117,10 @@ public:
 	 * @return The ID value 
 	 */
 	QString id( ) const;
-	
+	/**
+	 * sets the owner of the post
+	 */
+	void setOwner(const SmfContact& aOwner);
 	/**
 	 * Method to set the title of the post
 	 * @param aTitle The post's new title
@@ -178,6 +185,6 @@ typedef QList<SmfPost> SmfPostList;
 
 // Make the class SmfPost known to QMetaType, so that as to register it.
 Q_DECLARE_METATYPE(SmfPost)
-Q_DECLARE_METATYPE(QList<SmfPost>)
+Q_DECLARE_METATYPE(SmfPostList)
 
 #endif /* SMFPOST_H_ */

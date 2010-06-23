@@ -131,6 +131,6 @@ public:
 			const int &aOperation, QByteArray *aData ) = 0;
 	};
 
-Q_DECLARE_INTERFACE( SmfContactFetcherPlugin, "org.symbian.smf.plugin.contact.fetcher/v1.0" );
+Q_DECLARE_INTERFACE( SmfContactFetcherPlugin, "org.symbian.smf.plugin.contact.fetcher/v0.2" );
 
 #endif /* SMFCONTACTFETCHERPLUGIN_H_ */

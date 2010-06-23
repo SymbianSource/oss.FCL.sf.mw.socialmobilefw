@@ -24,9 +24,9 @@
  * Note:- only symbian client-server impl is provided at the moment
  **/
 #include "smfprovider.h"
-#include "smfclientglobal.h"
-#include "smfglobal.h"
-#include "smfobserver.h"
+#include "SmfClientGlobal.h"
+#include "smfGlobal.h"
+#include "SmfObserver.h"
 
 class SmfProvider;
 
@@ -35,10 +35,10 @@ class SmfProvider;
 #include <QDateTime>
 #include <QStringList>
 
-#include "smfobserver.h"
+#include "SmfObserver.h"
 #include "smfcontactfetcher.h"
 #include "smfpostprovider.h"
-
+#include "smflocation.h"
 #ifdef Q_OS_SYMBIAN
 class CSmfClientSymbian;
 #else
@@ -97,8 +97,7 @@ public:
    * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
    * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  //TODO:-implement 
-  //bool searchNear(SmfPlace* location,SmfLocationSearchBoundary proximity,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE) ;
+  bool searchNear(SmfLocation* location,SmfLocationSearchBoundary proximity,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE) ;
 
 
   /**
@@ -128,10 +127,14 @@ private:
   SmfProvider* m_baseProvider;
   //serialized byte array of provider
   QByteArray m_providerSerialized;
+  //serialized xtra info, order of serialization follows order of param
+  QByteArray m_xtraInfoSerialized;
 #ifdef Q_OS_SYMBIAN
   CSmfClientSymbian* m_SmfClientPrivate;
   friend class CSmfClientSymbian;
-#else
+  int m_xtraInfoFlag;
+  int m_pageInfoFlag;
+ #else
   SmfClientQt* m_SmfClientPrivate;
   friend class SmfClientQt;
 #endif

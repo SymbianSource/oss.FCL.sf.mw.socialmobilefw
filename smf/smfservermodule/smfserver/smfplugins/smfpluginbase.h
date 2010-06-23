@@ -53,6 +53,7 @@ public:
 	
 	/**
 	 * Method to get the result for a network request.
+	 * @param aOperation The type of operation to be requested
 	 * @param aTransportResult The result of transport operation
 	 * @param aReply The QByteArray instance containing the network response.
 	 * The plugins should delete this instance once they have read the 
@@ -97,6 +98,7 @@ public:
 	 * @param aPageResult [out] The SmfResultPage structure variable
 	 */
 	virtual SmfPluginError responseAvailable( 
+			const SmfRequestTypeID aOperation,
 			const SmfTransportResult &aTransportResult, 
 			QByteArray *aReply, 
 			QVariant* aResult, 
@@ -105,6 +107,6 @@ public:
 	
 	};
 
-Q_DECLARE_INTERFACE( SmfPluginBase, "org.symbian.smf.plugin.smfpluginbase/v1.0" );
+Q_DECLARE_INTERFACE( SmfPluginBase, "org.symbian.smf.plugin.smfpluginbase/v0.2" );
 
 #endif /* SMFPLUGINBASE_H_ */

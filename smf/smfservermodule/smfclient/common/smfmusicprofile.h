@@ -20,15 +20,18 @@
 #ifndef SMFMUSICPROFILE_H_
 #define SMFMUSICPROFILE_H_
 
-#include <smftrackinfo.h>
-#include <smfevent.h>
+#include "smftrackinfo.h"
+#include "smfevent.h"
 #include <qdatastream.h>
 #include <QSharedData>
-#include <smfclientglobal.h>
+#include "smfclientglobal.h"
 #include <QMetaType>
 
 class SmfMusicProfilePrivate;
-
+/**
+ * Implementation constants
+ */
+const int SmfMusicProfileMaxSize = 20000;
 /**
  * @ingroup smf_common_group
  * The music profile class represents a user's profile in music site

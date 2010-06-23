@@ -9,7 +9,7 @@ MOBILITY += contacts \
 QT += core \
 	xml \
 	network
-	
+
 HEADERS = fbpostproviderplugin.h
 
 SOURCES = fbpostproviderplugin.cpp
@@ -28,11 +28,13 @@ symbian: {
     pluginDep.path = $$QT_PLUGINS_BASE_DIR/smf/plugin/contact.posts
     DEPLOYMENT += pluginDep
     
-    TARGET.CAPABILITY = ReadUserData \
-        WriteUserData \
-        LocalServices \
-        NetworkServices \
-        UserEnvironment
+    TARGET.CAPABILITY = NetworkServices \
+    	ReadUserData \
+    	WriteUserData \
+    	LocalServices \
+    	UserEnvironment \
+    	ReadDeviceData \
+    	WriteDeviceData
     
    LIBS += -lsmfclient.dll
 }

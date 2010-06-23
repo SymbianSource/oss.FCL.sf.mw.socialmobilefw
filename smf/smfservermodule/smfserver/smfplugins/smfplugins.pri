@@ -3,6 +3,7 @@ INCLUDEPATH += smfplugins
 PUBLIC_HEADERS += \
 	smfplugins/smfpluginbase.h \
 	smfplugins/smfproviderbase.h \
+	smfplugins/smfactivityfetcherplugin.h \
 	smfplugins/smfcontactfetcherplugin.h \
 	smfplugins/smfpostproviderplugin.h \
 	smfplugins/smflyricsserviceplugin.h \
@@ -16,6 +17,7 @@ PUBLIC_HEADERS += \
 symbian: {
     BLD_INF_RULES.prj_exports += smfplugins/smfpluginbase.h
     BLD_INF_RULES.prj_exports += smfplugins/smfproviderbase.h
+    BLD_INF_RULES.prj_exports += smfplugins/smfactivityfetcherplugin.h
     BLD_INF_RULES.prj_exports += smfplugins/smfcontactfetcherplugin.h
     BLD_INF_RULES.prj_exports += smfplugins/smfpostproviderplugin.h
     BLD_INF_RULES.prj_exports += smfplugins/smflyricsserviceplugin.h

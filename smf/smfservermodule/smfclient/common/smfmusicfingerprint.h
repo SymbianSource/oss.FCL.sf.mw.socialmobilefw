@@ -20,9 +20,9 @@
 #ifndef SMFMUSICFINGERPRINT_H_
 #define SMFMUSICFINGERPRINT_H_
 
-#include <qdatastream.h>
+#include <QDataStream>
 #include <QSharedData>
-#include <smfclientglobal.h>
+#include "smfclientglobal.h"
 #include <QMetaType>
 
 class SmfMusicFingerPrintPrivate;

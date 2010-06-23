@@ -24,7 +24,9 @@
 #include "smfprovider.h"
 #include "smfclientglobal.h"
 #include "smfpicture.h"
+#include "smfpicturealbum.h"
 #include "smfcomment.h"
+#include "smfcontact.h"
 
 #include <QObject>
 #include <QDateTime>
@@ -64,16 +66,30 @@ public:
   SmfGallery(SmfProvider* baseprovider);
   ~SmfGallery();
 
-public:
+	public slots:
+	/**
+	 * Get the album listing asynchronously.
+	 * The albumsAvailable() signal is emitted with SmfPictureAlbumList once the albums have arrived.
+	 * When the list is big user can specify the page number and per page item data.
+	 * If not supplied by the user default values are used.
+	 * @param names the subject or any keywords to be used to filter albums with that name
+	 * @param user the user whose albums are requested 
+	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 */
+	void albums(QStringList names, SmfContact* user, int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE);
+	
+	
   /**
    * Get the picture listing asynchronously.
    * The picturesAvailable() signal is emitted with SmfPictureList once the pictures have arrived.
    * When the list is big user can specify the page number and per page item data.
    * If not supplied by the user default values are used.
+	 * @param albums album(s) whose pictures are being requested
    * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
    * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  void pictures(int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE);
+	void pictures(SmfPictureAlbumList &albums, int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE);
 
   /**
    * Returns a user title/caption for the picture
@@ -90,15 +106,17 @@ public slots:
 	 * Upload an image.Implemented as slot to connect to UI controls more easily
 	 * uploadFinished() signal is emitted with the success value of the upload
 	 * @param image the image to be uploaded
+	 * @param album the optional destination album name 
 	 */
-   void upload(SmfPicture* image) ;
+	void upload(SmfPicture* image, SmfPictureAlbum* album=NULL) ;
 
 	/**
 	 * Upload an list image.Implemented as slot to connect to UI controls more easily
 	 * uploadFinished() signal is emitted with the success value of the upload
 	 * @param images the list image to be uploaded
+	 * @param album the optional destination album name 
 	 */
-   void upload(SmfPictureList* images) ;
+	void upload(SmfPictureList* images, SmfPictureAlbum* album=NULL) ;
 
   /**
    * Posts a comment for an image. uploadFinished() signal is emitted
@@ -115,8 +133,17 @@ public slots:
 	* plugin and client application. service provider should provide some
 	* serializing-deserializing utilities for these custom data
 	*/
-   void customRequest(const int& operationId,QByteArray* customData){/*to be implemented*/};
+   void customRequest(const int& operationId,QByteArray* customData);
 signals:
+	
+	/*
+	 * Notification on arrival of list of SmfPictureAlbum as a result of call to @ref albums().
+	 * @param pics Picture list
+	 * @param error Error string
+	 * @param resultPage Page number info
+	 */
+	void albumsAvailable(SmfPictureAlbumList* albums, SmfError error, SmfResultPage resultPage);
+	
 	/*
 	 * Notification on arrival of list of SmfPicture as a result of request.
 	 * Note if number of friends is large, then it can download the list page by page.
@@ -132,13 +159,18 @@ signals:
    * Notification of the success of the uploading of image/comment
    * @param error The upload success result of each individual pictures
    */
-  void uploadFinished(QList<bool> error);
+  void uploadFinished(QList<SmfError> error);
 	/**
 	 * Emitted when custom data is available
 	 * @param operationId Requested operation id
 	 * @param customData Custom data received, interpretation is not the responsibility of Smf
 	 */
 	void customDataAvailable(int operationId, QByteArray* customData);
+
+	/** friend so that it can directly emit SmfGallery's signal*/
+	friend class SmfGalleryPrivate;
+
+
 private:
 	SmfProvider* m_baseProvider;
 	//private impl wrapper

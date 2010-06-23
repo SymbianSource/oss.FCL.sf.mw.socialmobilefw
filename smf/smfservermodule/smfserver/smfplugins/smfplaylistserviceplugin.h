@@ -103,6 +103,6 @@ public:
 	
 	};
 
-Q_DECLARE_INTERFACE( SmfPlaylistServicePlugin, "org.symbian.smf.plugin.music.playlist/v1.0" );
+Q_DECLARE_INTERFACE( SmfPlaylistServicePlugin, "org.symbian.smf.plugin.music.playlist/v0.2" );
 
 #endif /* SMFPLAYLISTSERVICEPLUGIN_H_ */

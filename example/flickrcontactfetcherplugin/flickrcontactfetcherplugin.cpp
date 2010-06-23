@@ -1,39 +1,35 @@
+/**
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0" 
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
+ *
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Nalina Hariharan
+ * 
+ * Description:
+ * The Plugin that fetches contacts from the logged in user's flickr account
+ *
+ */
 
 // Include files
 #include <QtPlugin>
 #include <QCryptographicHash>
-#include <QDataStream>
 #include <QTextStream>
 #include <QFile>
-#include <QNetworkReply>
-#include <QXmlStreamReader>
-#include <parser.h>
 #include <QMap>
 #include <QListIterator>
+#include <QDebug>
+#ifdef SMF_XMLPARSING
+#include <QXmlStreamReader>
+#endif
 
 #include "flickrcontactfetcherplugin.h"
-
-// HARD CODED AS CSM IS NOT AVAILABLE - START - use your rigistered app's keys here
-static const QString apiKey = "";
-static const QString apiSecret = "";
-static const QString miniToken = "";
-QString fullToken = "";
-// HARD CODED AS CSM IS NOT AVAILABLE - END
-
-
-/**
- * Method called by plugins for logging
- * @param log string to be logged
- */
-void FlickrContactFetcherPlugin::writeLog(QString log) const
-	{
-	QFile file("c:\\data\\PluginLogs.txt");
-    if (!file.open(QIODevice::Append | QIODevice::Text))
-	         ;
-    QTextStream out(&file);
-    out << log << "\n";
-    file.close();
-	}
 
 /**
  * Destructor
@@ -52,50 +48,86 @@ FlickrContactFetcherPlugin::~FlickrContactFetcherPlugin( )
  * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
  */
 SmfPluginError FlickrContactFetcherPlugin::friends( SmfPluginRequestData &aRequest,
-		const int aPageNum,
+		const int aPageNum, 
 		const int aItemsPerPage )
 	{
-	writeLog("FlickrContactFetcherPlugin::friends");
-
-	SmfPluginError error = SmfPluginErrInvalidRequest;
+	qDebug()<<"Inside FlickrContactFetcherPlugin::friends()";
+	
+	SmfPluginError error = SmfPluginErrInvalidArguments;
 
 	// invalid arguments
 	if( aPageNum < 0 || aItemsPerPage < 0 )
-		return error;
-	else
 		{
-		// Create the API signature string
-		QString baseString;
-		baseString.append(apiSecret);
-		baseString.append("api_key"+apiKey);
-		baseString.append("auth_token"+fullToken);
-		baseString.append("filterfriends");
-		baseString.append("formatjson");
-		baseString.append("methodflickr.contacts.getList");
-		baseString.append("page"+QString::number(aPageNum));
-		baseString.append("per_page"+QString::number(aItemsPerPage));
-
-		// Create the url
-		QUrl url("http://api.flickr.com/services/rest/?");
-		url.addQueryItem("method", "flickr.contacts.getList");
-		url.addQueryItem("api_key", apiKey);
-		url.addQueryItem("filter", "friends");
-		url.addQueryItem("format", "json");
-		url.addQueryItem("page", QString::number(aPageNum));
-		url.addQueryItem("per_page", QString::number(aItemsPerPage));
-		url.addQueryItem("auth_token", fullToken);
-		url.addQueryItem("api_sig", generateSignature(baseString));
-
-		// Create the request, set the url
-		writeLog("final url = "+url.toString());
-		aRequest.iNetworkRequest.setUrl(url);
-		aRequest.iRequestType = SmfContactGetFriends;
-		aRequest.iPostData = NULL;
-		aRequest.iHttpOperationType = QNetworkAccessManager::GetOperation;
-		error = SmfPluginErrNone;
+		qDebug()<<"Invalid arguments";
+		return error;
 		}
-	writeLog("Url string is : "+aRequest.iNetworkRequest.url().toString());
-	return error;
+	
+	qDebug()<<"Valid arguments";
+	
+#if 1
+// Reading the keys, CSM Stubbed - START
+	QFile file("c:\\data\\FlickrKeys.txt");
+	if (!file.open(QIODevice::ReadOnly))
+		{
+		qDebug()<<"File to read the keys could not be opened";
+		return SmfPluginErrUserNotLoggedIn;
+		}
+	
+	qDebug()<<"Key file read, going to parse the key values from file";
+	
+	QByteArray arr = file.readAll();
+	QList<QByteArray> list = arr.split('\n');
+	file.close();
+	
+	QString apiKey(list[0]);
+	QString apiSecret(list[1]);
+	QString authToken(list[2]);
+	
+	qDebug()<<"Api Key = "<<apiKey;
+	qDebug()<<"Api Secret = "<<apiSecret;
+	qDebug()<<"Auth Token = "<<authToken;
+// Reading the keys, CSM Stubbed - END
+#endif
+	
+	// Create the API signature string
+	QString baseString;
+	baseString.append(apiSecret);
+	baseString.append("api_key"+apiKey);
+	baseString.append("auth_token"+authToken);
+	baseString.append("filterfriends");
+#ifdef SMF_XMLPARSING
+	baseString.append("formatxml");
+#else
+	baseString.append("formatjson");
+#endif
+	baseString.append("methodflickr.contacts.getList");
+	baseString.append("page"+QString::number(aPageNum));
+	baseString.append("per_page"+QString::number(aItemsPerPage));
+	
+	// Create the url
+	QUrl url("http://api.flickr.com/services/rest/?");
+	url.addQueryItem("api_key", apiKey);
+	url.addQueryItem("auth_token", authToken);
+	url.addQueryItem("filter", "friends");
+#ifdef SMF_XMLPARSING
+	url.addQueryItem("format", "x");
+#else
+	url.addQueryItem("format", "json");
+#endif
+	url.addQueryItem("method", "flickr.contacts.getList");
+	url.addQueryItem("page", QString::number(aPageNum));
+	url.addQueryItem("per_page", QString::number(aItemsPerPage));
+	url.addQueryItem("api_sig", generateSignature(baseString));
+	
+	// Create the request, set the url
+	aRequest.iNetworkRequest.setUrl(url);
+	aRequest.iRequestType = SmfContactGetFriends;
+	aRequest.iPostData = NULL;
+	aRequest.iHttpOperationType = QNetworkAccessManager::GetOperation;
+	error = SmfPluginErrNone;
+
+	qDebug()<<"Url string is : "<<aRequest.iNetworkRequest.url().toString();
+	return error; 
 	}
 
 /**
@@ -105,15 +137,15 @@ SmfPluginError FlickrContactFetcherPlugin::friends( SmfPluginRequestData &aReque
  */
 QString FlickrContactFetcherPlugin::generateSignature(const QString aBaseString)
 	{
-	writeLog("FlickrContactFetcherPlugin::generateSignature");
-
+	qDebug()<<"Inside FlickrContactFetcherPlugin::generateSignature()";
+	
 	// Create md5 hash of the signature string
     QByteArray byteArray;
     byteArray.insert(0, aBaseString.toAscii());
 
     QByteArray md5Hash = QCryptographicHash::hash(byteArray,QCryptographicHash::Md5 ).toHex();
     QString returnString (md5Hash);
-    writeLog("generated signature = "+QString(returnString));
+    qDebug()<<"generated signature = "<<QString(returnString);
     return returnString;
 	}
 
@@ -125,14 +157,14 @@ QString FlickrContactFetcherPlugin::generateSignature(const QString aBaseString)
  * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
  */
 SmfPluginError FlickrContactFetcherPlugin::followers( SmfPluginRequestData &aRequest,
-		const int aPageNum ,
+		const int aPageNum , 
 		const int aItemsPerPage  )
 	{
 	Q_UNUSED(aRequest)
-Q_UNUSED(aPageNum)
-Q_UNUSED(aItemsPerPage)
-	SmfPluginError error = SmfPluginErrInvalidRequest;
-	return error;
+	Q_UNUSED(aPageNum)
+	Q_UNUSED(aItemsPerPage)
+	qDebug()<<"Inside FlickrContactFetcherPlugin::followers()";
+	return SmfPluginErrServiceNotSupported; 
 	}
 
 /**
@@ -145,15 +177,15 @@ Q_UNUSED(aItemsPerPage)
  */
 SmfPluginError FlickrContactFetcherPlugin::search( SmfPluginRequestData &aRequest,
 		const SmfContact &aContact,
-		const int aPageNum ,
+		const int aPageNum , 
 		const int aItemsPerPage  )
 	{
 	Q_UNUSED(aRequest)
-Q_UNUSED(aContact)
-Q_UNUSED(aPageNum)
-Q_UNUSED(aItemsPerPage)
-	SmfPluginError error = SmfPluginErrInvalidRequest;
-	return error;
+	Q_UNUSED(aContact)
+	Q_UNUSED(aPageNum)
+	Q_UNUSED(aItemsPerPage)
+	qDebug()<<"Inside FlickrContactFetcherPlugin::search()";
+	return SmfPluginErrServiceNotSupported; 
 	}
 
 /**
@@ -169,16 +201,16 @@ Q_UNUSED(aItemsPerPage)
 SmfPluginError FlickrContactFetcherPlugin::searchNear( SmfPluginRequestData &aRequest,
 		const SmfLocation &aLocation,
 		const SmfLocationSearchBoundary &aProximity,
-		const int aPageNum ,
+		const int aPageNum , 
 		const int aItemsPerPage  )
 	{
 	Q_UNUSED(aRequest)
-Q_UNUSED(aLocation)
-Q_UNUSED(aProximity)
-Q_UNUSED(aPageNum)
-Q_UNUSED(aItemsPerPage)
-	SmfPluginError error = SmfPluginErrInvalidRequest;
-	return error;
+	Q_UNUSED(aLocation)
+	Q_UNUSED(aProximity)
+	Q_UNUSED(aPageNum)
+	Q_UNUSED(aItemsPerPage)
+	qDebug()<<"Inside FlickrContactFetcherPlugin::searchNear()";
+	return SmfPluginErrServiceNotSupported; 
 	}
 
 /**
@@ -189,14 +221,14 @@ Q_UNUSED(aItemsPerPage)
  * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
  */
 SmfPluginError FlickrContactFetcherPlugin::groups( SmfPluginRequestData &aRequest,
-		const int aPageNum ,
+		const int aPageNum , 
 		const int aItemsPerPage  )
 	{
 	Q_UNUSED(aRequest)
-Q_UNUSED(aPageNum)
-Q_UNUSED(aItemsPerPage)
-	SmfPluginError error = SmfPluginErrInvalidRequest;
-	return error;
+	Q_UNUSED(aPageNum)
+	Q_UNUSED(aItemsPerPage)
+	qDebug()<<"Inside FlickrContactFetcherPlugin::groups()";
+	return SmfPluginErrServiceNotSupported; 
 	}
 
 /**
@@ -209,34 +241,34 @@ Q_UNUSED(aItemsPerPage)
  */
 SmfPluginError FlickrContactFetcherPlugin::searchInGroup( SmfPluginRequestData &aRequest,
 		const SmfGroup &aGroup,
-		const int aPageNum ,
+		const int aPageNum , 
 		const int aItemsPerPage  )
 	{
 	Q_UNUSED(aRequest)
-Q_UNUSED(aGroup)
-Q_UNUSED(aPageNum)
-Q_UNUSED(aItemsPerPage)
-	SmfPluginError error = SmfPluginErrInvalidRequest;
-	return error;
+	Q_UNUSED(aGroup)
+	Q_UNUSED(aPageNum)
+	Q_UNUSED(aItemsPerPage)
+	qDebug()<<"Inside FlickrContactFetcherPlugin::searchInGroup()";
+	return SmfPluginErrServiceNotSupported; 
 	}
 
 /**
  * Customised method for SmfContactFetcherPlugin interface
  * @param aRequest [out] The request data to be sent to network
- * @param aOperation The operation type (should be known between
+ * @param aOperation The operation type (should be known between 
  * the client interface and the plugin)
- * @param aData The data required to form the request (The type
+ * @param aData The data required to form the request (The type 
  * of data should be known between client and the plugin)
  * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
  */
-SmfPluginError FlickrContactFetcherPlugin::customRequest( SmfPluginRequestData &aRequest,
+SmfPluginError FlickrContactFetcherPlugin::customRequest( SmfPluginRequestData &aRequest, 
 		const int &aOperation, QByteArray *aData )
 	{
 	Q_UNUSED(aRequest)
-Q_UNUSED(aOperation)
-Q_UNUSED(aData)
-	SmfPluginError error = SmfPluginErrInvalidRequest;
-	return error;
+	Q_UNUSED(aOperation)
+	Q_UNUSED(aData)
+	qDebug()<<"Inside FlickrContactFetcherPlugin::customRequest()";
+	return SmfPluginErrServiceNotSupported; 
 	}
 
 /**
@@ -249,7 +281,7 @@ void FlickrContactFetcherPlugin::initialize( SmfPluginUtil *aUtil )
 	{
 	// Save the SmfPluginUtil handle
 	m_util = aUtil;
-
+	
 	// Create an instance of FlickrProviderBase
 	m_provider = new FlickrProviderBase;
 	m_provider->initialize();
@@ -266,134 +298,160 @@ SmfProviderBase* FlickrContactFetcherPlugin::getProviderInfo( )
 
 /**
  * Method to get the result for a network request.
+ * @param aOperation The type of operation to be requested
  * @param aTransportResult The result of transport operation
  * @param aResponse The QByteArray instance containing the network response.
- * The plugins should delete this instance once they have read the
+ * The plugins should delete this instance once they have read the 
  * data from it.
- * @param aResult [out] An output parameter to the plugin manager.If the
- * return value is SmfSendRequestAgain, QVariant will be of type
+ * @param aResult [out] An output parameter to the plugin manager.If the 
+ * return value is SmfSendRequestAgain, QVariant will be of type 
  * SmfPluginRequestData.
- * For SmfGalleryPlugin: If last operation was pictures(), aResult will
- * be of type QList<SmfPicture>. If last operation was description(),
- * aResult will be of type QString. If last operation was upload() or
+ * For SmfGalleryPlugin: If last operation was pictures(), aResult will 
+ * be of type QList<SmfPicture>. If last operation was description(), 
+ * aResult will be of type QString. If last operation was upload() or 
  * postComment(), aResult will be of type bool.
  * @param aRetType [out] SmfPluginRetType
  * @param aPageResult [out] The SmfResultPage structure variable
  */
-SmfPluginError FlickrContactFetcherPlugin::responseAvailable(
-		const SmfTransportResult &aTransportResult,
-		QByteArray *aResponse,
-		QVariant* aResult,
+SmfPluginError FlickrContactFetcherPlugin::responseAvailable( 
+		const SmfRequestTypeID aOperation,
+		const SmfTransportResult &aTransportResult, 
+		QByteArray *aResponse, 
+		QVariant* aResult, 
 		SmfPluginRetType &aRetType,
 		SmfResultPage &aPageResult )
 	{
-	writeLog("FlickrContactFetcherPlugin::responseAvailable");
 	Q_UNUSED(aPageResult)
-	SmfPluginError error;
-	QList<SmfContact> list;
-
+	qDebug()<<"Inside FlickrContactFetcherPlugin::responseAvailable()";
+	
+	SmfPluginError error = SmfPluginErrNetworkError;
+	
+	if( !aResponse || (0 == aResponse->size()) )
+		{
+		qDebug()<<"Response is NULL or empty";
+		aRetType = SmfRequestError;
+		return error;
+		}
+	
+	QByteArray response(*aResponse);
+	delete aResponse;
+	qDebug()<<"FB response = "<<QString(response);
+	qDebug()<<"FB response size = "<<response.size();
+	
 	if(SmfTransportOpNoError == aTransportResult)
 		{
-		writeLog("No transport error");
-
-		QByteArray response(aResponse->data());
-		delete aResponse;
-		writeLog("Flickr response = "+QString(response));
-
-#if 1
-		// For getting contacts from json response
-		QJson::Parser parser;
-		bool ok;
-
-		// To remove the "jsonFlickrApi(" and also remove the last ")" from the response,
-		// as these gives a Json parsing error
-		response.remove(0, 14);
-		response.chop(1);
-
-		QVariantMap result = parser.parse(response, &ok).toMap();
-		if (!ok) {
-			writeLog("An error occurred during json parsing");
-			aResult->setValue(list);
-			error = SmfPluginErrParsingFailed;
-			return error;
-		}
-
-		QVariantMap map1 = result["contacts"].toMap();
-		writeLog("page = "+map1["page"].toString());
-		writeLog("pages = "+map1["pages"].toString());
-		writeLog("per_page = "+map1["per_page"].toString());
-		writeLog("perpage = "+map1["perpage"].toString());
-		writeLog("total = "+map1["perpage"].toString());
-
-		QList<QVariant> list1 = map1["contact"].toList();
-
-		QListIterator<QVariant> i(list1);
-		while(i.hasNext())
+		qDebug()<<"No transport error";
+		
+		if(SmfContactGetFriends == aOperation)
 			{
-			SmfContact contact;
-			QVariantMap map2 = i.next().toMap();
-			writeLog("nsid = "+map2["nsid"].toString());
-			writeLog("username = "+map2["username"].toString());
-			writeLog("iconserver = "+map2["iconserver"].toString());
-			writeLog("iconfarm = "+map2["iconfarm"].toString());
-			writeLog("ignored = "+map2["ignored"].toString());
-			writeLog("realname = "+map2["realname"].toString());
-			writeLog("friend = "+map2["friend"].toString());
-			writeLog("family = "+map2["family"].toString());
-			writeLog("path_alias = "+map2["path_alias"].toString());
-			writeLog("location = "+map2["location"].toString());
-
-			QContactName contactname;
-			QString username = map2["username"].toString();
-			writeLog("Username = "+username);
-			contactname.setFirstName(username);
-			contactname.setLastName(username);
-			QVariant nameVar = QVariant::fromValue(contactname);
-			contact.setValue("Name",nameVar);
-			list.append(contact);
-			}
-#endif
-
-#if 0
-		// For getting contacts from xml response
-		QXmlStreamReader xml(response);
-		while (!xml.atEnd())
-			{
-			xml.readNext();
-			if (xml.tokenType() == QXmlStreamReader::StartElement)
+			qDebug()<<"For getting friends response";
+			
+			QList<SmfContact> list;
+			
+#ifdef SMF_XMLPARSING // Xml parsing
+			// For getting contacts from xml response
+			QXmlStreamReader xml(response);
+			while (!xml.atEnd())
 				{
-				// If the tag is contact
-				if (xml.name() == "contact")
+				xml.readNext();
+				if (xml.tokenType() == QXmlStreamReader::StartElement)
 					{
-					writeLog("Contact tag found");
-					SmfContact contact;
-					QStringRef str;
-					QContactName contactname;
-					QString username = xml.attributes().value("username").toString();
-					writeLog("Username = ");
-					writeLog(username);
-					contactname.setFirstName(username);
-					contactname.setLastName(username);
-					QVariant namevar1 = QVariant::fromValue(contactname);
-					contact.setValue("Name",namevar1);
-                    list.append(contact);
+					// If the tag is contact
+					if (xml.name() == "contact")
+						{
+						qDebug()<<"Contact tag found";
+						SmfContact contact;
+						QStringRef str;
+						QContactName contactname;
+						QString username = xml.attributes().value("username").toString();
+						qDebug()<<"Username = "<<username;
+						contactname.setFirstName(username);
+						contactname.setLastName(username);
+						QVariant namevar1 = QVariant::fromValue(contactname);
+						contact.setValue("Name",namevar1);
+						list.append(contact);
+						}
 					}
 				}
+#else
+			// To remove the "jsonFlickrApi(" and also remove the last ")" from the response,
+			// as these gives a Json parsing error
+			response.remove(0, 14);
+			response.chop(1);
+			
+			// For getting contacts from json response
+			bool ok;
+			QVariantMap result = m_util->parse(response, &ok).toMap();
+			if (!ok) {
+				qDebug()<<"An error occurred during json parsing";
+				aResult->setValue(list);
+				aRetType = SmfRequestError;
+				return SmfPluginErrParsingFailed;
 			}
+			
+			QVariantMap map1 = result["contacts"].toMap();
+			qDebug()<<"page = "<<map1["page"].toString();
+			qDebug()<<"pages = "<<map1["pages"].toString();
+			qDebug()<<"per_page = "<<map1["per_page"].toString();
+			qDebug()<<"perpage = "<<map1["perpage"].toString();
+			qDebug()<<"total = "<<map1["perpage"].toString();
+			
+			QList<QVariant> list1 = map1["contact"].toList();
+			
+			QListIterator<QVariant> i(list1);
+			while(i.hasNext())
+				{
+				SmfContact contact;
+				QVariantMap map2 = i.next().toMap();
+				qDebug()<<"nsid = "<<map2["nsid"].toString();
+				qDebug()<<"username = "<<map2["username"].toString();
+				qDebug()<<"iconserver = "<<map2["iconserver"].toString();
+				qDebug()<<"iconfarm = "<<map2["iconfarm"].toString();
+				qDebug()<<"ignored = "<<map2["ignored"].toString();
+				qDebug()<<"realname = "<<map2["realname"].toString();
+				qDebug()<<"friend = "<<map2["friend"].toString();
+				qDebug()<<"family = "<<map2["family"].toString();
+				qDebug()<<"path_alias = "<<map2["path_alias"].toString();
+				qDebug()<<"location = "<<map2["location"].toString();
+				
+				QContactName contactname;
+				QString username = map2["username"].toString();
+				qDebug()<<"Username = "<<username;
+				contactname.setFirstName(username);
+				contactname.setLastName(username);
+				QVariant nameVar = QVariant::fromValue(contactname);
+				contact.setValue("Name",nameVar);
+				list.append(contact);
+				}
 #endif
+			
+			qDebug()<<"list count = "<<list.count();
+			aResult->setValue(list);
+			aRetType = SmfRequestComplete;
+			error = SmfPluginErrNone;
+			}
+		else
+			{
+			qDebug()<<"Service unsupported, currently only SmfContactGetFriends !!!";
+			aRetType = SmfRequestError;
+			error = SmfPluginErrServiceNotSupported;
+			}
+		}
 
-		writeLog("list count = "+QString::number(list.count(),10));
+	else if(SmfTransportOpOperationCanceledError == aTransportResult)
+		{
+		qDebug()<<"Operation Cancelled !!!";
+		error = SmfPluginErrCancelComplete;
 		aRetType = SmfRequestComplete;
-		error = SmfPluginErrNone;
 		}
 
 	else
 		{
-		error = SmfPluginErrInvalidRequest;
+		qDebug()<<"Transport Error !!!";
+		error = SmfPluginErrNetworkError;
 		aRetType = SmfRequestError;
 		}
-
-	aResult->setValue(list);
+	
 	return error;
 	}
 
@@ -460,6 +518,25 @@ QImage FlickrProviderBase::applicationIcon( ) const
 	}
 
 /**
+* Method to get the list of interfaces that this provider support
+* @return List of supported Interafces
+*/
+QList<QString> FlickrProviderBase::supportedInterfaces( ) const
+	{
+	return m_supportedInterfaces;
+	}
+
+/**
+* Method to get the list of languages supported by this service provider
+* @return a QStringList of languages supported by this service 
+* provider in 2 letter ISO 639-1 format.
+*/
+QStringList FlickrProviderBase::supportedLanguages( ) const
+	{
+	return m_supportedLangs;
+	}
+
+/**
  * Method to get the Plugin specific ID
  * @return The Plugin specific ID
  */
@@ -469,27 +546,27 @@ QString FlickrProviderBase::pluginId( ) const
 	}
 
 /**
- * Method to get the ID of the authentication application
+ * Method to get the ID of the authentication application 
  * for this service
  * @param aProgram The authentication application name
  * @param aArguments List of arguments required for authentication app
  * @param aMode Strting mode for authentication application
- * @return The ID of the authentication application
+ * @return The ID of the authentication application 
  */
-QString FlickrProviderBase::authenticationApp( QString &aProgram,
-		QStringList & aArguments,
+QString FlickrProviderBase::authenticationApp( QString &aProgram, 
+		QStringList & aArguments, 
 		QIODevice::OpenModeFlag aMode ) const
 	{
 	Q_UNUSED(aProgram)
-Q_UNUSED(aArguments)
-Q_UNUSED(aMode)
+	Q_UNUSED(aArguments)
+	Q_UNUSED(aMode)
 	return m_authAppId;
 	}
 
 /**
- * Method to get the unique registration ID provided by the
+ * Method to get the unique registration ID provided by the 
  * Smf for authorised plugins
- * @return The unique registration ID/token provided by the Smf for
+ * @return The unique registration ID/token provided by the Smf for 
  * authorised plugins
  */
 QString FlickrProviderBase::smfRegistrationId( ) const
@@ -500,11 +577,12 @@ QString FlickrProviderBase::smfRegistrationId( ) const
 void FlickrProviderBase::initialize()
 	{
 	m_serviceName = "Flickr";
-	m_description = "Flickr plugin description";
+	m_description = "Flickr contact fetcher plugin description";
 	m_serviceUrl = QUrl(QString("http://api.flickr.com"));
 	m_pluginId = "flickrcontactfetcherplugin.qtplugin";
 	m_authAppId = "Flickr AuthAppId";
 	m_smfRegToken = "Flickr RegToken";
+	m_supportedInterfaces.append("org.symbian.smf.plugin.contact.fetcher/v0.2");
 	}
 
 

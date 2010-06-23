@@ -9,6 +9,9 @@
  * Initial Contributors:
  * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
  *
+ * Contributors:
+ * Manasij Roy, Nalina Hariharan
+ * 
  * Description:
  * Contains private implementation of the smfactions
  */
@@ -18,7 +21,7 @@
 
 #include <QDateTime>
 #include <QSharedData>
-#include <QList>
+#include <QVariant>
 #include <QImage>
 #include <QDateTime>
 #include <QStringList>
@@ -28,13 +31,31 @@
 #include <QMetaType>
 
 #include "smfactions.h"
+#include "smfpost.h"
+#include "smfcontact.h"
 
 class SmfActivityObjectPrivate: public QSharedData
 	{
 public:	
-	SmfActivityObjectPrivate();
-	SmfActivityObjectPrivate(const SmfActivityObjectPrivate& aOther);
-	~SmfActivityObjectPrivate();
+	SmfActivityObjectPrivate( ) {
+		m_id.clear();
+		m_caption.clear();
+		m_link.clear();
+		m_content.clear();
+	}
+	
+	SmfActivityObjectPrivate( const SmfActivityObjectPrivate& aOther ) :
+		QSharedData (aOther),
+		m_id (aOther.m_id),
+		m_thumbnail (aOther.m_thumbnail),
+		m_caption (aOther.m_caption),
+		m_type (aOther.m_type),
+		m_objData (aOther.m_objData),
+		m_link (aOther.m_link),
+		m_time (aOther.m_time),
+		m_content (aOther.m_content) { }
+
+	~SmfActivityObjectPrivate( ) {}
 	
 	/**
 	 * Data members
@@ -52,10 +73,25 @@ public:
 class SmfActivityEntryPrivate: public QSharedData
 	{
 public:
-	SmfActivityEntryPrivate();
-	SmfActivityEntryPrivate(const SmfActivityEntryPrivate& aOther);
-	~SmfActivityEntryPrivate();
+	SmfActivityEntryPrivate( ) {
+		m_id.clear();
+	}
 	
+	SmfActivityEntryPrivate( const SmfActivityEntryPrivate& aOther ) :
+		QSharedData (aOther),
+		m_id (aOther.m_id),
+		m_title (aOther.m_title),
+		m_details (aOther.m_details),
+		m_author (aOther.m_author),
+		m_actionName (aOther.m_actionName),
+		m_activities (aOther.m_activities),
+		m_targetObj (aOther.m_targetObj)  { }
+
+	~SmfActivityEntryPrivate( ) { }
+	
+	/**
+	 * Data members
+	 */
 	QString m_id;
 	SmfPost m_title;
 	SmfPost m_details;

@@ -10,6 +10,8 @@ QT += core \
 	xml \
 	network
 	
+#DEFINES += SMF_XMLPARSING
+	
 HEADERS = flickrcontactfetcherplugin.h
 
 SOURCES = flickrcontactfetcherplugin.cpp
@@ -28,13 +30,15 @@ symbian: {
     pluginDep.path = $$QT_PLUGINS_BASE_DIR/smf/plugin/contact.fetcher
     DEPLOYMENT += pluginDep
     
-    TARGET.CAPABILITY = ReadUserData \
-        WriteUserData \
-        LocalServices \
-        NetworkServices \
-        UserEnvironment
+    TARGET.CAPABILITY = NetworkServices \
+    	ReadUserData \
+    	WriteUserData \
+    	LocalServices \
+    	UserEnvironment \
+    	ReadDeviceData \
+    	WriteDeviceData
     
-   LIBS += -lsmfclient.dll -lqjson.dll
+   LIBS += -lsmfclient.dll
 }
 
 target.path += $$[QT_INSTALL_PLUGINS]/smf/plugin/contact.fetcher

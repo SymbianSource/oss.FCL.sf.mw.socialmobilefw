@@ -18,8 +18,8 @@
  *
  */
 
-#include <smfmusicrating.h>
-#include <smfmusicrating_p.h>
+#include "smfmusicrating.h"
+#include "smfmusicrating_p.h"
 
 /**
  * Constructor with default argument
@@ -27,6 +27,7 @@
  */
 SmfMusicRating::SmfMusicRating( SmfTrackInfo *aParent )
 	{
+	Q_UNUSED(aParent)
 	d = new SmfMusicRatingPrivate();
 	}
 

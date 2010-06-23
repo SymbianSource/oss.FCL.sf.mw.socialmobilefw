@@ -4,6 +4,7 @@ QJSON_SRCBASE = .
 TEMPLATE = lib
 QT      -= gui
 TARGET   = qjson
+DESTDIR  = $$QJSON_BASE/lib
 CONFIG += create_prl
 
 # SMF dest directory for desktop builds
@@ -61,7 +62,13 @@ symbian: {
 
   # uid for the dll
   TARGET.UID3=0xEe29a5ee
-  TARGET.CAPABILITY = ReadDeviceData WriteDeviceData
+  TARGET.CAPABILITY = ReadUserData \
+        WriteUserData \
+        LocalServices \
+        NetworkServices \
+        UserEnvironment \
+    ReadDeviceData \
+    WriteDeviceData
 
   # do not freeze api-> no libs produced. Comment when freezing!
   # run "abld freeze winscw" to create def files

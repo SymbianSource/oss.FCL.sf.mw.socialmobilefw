@@ -29,7 +29,6 @@
 #else
 #include "smfclientqt.h"
 #endif
-
 /**
  * Private Qt wrapper
  * Provided to accomodate diff facilities in diff platforms.

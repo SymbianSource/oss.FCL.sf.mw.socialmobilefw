@@ -36,7 +36,7 @@ public: // Constructors and destructors
 	 * Two phase contruction.
 	 * @param aObserver For callback
 	 */
-     static CSmfClientSymbian* NewL(smfObserver* aObserver);
+     static CSmfClientSymbian* NewL(smfObserver* aObserver=NULL);
 
 
      static CSmfClientSymbian* NewLC(smfObserver* aObserver);
@@ -55,16 +55,29 @@ public: // Constructors and destructors
       * @param aSerializedData serialized by the caller.
       * @param aInterfaceName Interface name
       * @param requestType Opcode
+      * @param maxSize Max data size that is allocated in the client side for
+      * receiving this data
+      * @param xtraInfo XtraInfo when required by server other than smfProvider
       */
      TInt sendRequest(QByteArray& aSerializedData,
     		 QString aInterfaceName,
-    		 SmfRequestTypeID requestType);
+    		 SmfRequestTypeID requestType,TInt aMaxAllocation,QByteArray xtraInfo=QByteArray());
      /**
       * This overloaded API is for ESmfGetServices, where data should be
       * fetched synchronously
       */
      QByteArray sendRequest(QString aInterfaceName,
-    		 SmfRequestTypeID requestType);
+    		 SmfRequestTypeID requestType,TInt maxSize=10);
+     
+     /**
+      * For sending request specific to DSM. These are used by SmfRelationMngr API
+      * @param requestType Opcode
+      * @param aSerializedData Data to be passed to DSM through server, interpretation
+      * depends on Relation manager and DSM
+      * @maxSize Size to be allocated in the client side
+      * @return Data received from server, interpretation depends on SmfRelationMngr and DSM
+      */
+     QByteArray sendDSMSyncRequest(SmfRequestTypeID requestType,QByteArray& aSerializedData,SmfError& aErr,TInt maxSize=10);
      /**
       * For testing purpose only
       */

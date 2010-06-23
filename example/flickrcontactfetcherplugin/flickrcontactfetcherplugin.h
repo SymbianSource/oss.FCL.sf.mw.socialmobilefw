@@ -1,3 +1,22 @@
+/**
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0" 
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
+ *
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Nalina Hariharan
+ * 
+ * Description:
+ * The Plugin that fetches contacts from the logged in user's flickr account
+ *
+ */
+
 #ifndef _FLICKRCONTACTFETCHERPLUGIN_H
 #define _FLICKRCONTACTFETCHERPLUGIN_H
 
@@ -10,16 +29,22 @@ class FlickrProviderBase;
 class QVariant;
 class QNetworkReply;
 
-// Class declaration
+
+/**
+ * The Plugin that fetches contacts from the logged in user's flickr account
+ */
 class FlickrContactFetcherPlugin : public QObject, public SmfContactFetcherPlugin
 	{
 	Q_OBJECT
 	Q_INTERFACES( SmfContactFetcherPlugin SmfPluginBase )
 
 public:
+	/**
+	 * Destructor
+	 */
 	virtual ~FlickrContactFetcherPlugin( );
 	
-public: // From SmfContactFetcherPlugin
+public: // From SmfContactFetcherPlugin interface
 	
 	/**
 	 * Method to get the list of friends
@@ -108,7 +133,7 @@ public: // From SmfContactFetcherPlugin
 	SmfPluginError customRequest( SmfPluginRequestData &aRequest, 
 			const int &aOperation, QByteArray *aData );
 	
-public: // From SmfPluginBase
+public: // From SmfPluginBase interface
 	/**
 	 * The first method to be called in the plugin that implements this interface.
 	 * If this method is not called, plugin may not behave as expected.
@@ -125,6 +150,7 @@ public: // From SmfPluginBase
 	
 	/**
 	 * Method to get the result for a network request.
+	 * @param aOperation The type of operation to be requested
 	 * @param aTransportResult The result of transport operation
 	 * @param aResponse The QByteArray instance containing the network response.
 	 * The plugins should delete this instance once they have read the 
@@ -140,6 +166,7 @@ public: // From SmfPluginBase
 	 * @param aPageResult [out] The SmfResultPage structure variable
 	 */
 	SmfPluginError responseAvailable( 
+			const SmfRequestTypeID aOperation,
 			const SmfTransportResult &aTransportResult, 
 			QByteArray *aResponse, 
 			QVariant* aResult, 
@@ -152,47 +179,26 @@ private:
 	 * @param aBaseString The base string
 	 * @return The md5 hash of the base string
 	 */
-	QString generateSignature(const QString aBaseString);
-	
-	/**
-	 * Method called by plugins for logging
-	 * @param log string to be logged
-	 */
-	void writeLog(QString log) const;
+	QString generateSignature( const QString aBaseString );
     
-private:
-	/**
-	 * Method called by plugins to generate a request data
-	 * @param aRequest [out] The request data to be sent to network
-	 * @param aOperation The type of http operation
-	 * @param aSignatureMethod The signature method to be used
-	 * @param aParams A map of parameters to its values
-	 * @param aMode The mode of creation of the request
-	 * @param aPostData The data to be posted (for HTTP POST 
-	 * only, else it will be NULL)
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
-	 */
-	SmfPluginError createRequest( SmfPluginRequestData &aRequest,
-			const QNetworkAccessManager::Operation aOperation, 
-			const SmfSignatureMethod aSignatureMethod, 
-			QMultiMap<QByteArray, QByteArray> &aParams, 
-			const SmfParsingMode aMode,
-			QBuffer *aPostData );
-
 private:
 	FlickrProviderBase *m_provider;
 	SmfPluginUtil *m_util;
-	
 	};
 
 
-// Class declaration
+/**
+ * The Plugin class that implements SmfProviderBase for this flickr plugin
+ */
 class FlickrProviderBase : public QObject, public SmfProviderBase
 	{
 	Q_OBJECT
 	Q_INTERFACES( SmfProviderBase )
 
 public:
+	/**
+	 * Destructor
+	 */
 	virtual ~FlickrProviderBase( );
 
 	/**
@@ -232,6 +238,19 @@ public:
 	QImage applicationIcon( ) const;
 	
 	/**
+	* Method to get the list of interfaces that this provider support
+	* @return List of supported Interafces
+	*/
+	QList<QString> supportedInterfaces( ) const;
+	
+	/**
+	* Method to get the list of languages supported by this service provider
+	* @return a QStringList of languages supported by this service 
+	* provider in 2 letter ISO 639-1 format.
+	*/
+	QStringList supportedLanguages( ) const;
+	
+	/**
 	 * Method to get the Plugin specific ID
 	 * @return The Plugin specific ID
 	 */
@@ -257,8 +276,14 @@ public:
 	QString smfRegistrationId( ) const;
 	
 private:
-	friend class FlickrContactFetcherPlugin;
+	/**
+	 * Method that initializes this class. This method should be called 
+	 * from the initialize() method of the FlickrContactProviderBase class
+	 */
 	void initialize();
+	
+private:
+	friend class FlickrContactFetcherPlugin;
 	QString m_serviceName;
 	QImage m_serviceIcon;
 	QString m_description;
@@ -268,6 +293,8 @@ private:
 	QString m_pluginId;
 	QString m_authAppId;
 	QString m_smfRegToken;
+	QList<QString> m_supportedInterfaces;
+	QStringList m_supportedLangs;
 	};
 
 #endif /*_FLICKRCONTACTFETCHERPLUGIN_H*/

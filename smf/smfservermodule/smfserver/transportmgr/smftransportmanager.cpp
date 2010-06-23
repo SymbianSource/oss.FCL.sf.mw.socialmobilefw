@@ -26,13 +26,13 @@
 // Static data initialisation
 SmfTransportManager* SmfTransportManager::m_myInstance = NULL;
 
-
 /**
  * Method to get the instance of SmfTransportManager class
  * @return The instance of SmfTransportManager class
  */
 SmfTransportManager* SmfTransportManager::getInstance ( )
 	{
+	qDebug()<<("Inside SmfTransportManager::getInstance()");
 	if(NULL == m_myInstance)
 		m_myInstance = new SmfTransportManager( );
 	return m_myInstance;
@@ -43,16 +43,21 @@ SmfTransportManager* SmfTransportManager::getInstance ( )
  * @param aParent The parent object
  */
 SmfTransportManager::SmfTransportManager ( )
-		: m_netwConfigMngr(this), m_systemInfo(this)
 	{
+	qDebug()<<("Inside SmfTransportManager::SmfTransportManager()");
+
+	m_systemInfo = new QSystemNetworkInfo(this);
+	
+	m_netwConfigMngr = new QNetworkConfigurationManager(this);
+	
 	// Register for monitoring changes in IAPs (network configurations)
-	connect(&m_netwConfigMngr, SIGNAL(configurationAdded(const QNetworkConfiguration &)), 
+	connect(m_netwConfigMngr, SIGNAL(configurationAdded(const QNetworkConfiguration &)), 
 			this, SLOT(configurationAdded(const QNetworkConfiguration &)));
 	
-	connect(&m_netwConfigMngr, SIGNAL(configurationChanged(const QNetworkConfiguration &)), 
+	connect(m_netwConfigMngr, SIGNAL(configurationChanged(const QNetworkConfiguration &)), 
 			this, SLOT(configurationChanged(const QNetworkConfiguration &)));
 	
-	connect(&m_netwConfigMngr, SIGNAL(configurationRemoved(const QNetworkConfiguration &)), 
+	connect(m_netwConfigMngr, SIGNAL(configurationRemoved(const QNetworkConfiguration &)), 
 			this, SLOT(configurationRemoved(const QNetworkConfiguration &)));
 	}
 
@@ -62,8 +67,16 @@ SmfTransportManager::SmfTransportManager ( )
  */
 SmfTransportManager::~SmfTransportManager ( )
 	{
+	if(m_netwConfigMngr)
+		delete m_netwConfigMngr;
+	
+	if(m_systemInfo)
+		delete m_systemInfo;
+	
 	if(m_myInstance)
 		delete m_myInstance;
+	
+	m_myInstance = NULL;
 	}
 
 
@@ -71,19 +84,20 @@ SmfTransportManager::~SmfTransportManager ( )
  * Method to initialize the transport component before 
  * executing a web query
  * @return SmfTransportInitializeResult
- * @see smfglobal.h
  */
 SmfTransportInitializeResult SmfTransportManager::initializeTransport ( )
 	{
+	qDebug()<<"Inside SmfTransportManager::initializeTransport()";
 	SmfTransportInitializeResult retVal = SmfTransportInitNetworkNotAvailable;
 	
 	if(getNetworkAvailabilty())
 		{
+		qDebug()<<"getNetworkAvailabilty() returned true";
 		retVal = SmfTransportInitNoError;
 		
 		SmfNetworkStatus status;
 		getCurrentNetworkStatus(status);
-		
+		qDebug()<<("getCurrentNetworkStatus() returned = "+QString::number(status));
 		switch(status)
 			{
 			// homenetwork
@@ -108,6 +122,10 @@ SmfTransportInitializeResult SmfTransportManager::initializeTransport ( )
 				retVal = SmfTransportInitNetworkNotAvailable;
 			}
 		}
+	else
+		qDebug()<<"getNetworkAvailabilty() returned false!!!";
+	
+	qDebug()<<"Return value of SmfTransportManager::initializeTransport() = "<<retVal;
 	return retVal;
 	}
 
@@ -117,7 +135,58 @@ SmfTransportInitializeResult SmfTransportManager::initializeTransport ( )
  */
 bool SmfTransportManager::getNetworkAvailabilty ( )
 	{
-	return m_netwConfigMngr.isOnline();
+	qDebug()<<"Inside SmfTransportManager::getNetworkAvailabilty()";
+
+/*	QSystemNetworkInfo::NetworkStatus ret2 = m_systemInfo->networkStatus(QSystemNetworkInfo::GsmMode);
+	qDebug()<<"gsm = "<<ret2;
+	
+	ret2 = m_systemInfo->networkStatus(QSystemNetworkInfo::CdmaMode);
+	qDebug()<<"cdma = "<<ret2;
+	
+	ret2 = m_systemInfo->networkStatus(QSystemNetworkInfo::WcdmaMode);
+	qDebug()<<"wcdma = "<<ret2;
+	
+	ret2 = m_systemInfo->networkStatus(QSystemNetworkInfo::WlanMode);
+	qDebug()<<"wlan = "<<ret2;
+	
+	ret2 = m_systemInfo->networkStatus(QSystemNetworkInfo::EthernetMode);
+	qDebug()<<"ethernet = "<<ret2;
+	
+	ret2 = m_systemInfo->networkStatus(QSystemNetworkInfo::BluetoothMode);
+	qDebug()<<"bluetooth = "<<ret2;
+	
+	ret2 = m_systemInfo->networkStatus(QSystemNetworkInfo::WimaxMode);
+	qDebug()<<"wimax = "<<ret2;
+	
+	bool ret1 = m_netwConfigMngr->isOnline();
+	qDebug()<<"m_netwConfigMngr->isOnline() = "<<ret1;*/
+		
+	bool retVal = false;
+	
+	// Get all the defined and undefined configurations
+	QList<QNetworkConfiguration> list = m_netwConfigMngr->allConfigurations();
+	qDebug()<<"list count = "<<list.count();
+	
+	if(list.count())
+		{
+		foreach(QNetworkConfiguration conf, list)
+			{
+			qDebug()<<"Configuration name = "<<conf.name();
+			qDebug()<<"Configuration bearer name = "<<conf.bearerName();
+			qDebug()<<"Configuration state = "<<conf.state();
+
+			// If the stateflgag is any one other than QNetworkConfiguration::Undefined or 
+			// QNetworkConfiguration::Defined, means a defined configuration is available
+			if( (QNetworkConfiguration::Discovered == conf.state()) ||
+					(QNetworkConfiguration::Active == conf.state()) )
+				{
+				retVal = true;
+				break;
+				}
+			}
+		}
+
+	return retVal;
 	}
 
 
@@ -125,33 +194,37 @@ bool SmfTransportManager::getNetworkAvailabilty ( )
  * Method that checks if the phone is in home network or in roaming.
  * @param aStatus [out] An output parameter indicating the current network 
  * status as SmfNetworkStatus
- * @see smfglobal.h
  */
 void SmfTransportManager::getCurrentNetworkStatus ( 
 		SmfNetworkStatus &aStatus )
 	{
-	QSystemNetworkInfo::NetworkStatus status = m_systemInfo.networkStatus ( QSystemNetworkInfo::GsmMode );
+	QSystemNetworkInfo::NetworkStatus status = m_systemInfo->networkStatus ( QSystemNetworkInfo::GsmMode );
+	qDebug()<<"m_systemInfo->networkStatus ( QSystemNetworkInfo::GsmMode ) = "<<status;
 	
 	switch(status)
 		{
 		// homenetwork
 		case QSystemNetworkInfo::HomeNetwork:
 			aStatus = SmfNetworkConnectedHome;
+			qDebug()<<"Home network";
 			break;
 		
 		// connected
 		case QSystemNetworkInfo::Connected:
 			aStatus = SmfNetworkConnected;
+			qDebug()<<"network connected";
 			break;
 		
 		// roaming	
 		case QSystemNetworkInfo::Roaming:
 			aStatus = SmfNetworkConnectedRoaming;
+			qDebug()<<"roaming";
 			break;
 			
 		// unknown state			
 		case QSystemNetworkInfo::Searching:
 		case QSystemNetworkInfo::Busy:
+			qDebug()<<"network state unknown";
 			aStatus = SmfNetworkStateNotKnown;
 			break;
 
@@ -161,6 +234,7 @@ void SmfTransportManager::getCurrentNetworkStatus (
 		case QSystemNetworkInfo::EmergencyOnly:
 		case QSystemNetworkInfo::Denied:
 		default :
+			qDebug()<<"not connected";
 			aStatus = SmfNetworkNotConnected;
 		}
 	}
@@ -174,7 +248,7 @@ void SmfTransportManager::getCurrentNetworkStatus (
 void SmfTransportManager::configurationAdded ( 
 		const QNetworkConfiguration &aConfig )
 	{
-	Q_UNUSED(aConfig);
+	Q_UNUSED(aConfig)
 	SmfTransportManagerUtil::getInstance()->configurationAdded(SmfTransportOpIAPChanged);
 	}
 
@@ -185,7 +259,7 @@ void SmfTransportManager::configurationAdded (
 void SmfTransportManager::configurationChanged ( 
 		const QNetworkConfiguration &aConfig )
 	{
-	if( aConfig == m_netwConfigMngr.defaultConfiguration() )
+	if( aConfig == m_netwConfigMngr->defaultConfiguration() )
 		SmfTransportManagerUtil::getInstance()->configurationChanged(SmfTransportOpIAPChanged);
 	}
 
@@ -197,7 +271,7 @@ void SmfTransportManager::configurationChanged (
 void SmfTransportManager::configurationRemoved ( 
 		const QNetworkConfiguration &aConfig )
 	{
-	if( aConfig == m_netwConfigMngr.defaultConfiguration() )
+	if( aConfig == m_netwConfigMngr->defaultConfiguration() )
 		SmfTransportManagerUtil::getInstance()->configurationRemoved(SmfTransportOpIAPChanged);
 	}
 

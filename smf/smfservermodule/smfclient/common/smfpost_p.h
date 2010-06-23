@@ -21,7 +21,7 @@
 #define SMFPOST_P_H_
 
 #include <QSharedData>
-
+#include "smfcontact.h"
 class SmfPostPrivate : public QSharedData
 {
 public:
@@ -33,8 +33,9 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfPostPrivate( QString aTitle, QString aDesc, QImage aImage, QUrl aUrl ) 
+	SmfPostPrivate(SmfContact aOwner, QString aTitle, QString aDesc, QImage aImage, QUrl aUrl ) 
 		{
+		m_owner = aOwner;
 		m_title = aTitle; 
 		m_desc = aDesc;
 		m_image = aImage;
@@ -60,7 +61,7 @@ public:
 	~SmfPostPrivate( )
 		{
 		}
-  
+	SmfContact m_owner; //owner of the post(who posted this message)
 	QString m_title;	// title
 	QString m_desc;		// description
 	QImage m_image;		// image

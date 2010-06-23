@@ -21,29 +21,29 @@
 #ifndef SMFCONTACT_H_
 #define SMFCONTACT_H_
 
-#include "qtcontacts.h"
-#include "smfclientglobal.h"
+#include <qtcontacts.h>
 #include <qdatastream.h>
 #include <QSharedData>
 #include <QVariant>
-//#include <smfclientglobal.h>
+#include "smfclientglobal.h"
+
 #include "smfcontact_p.h"
 
 using namespace QtMobility;
 
+/**
+ * Max size for one SmfContact
+ */
+const int MaxSmfContactSize = 1000;
 
-//TODO:- For the time being we'll just store a string SmfContact 
 /**
  * @ingroup smf_common_group
  * The contact class represents a social contact
  * 
  * Note: This class has dependencies on QtMobility project
  */
-//QList<SmfContact> gives error for serialization if its derived from QObject
-class  SMFCLIENT_EXPORT SmfContact //: public QObject
+class  SMFCLIENT_EXPORT SmfContact
 	{
-	//Q_OBJECT
-
 public:
 	/**
 	 * Constructor with default argument
@@ -58,27 +58,17 @@ public:
 	SmfContact( const SmfContact &aOther );
 	
 	/**
+	 * Overloaded = operator
+	 * @param aOther The reference object
+	 * @return The target reference value
+	 */
+	SmfContact& operator=( const SmfContact &aOther );
+	
+	/**
 	 * Destructor
 	 */
 	~SmfContact( );
-//Q_DECLARE_LATIN1_LITERAL(SubTypeAddress, "Address");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeAnniversary, "Anniversary");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeAvatar, "Avatar");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeBirthday, "Birthday");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeContactId, "ContactId");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeEmailAddress, "EmailAddress");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeGender, "Gender");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeGeolocation, "Geolocation");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeGuid, "Guid");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeName, "Name");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeNickname, "Nickname");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeNote, "Note");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeOnlineAccount, "OnlineAccount");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeOrganization, "Organization");
-//Q_DECLARE_LATIN1_LITERAL(SubTypePhoneNumber, "PhoneNumber");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeTimestamp, "Timestamp");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeType, "Type");
-//Q_DECLARE_LATIN1_LITERAL(SubTypeUrl, "Url");
+	
 public slots:
 	/**
 	 * Method to get the available sub fields for contacts.
@@ -90,7 +80,7 @@ public slots:
 	 *   QtMobility::QContactId				ContactId;
 	 *   QtMobility::QContactEmailAddress	EmailAddress;
 	 *   QtMobility::QContactGender			Gender;
-	 *   QtMobility::QContactGeolocation	Geolocation;
+	 *   QtMobility::QContactGeoLocation	Geolocation;
 	 *   QtMobility::QContactGuid			Guid;
 	 *   QtMobility::QContactName			Name;
 	 *   QtMobility::QContactNickname		Nickname;
@@ -98,12 +88,13 @@ public slots:
 	 *   QtMobility::QContactOnlineAccount	OnlineAccount;
 	 *   QtMobility::QContactOrganization	Organization;
 	 *   QtMobility::QContactPhoneNumber	PhoneNumber;
+	 *   QtMobility::QContactPresence		Presence;
+	 *   QtMobility::QContactThumbnail		Thumbnail;
 	 *   QtMobility::QContactTimestamp		Timestamp;
 	 *   QtMobility::QContactType			Type;
 	 *   QtMobility::QContactUrl			Url;
 	 * @return The Available sub fields for this contact
 	 */
-
 	QStringList subTypes( ) const;
 	
 	/**
@@ -124,9 +115,11 @@ public slots:
 	
 	/**
 	 * Method to set value for a subtype
+	 * @param aSubType The subtype string
+	 * @param value Thhe value to be set for the subtype
 	 */
 	void setValue(const QString& aSubType,QVariant& value);
-	void writeLog(QString log) const;
+
 private:
 	QSharedDataPointer<SmfContactPrivate> d;
 	
@@ -158,15 +151,135 @@ SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream,
  */
 SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfContact &aContact );
+
+
 typedef QList<SmfContact> SmfContactList;
+
+
 /**
- * Serialization support for Qt mobility contact
+ * Serialization support for QtMobility QContact classes
  */
 SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
-		const QContactName &aContact );
+	const QContactAddress &aAddress );
 
 SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
-		QContactName &aContact );
+		QContactAddress &aAddress );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactAnniversary &aAnniversary );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactAnniversary &aAnniversary );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactAvatar &aAvatar );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactAvatar &aAvatar );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactBirthday &aBirthday );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactBirthday &aBirthday );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactEmailAddress &aEMail );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactEmailAddress &aEMail );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactGender &aGender );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactGender &aGender );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactGeoLocation &aGeolocation );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactGeoLocation &aGeolocation );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactGuid &aGuid );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactGuid &aGuid );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactId &aContactId );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactId &aContactId );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactName &aName );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactName &aName );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactNickname &aNickname );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactNickname &aNickname );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactNote &aNote );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactNote &aNote );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactOnlineAccount &aOnlineAccount );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactOnlineAccount &aOnlineAccount );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactOrganization &aOrganization );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactOrganization &aOrganization );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactPhoneNumber &aPhoneNumber );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactPhoneNumber &aPhoneNumber );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactPresence &aPresence );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactPresence &aPresence );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactThumbnail &aThumbnail );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactThumbnail &aThumbnail );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactTimestamp &aTimestamp );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactTimestamp &aTimestamp );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactType &aType );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactType &aType );
+
+SMFCLIENT_EXPORT QDataStream &operator<<( QDataStream &aDataStream, 
+	const QContactUrl &aUrl );
+
+SMFCLIENT_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
+		QContactUrl &aUrl );
+
+
 // Make the class SmfContact known to QMetaType, so that as to register it.
 Q_DECLARE_METATYPE(SmfContact)
 Q_DECLARE_METATYPE(QList<SmfContact>)
@@ -179,6 +292,7 @@ Q_DECLARE_METATYPE(QContactBirthday)
 Q_DECLARE_METATYPE(QContactId)
 Q_DECLARE_METATYPE(QContactEmailAddress)
 Q_DECLARE_METATYPE(QContactGender)
+Q_DECLARE_METATYPE(QContactGeoLocation)
 Q_DECLARE_METATYPE(QContactGuid)
 Q_DECLARE_METATYPE(QContactName)
 Q_DECLARE_METATYPE(QContactNickname)
@@ -186,6 +300,8 @@ Q_DECLARE_METATYPE(QContactNote)
 Q_DECLARE_METATYPE(QContactOnlineAccount)
 Q_DECLARE_METATYPE(QContactOrganization)
 Q_DECLARE_METATYPE(QContactPhoneNumber)
+Q_DECLARE_METATYPE(QContactPresence)
+Q_DECLARE_METATYPE(QContactThumbnail)
 Q_DECLARE_METATYPE(QContactTimestamp)
 Q_DECLARE_METATYPE(QContactType)
 Q_DECLARE_METATYPE(QContactUrl)

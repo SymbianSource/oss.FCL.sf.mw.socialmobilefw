@@ -17,15 +17,16 @@
  *
  */
 
-#include <smfpicture.h>
-#include <smfpicture_p.h>
+#include "smfpicture.h"
+#include "smfpicture_p.h"
 
 /**
  * Constructor with default argument
  */
-SmfPicture::SmfPicture( )
+SmfPicture::SmfPicture(/*bool aDownloaded*/)
 	{
 	d = new SmfPicturePrivate;
+	//d->isDownloaded = aDownloaded;
 	}
 
 /**
@@ -162,7 +163,10 @@ QString SmfPicture::id( ) const
 	{
 	return d->m_photoId;
 	}
-
+bool SmfPicture::downloadFlag()
+	{
+	return d->isDownloaded;
+	}
 /**
  * Method to set a picture owner
  * @param aOwner The owner of the picture
@@ -321,9 +325,9 @@ QDataStream& operator>>( QDataStream &aDataStream,
 	aDataStream>>aPic.d->m_description;
 	
 	// Deserialize d->m_picVisibility
-	quint32 val = aPic.d->m_picVisibility;
+	quint32 val = 0;
 	aDataStream>>val;
-	//aPic.d->m_picVisibility = val;
+	aPic.d->m_picVisibility = (SmfPictureVisibility)val;
 
 	// Deserialize d->m_postedOn
 	aDataStream>>aPic.d->m_postedOn;

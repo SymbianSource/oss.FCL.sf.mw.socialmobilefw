@@ -13,7 +13,7 @@
  * Manasij Roy, Nalina Hariharan
  * 
  * Description:
- * The SmfEvent class represents an event
+ * SmfPostProvider
  *
  */
 #ifndef SMFPOSTPROVIDER_H
@@ -30,8 +30,7 @@
 #include "smfcontact.h"
 #include "smflocation.h"
 #include "smfpost.h"
-
-class SmfPostProviderPrivate;
+#include "smfpostprovider_p.h"
 
 /**
  * @ingroup smf_client_group 
@@ -162,7 +161,7 @@ signals:
 	 * Emitted when update post is finished.
 	 * @param success the success of the update
 	 */
-	void postFinished(bool success);
+	void postFinished(SmfError success);
 	/**
 	 * Emitted when custom data is available
 	 * @param operationId Requested operation id

@@ -45,7 +45,7 @@ SmfContactFetcher::~SmfContactFetcher()
 		delete m_frndContact;
 		m_frndContact = NULL;
 	}
-	//TODO:- Request to unload the plugin
+	/** @TODO:- Request to unload the plugin*/
 }
 bool  SmfContactFetcher::friends(int pageNum,int perPage)
 {

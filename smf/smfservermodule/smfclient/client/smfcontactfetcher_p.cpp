@@ -15,12 +15,12 @@
 #include "smfcontactfetcher_p.h"
 #ifdef WRITE_LOG
 #include <QFile>
-#include <QTextStream>
+#include <QTextstream>
 #endif
 #ifdef Q_OS_SYMBIAN
 #include "SmfClientSymbian.h"
 #else
-#include "smfclientqt.h"
+#include "SmfClientQt.h"
 #endif
  /**
    * Constructs the SmfContactFetcher.
@@ -32,14 +32,18 @@
   SmfContactFetcherPrivate::SmfContactFetcherPrivate(SmfContactFetcher* contactFetcher)
   : m_contactFetcher(contactFetcher),m_contactList(0)
 	  {
-	  //private impl for symbian
-	#ifdef Q_OS_SYMBIAN
-	m_SmfClientPrivate = CSmfClientSymbian::NewL(this);
-	#endif
+		//private impl for symbian
+		#ifdef Q_OS_SYMBIAN
+		m_SmfClientPrivate = CSmfClientSymbian::NewL(this);
+		#endif
 	  }
   SmfContactFetcherPrivate::~SmfContactFetcherPrivate()
 	  {
-
+	  if(m_SmfClientPrivate)
+		  {
+		  delete m_SmfClientPrivate;
+		  m_SmfClientPrivate = NULL;
+		  }
 	  }
 
   /**
@@ -54,18 +58,21 @@
 	  {
 	  m_providerSerialized.clear();
 	  //We need to pass Opcode and SmfProvider serialized into bytearray 
-	  
+	  m_xtraInfoFlag = 0;
+	  m_pageInfoFlag = 1;
 	  m_baseProvider = m_contactFetcher->getProvider();
 	  //serialize start
 	  QDataStream write(&m_providerSerialized,QIODevice::WriteOnly);
 	  write<<*(m_baseProvider);
+	  write<<m_pageInfoFlag;
+	  write<<pageNum;
+	  write<<perPage;
+	  write<<m_xtraInfoFlag;
 	  //serialize end
-	  
-	  
 	  QString intfName(contactFetcherInterface);
-	  
+	  int maxAllocation = MaxSmfContactSize*perPage;
 	  //call private impl's send method
-	  m_SmfClientPrivate->sendRequest(m_providerSerialized,intfName,SmfContactGetFriends);
+	  m_SmfClientPrivate->sendRequest(m_providerSerialized,intfName,SmfContactGetFriends,maxAllocation,QByteArray());
 	  }
 
   /**
@@ -85,13 +92,19 @@
 	  //serialize start
 	  QDataStream write(&m_providerSerialized,QIODevice::WriteOnly);
 	  write<<*(m_baseProvider);
+	  m_pageInfoFlag = 1;
+	  write<<m_pageInfoFlag;
+	  write<<pageNum;
+	  write<<perPage;
+	  m_xtraInfoFlag = 0;
+	  write<<m_xtraInfoFlag;
 	  //serialize end
 	  
 	  
 	  QString intfName(contactFetcherInterface);
-	  
+	  int maxAllocation = MaxSmfContactSize*perPage;
 	  //call private impl's send method
-	  m_SmfClientPrivate->sendRequest(m_providerSerialized,intfName,SmfContactGetFollowers);
+	  m_SmfClientPrivate->sendRequest(m_providerSerialized,intfName,SmfContactGetFollowers,maxAllocation);
 	  }
   /**
    * Searches for a contact The searchContactFinished() signal
@@ -106,19 +119,28 @@
 	  //We need to pass Opcode and SmfProvider+SmfContact serialized into bytearray 
 	  
 	  m_baseProvider = m_contactFetcher->getProvider();
+	  m_xtraInfoSerialized.clear();
 	  m_contact = contact;
 	  //serialize start
 	  QDataStream write(&m_providerSerialized,QIODevice::WriteOnly);
 	  write<<*(m_baseProvider);
-	  //now serialize SmfContact 
-	  write<<*(m_contact);
-	  //serialize end
+	  m_pageInfoFlag = 1;
+	  write<<m_pageInfoFlag;
+	  write<<pageNum;
+	  write<<pageNum;
+
 	  
+	  //serialize xtra info
+	  QDataStream writeXtra(&m_xtraInfoSerialized,QIODevice::WriteOnly);
+	  writeXtra<<*(m_contact);
+	  
+	  m_xtraInfoFlag = m_xtraInfoSerialized.size();
+	  write<<m_xtraInfoFlag;
 	  
 	  QString intfName(contactFetcherInterface);
-	  
+	  int maxAllocation = MaxSmfContactSize*perPage;
 	  //call private impl's send method
-	  m_SmfClientPrivate->sendRequest(m_providerSerialized,intfName,SmfContactSearch);
+	  m_SmfClientPrivate->sendRequest(m_providerSerialized,intfName,SmfContactSearch,maxAllocation,m_xtraInfoSerialized);
 	  }
 
   /**
@@ -130,11 +152,31 @@
    * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
    * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  //TODO:-implement
-//   bool  SmfContactFetcherPrivate::searchNear(SmfPlace* location,SmfLocationSearchBoundary proximity,int pageNum,int perPage) 
-//	   {
-//	   
-//	   }
+   bool  SmfContactFetcherPrivate::searchNear(SmfLocation* location,SmfLocationSearchBoundary proximity,int pageNum,int perPage) 
+	   {
+		  m_baseProvider = m_contactFetcher->getProvider();
+		  m_xtraInfoSerialized.clear();
+		  //serialize start
+		  QDataStream write(&m_providerSerialized,QIODevice::WriteOnly);
+		  write<<*(m_baseProvider);
+		  m_pageInfoFlag = 1;
+		  write<<m_pageInfoFlag;
+		  write<<pageNum;
+		  write<<pageNum;
+		  //m_xtraInfoFlag = 1;
+		  //write<<m_xtraInfoFlag;
+		  
+		  //serialize xtra info
+		  QDataStream writeXtra(&m_xtraInfoSerialized,QIODevice::WriteOnly);
+		  writeXtra<<*(location);
+		  writeXtra<<proximity;
+		  m_xtraInfoFlag = m_xtraInfoSerialized.size();
+		  write<<m_xtraInfoFlag;
+		  QString intfName(contactFetcherInterface);
+		  int maxAllocation = MaxSmfContactSize*perPage;
+		  //call private impl's send method
+		  m_SmfClientPrivate->sendRequest(m_providerSerialized,intfName,SmfContactSearchNear,maxAllocation,m_xtraInfoSerialized);
+	   }
 
 
   /**
@@ -154,13 +196,19 @@
 		  //serialize start
 		  QDataStream write(&m_providerSerialized,QIODevice::WriteOnly);
 		  write<<*(m_baseProvider);
+		  m_pageInfoFlag = 1;
+		  write<<m_pageInfoFlag;
+		  write<<pageNum;
+		  write<<perPage;
+		  m_xtraInfoFlag = 0;
+		  write<<m_xtraInfoFlag;
 		  //serialize end
 		  
 		  
 		  QString intfName(contactFetcherInterface);
-		  
+		  int maxAllocation = MaxSmfGroupSize*perPage;
 		  //call private impl's send method
-		  m_SmfClientPrivate->sendRequest(m_providerSerialized,intfName,SmfContactGetGroups);
+		  m_SmfClientPrivate->sendRequest(m_providerSerialized,intfName,SmfContactGetGroups,maxAllocation);
 	   }
 
   /**
@@ -180,31 +228,37 @@ bool  SmfContactFetcherPrivate::searchInGroup(SmfGroup group,int pageNum,int per
 	  //serialize start
 	  QDataStream write(&m_providerSerialized,QIODevice::WriteOnly);
 	  write<<*(m_baseProvider);
-	  //now serialize SmfGroup 
-	  write<<m_grp;
+	  m_pageInfoFlag = 1;
+	  write<<m_pageInfoFlag;
+	  write<<pageNum;
+	  write<<perPage;
+	  //m_xtraInfoFlag = 1;
+	  //write<<m_xtraInfoFlag;
+	  
+	  //serialize xtra info
+	  QDataStream writeXtra(&m_xtraInfoSerialized,QIODevice::WriteOnly);
+	  writeXtra<<m_grp;
+	  m_xtraInfoFlag = m_xtraInfoSerialized.size();
+	  write<<m_xtraInfoFlag;
 	  //serialize end
 	  
 	  
 	  QString intfName(contactFetcherInterface);
-	  
+	  int maxAllocation = MaxSmfContactSize*perPage;
 	  //call private impl's send method
-	  m_SmfClientPrivate->sendRequest(m_providerSerialized,intfName,SmfContactSearch);
+	  m_SmfClientPrivate->sendRequest(m_providerSerialized,intfName,SmfContactSearchInGroup,maxAllocation);
+	  return 0;
    }
-
-
 void SmfContactFetcherPrivate::resultsAvailable(QByteArray result,SmfRequestTypeID opcode,SmfError error)
    	{
 	writeLog("SmfContactFetcherPrivate::resultsAvailable");
-	
-	//note:- "result" is serialized and we need to de-serialize it as per opcode
-	//TODO:- order of serialization Error value followed by data
 	
    	QDataStream reader(&result,QIODevice::ReadOnly);
    	
    	//Now de-serialize it based on opcode
    	switch(opcode)
    		{
-   		case SmfContactGetFriendsComplete:
+   		case SmfContactGetFriends:
    			{
 
    			if(m_contactList)
@@ -213,24 +267,18 @@ void SmfContactFetcherPrivate::resultsAvailable(QByteArray result,SmfRequestType
 				m_contactList = NULL;
    				}
    			m_contactList = new SmfContactList;
-   			//TODO
-//   			SmfError error;
-//   			reader>>error;
-//   			writeLog("Error=");
-//   			writeLog(QString::number(error));
-//   			SmfError err = (SmfError)error;
    			m_frndist.clear();
    			reader>>m_frndist;
    			writeLog("m_frndist.count=");
    			writeLog(QString::number(m_frndist.count()));
-   			//not incorporating paging now
+   			//TODO:-After consulting with PM owner decide page serialization
    			SmfResultPage page;
 
-   			emit m_contactFetcher->friendsListAvailable(&m_frndist,SmfNoError,page);
+   			emit m_contactFetcher->friendsListAvailable(&m_frndist,error,page);
    			
    			}
    			break;
-   		case SmfContactGetFollowersComplete:
+   		case SmfContactGetFollowers:
    			{
    			if(m_contactList)
    				{
@@ -238,32 +286,29 @@ void SmfContactFetcherPrivate::resultsAvailable(QByteArray result,SmfRequestType
 				m_contactList = NULL;
    				}
    			m_contactList = new SmfContactList;
-   			quint32 error;
-   			reader>>error;
-   			SmfError err = (SmfError)error;
    			reader>>*(m_contactList);
-   			//not incorporating paging now
+   			//TODO:-After consulting with PM owner decide page serialization
    			SmfResultPage page;
 
-   			emit m_contactFetcher->followersListAvailable(m_contactList,err,page);
+   			emit m_contactFetcher->followersListAvailable(m_contactList,error,page);
 			
    			}
    			break;
-   		case SmfContactGetGroupsComplete:
+   		case SmfContactGetGroups:
    			{
    			writeLog("Before m_grpList.clear=");
    			m_grpList.clear();
    			writeLog("Before reader>>m_grpList=");
    			reader>>m_grpList ;
-   			//not incorporating paging now
+   			/** @TODO:-After consulting with PM owner decide page serialization */
    			SmfResultPage page;
    			writeLog("m_grpList.count=");
    			writeLog(QString::number(m_grpList.count()));
-   			emit m_contactFetcher->groupListAvailable(&m_grpList,SmfNoError,page);
+   			emit m_contactFetcher->groupListAvailable(&m_grpList,error,page);
    			
    			}
    			break;
-   		case SmfContactSearchComplete:
+   		case SmfContactSearch:
    			{
    			if(m_contactList)
    				{
@@ -271,38 +316,58 @@ void SmfContactFetcherPrivate::resultsAvailable(QByteArray result,SmfRequestType
 				m_contactList = NULL;
    				}
    			m_contactList = new SmfContactList;
-   			quint32 error;
-   			reader>>error;
-   			SmfError err = (SmfError)error;
    			reader>>*(m_contactList);
-   			//not incorporating paging now
+   			/** @TODO:-After consulting with PM owner decide page serialization */
    			SmfResultPage page;
    			//searchContactFinished
-   			emit m_contactFetcher->searchContactFinished(m_contactList,err,page);
+   			emit m_contactFetcher->searchContactFinished(m_contactList,error,page);
+   			}
+   			break;
+   		case SmfContactSearchNear:
+   			{
+   			if(m_contactList)
+   				{
+				delete m_contactList;
+				m_contactList = NULL;
+   				}
+   			m_contactList = new SmfContactList;
+   			reader>>*(m_contactList);
+   			/** @TODO:-After consulting with PM owner decide page serialization*/
+   			SmfResultPage page;
+   			//searchContactFinished
+   			emit m_contactFetcher->searchNearFinished(m_contactList,error,page);
+   			}
+   			break;
+   		case SmfContactSearchInGroup:
+   			{
+   			if(m_contactList)
+   				{
+				delete m_contactList;
+				m_contactList = NULL;
+   				}
+   			m_contactList = new SmfContactList;
+   			reader>>*(m_contactList);
+   			//TODO:-After consulting with PM owner decide page serialization
+   			SmfResultPage page;
+   			//searchContactFinished
+   			emit m_contactFetcher->searchInGroupFinished(m_contactList,error,page);
    			}
    			break;
    		default:
-   			writeLog("Before m_grpList.clear=");
-   			m_grpList.clear();
-   			writeLog("Before reader>>m_grpList=");
-   			reader>>m_grpList ;
-   			//not incorporating paging now
-   			SmfResultPage page;
-   			writeLog("m_grpList.count=");
-   			writeLog(QString::number(m_grpList.count()));
-   			emit m_contactFetcher->groupListAvailable(&m_grpList,SmfNoError,page);
+   			writeLog("!!!!!!!!!!default!!!!!!!!!!!!!!");
    		}
    	
    	}
 void SmfContactFetcherPrivate::writeLog(QString log) const
 	{
+#ifdef WRITE_LOG
 	QFile file("c:\\data\\SmfClientLogs.txt");
     if (!file.open(QIODevice::Append | QIODevice::Text))
 	         return;
     QTextStream out(&file);
     out << log << "\n";
     file.close();
-
+#endif
 	}
 QDataStream &operator<<( QDataStream &aDataStream, 
 		const SmfError &err )

@@ -22,25 +22,40 @@
 DisplayWidget::DisplayWidget(QWidget *parent)
     : QWidget(parent)
 {
-	ui.setupUi(this);
-	ui.verticalLayout->setGeometry(QApplication::desktop()->availableGeometry());
-	//Add item as and when they are implemented
-	ui.comboBox_intf->addItem("Contact Fetcher");
-	ui.comboBox_intf->addItem("Post Provider");
-//	connect(ui.comboBox_intf,
-//			SIGNAL(currentIndexChanged(int)),
-//			this,
-//			SLOT(interfaceSelected(int)));
-	connect(ui.pushButton_intf,SIGNAL(clicked()),this,SLOT(interfaceSelected()));
-	connect(ui.pushButton_SP,SIGNAL(clicked()),this,SLOT(serviceProviderSelected()));
-	connect(ui.pushButton_service,SIGNAL(clicked()),this,SLOT(serviceSelected()));
-	writeLog("Start");
+//	ui.setupUi(this);
+//	ui.verticalLayout->setGeometry(QApplication::desktop()->availableGeometry());
+//	//Add item as and when they are implemented
+//	ui.comboBox_intf->addItem("Contact Fetcher");
+//	ui.comboBox_intf->addItem("Post Provider");
+////	connect(ui.comboBox_intf,
+////			SIGNAL(currentIndexChanged(int)),
+////			this,
+////			SLOT(interfaceSelected(int)));
+//	connect(ui.pushButton_intf,SIGNAL(clicked()),this,SLOT(interfaceSelected()));
+//	connect(ui.pushButton_SP,SIGNAL(clicked()),this,SLOT(serviceProviderSelected()));
+//	connect(ui.pushButton_service,SIGNAL(clicked()),this,SLOT(serviceSelected()));
+//	writeLog("Start");
+	SmfClient client;
+	QString intfName("org.symbian.smf.client.contact.fetcher\0.2");
+	providerList= client.GetServices(intfName);
+	writeLog("GetServices count=");
+	QString c = QString::number(providerList->count());
+	writeLog(c);	
+	SmfProvider smfP(providerList->at(0));
+	m_contactFetcher = new SmfContactFetcher(&smfP);
+				//connect to appropriate slot
+	connect(m_contactFetcher,
+			SIGNAL(friendsListAvailable(SmfContactList*, SmfError , SmfResultPage)),
+			this,
+			SLOT(showFriends(SmfContactList*, SmfError , SmfResultPage)));
+	
+	writeLog("Before m_contactFetcher->friends=");
+	//request for friends, excluding paging info
+	m_contactFetcher->friends();
 }
 void DisplayWidget::interfaceSelected()
 	{
 	SmfClient client;
-	//TODO:- PM should use commented interface name instead
-//	QString name("org.symbian.smf.client.contact.posts");
 	QString intfName;
 	switch(ui.comboBox_intf->currentIndex())
 		{
@@ -48,7 +63,7 @@ void DisplayWidget::interfaceSelected()
 			intfName = "org.symbian.smf.client.contact.fetcher";
 			break;
 		case 1:
-			intfName = "posts";
+			intfName = "org.symbian.smf.client.contact.posts";
 			break;
 		default:
 			//should not reach here!!!!
@@ -98,9 +113,9 @@ void DisplayWidget::serviceSelected()
 	SmfProvider smfP(providerList->at(ui.comboBox_service->currentIndex()));
 	
 	writeLog("Selected SmfProvider=");
-	writeLog(smfP.m_description);
-	writeLog(smfP.m_serviceUrl.toString());
-	writeLog(smfP.m_appUrl.toString());
+	writeLog(smfP.description());
+	writeLog(smfP.serviceUrl().toString());
+	writeLog(smfP.applicationUrl().toString());
 	switch(ui.comboBox_intf->currentIndex())
 		{
 		case 1:
@@ -148,7 +163,7 @@ void DisplayWidget::showPosts(SmfPostList* postlist, SmfError error, SmfResultPa
 	//display post description
 	
 	foreach(SmfPost post, *postlist)
-			{
+			{ 
 			QString desc = post.description();
 			ui.listWidget->addItem(desc);
 			}
@@ -165,22 +180,18 @@ void DisplayWidget::showFriends(SmfContactList* frnds, SmfError err, SmfResultPa
 	
 	foreach(SmfContact frnd, *frnds)
 			{
-		//lets display only street
+		//lets display only name
 		QVariant nameVar = frnd.value("Name");
 		QContactName name = nameVar.value<QContactName>();
 		QString fname;
 		QString lname;
-#ifdef OLDER_QT_MOBILITY
-		fname = name.first();
-		lname = name.last();
-#else
 		fname = name.firstName();
 		lname = name.lastName();
-#endif
-		
-		ui.listWidget->addItem(fname);
+		//qDebug()<<fname;
+		//qDebug()<<lname;
+		//ui.listWidget->addItem(fname);
 			}
-	ui.listWidget->show();
+	//ui.listWidget->show();
 	}
 void DisplayWidget::writeLog(QString log) const
 	{

@@ -35,9 +35,9 @@ SmfPost::SmfPost( )
  * @param aImage The post's image
  * @param aUrl The post's url
  */
-SmfPost::SmfPost( QString aTitle, QString aDesc, QImage aImage, QUrl aUrl )
+SmfPost::SmfPost( SmfContact aOwner,QString aTitle, QString aDesc, QImage aImage, QUrl aUrl )
 	{
-	d = new SmfPostPrivate(aTitle, aDesc, aImage, aUrl);
+	d = new SmfPostPrivate(aOwner,aTitle, aDesc, aImage, aUrl);
 	}
 
 /**
@@ -69,15 +69,18 @@ SmfPost& SmfPost::operator=( const SmfPost &aOther )
 SmfPost::~SmfPost( )
 	{
 	}
-
+SmfContact SmfPost::owner() const
+	{
+	return d->m_owner;
+	}
 /**
  * Method to get the title of the post
  * @return The post's title
  */
 QString SmfPost::title( ) const
-		{
+	{
 	return d->m_title;
-		}
+	}
 
 /**
  * Method to get the description of the post
@@ -105,7 +108,10 @@ QUrl SmfPost::url( ) const
 		{
 	return d->m_url;
 		}
-
+void SmfPost::setOwner(const SmfContact& aOwner)
+	{
+	d->m_owner = aOwner;
+	}
 /**
  * Method to get the id of the post
  * @return The ID value 
@@ -166,6 +172,7 @@ void SmfPost::setUrl( QUrl& aUrl )
 QDataStream &operator<<( QDataStream &aDataStream, 
 		const SmfPost &aPost )
 	{
+	aDataStream<<aPost.owner();
 	aDataStream<<aPost.title();
 	aDataStream<<aPost.description();
 	aDataStream<<aPost.image();
@@ -184,6 +191,9 @@ QDataStream &operator<<( QDataStream &aDataStream,
 QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfPost &aPost)
 	{
+	SmfContact owner;
+	aDataStream>>owner;
+	aPost.setOwner(owner);
 	QString title;
 	aDataStream>>title;
 	aPost.setTitle(title);

@@ -85,6 +85,6 @@ public:
 	
 	};
 
-Q_DECLARE_INTERFACE( SmfLyricsServicePlugin, "org.symbian.smf.plugin.music.lyrics/v1.0" );
+Q_DECLARE_INTERFACE( SmfLyricsServicePlugin, "org.symbian.smf.plugin.music.lyrics/v0.2" );
 
 #endif /* SMFLYRICSSERVICEPLUGIN_H_ */

@@ -1,162 +1,113 @@
-/*
- * smfprovider.cpp
+/**
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0" 
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  *
- *  Created on: Apr 15, 2010
- *      Author: manasij
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Manasij Roy, Nalina Hariharan
+ * 
+ * Description:
+ * Interface for a base service provider
+ *
  */
 #include "smfprovider.h"
 
-  SmfProvider::SmfProvider(QObject* parent)//:QObject(parent)
-	  {
-	  
-	  }
-  SmfProvider::~SmfProvider()
-	  {
-	  
-	  }
-
-  /**
-   * Localizable name of the service 
-   * @return service name
-   */
-  QString SmfProvider::serviceName() const
+ SmfProvider::SmfProvider()
   {
-	  return m_serviceName;
+  
   }
+ SmfProvider::~SmfProvider()
+  {
   
-  /**
-   * Logo of the service
-   * @return logo image of the service
-   */
-  QImage SmfProvider::serviceIcon() const
-		  {
-			  return m_serviceIcon;
-		  }
-  
-  /**
-   * Readable service description
-   * @return service description
-   */
-  QString SmfProvider::description() const
-		  {
-	  return m_description;
-		  }
-  
-  /*
-   * Website of the service
-   */
-  QUrl SmfProvider::serviceUrl() const
-		  {
-	  return m_serviceUrl;
-		  }
-  
-  /**
-   * URL of the application providing this service
-   */
-  QUrl SmfProvider::applicationUrl() const  //
-		  {
+  }
+QString SmfProvider::serviceName() const
+ {
+	return m_serviceName;
+ }
+QImage SmfProvider::serviceIcon() const
+ {
+	return m_serviceIcon;
+ }
+QString SmfProvider::description() const
+ {
+	 return m_description;
+ }
+QUrl SmfProvider::serviceUrl() const
+ {
+	 return m_serviceUrl;
+ }
+QUrl SmfProvider::applicationUrl() const  
+ {
 	  return m_appUrl;
-		  }
-  
-  /**
-   * service types - list of interfaces that this provider support
-   */
-  QList<QString> SmfProvider::serviceTypes() const
-		  {
-	  return m_serviceTypes;
-		  }
-  
-  /////////////////////////////////////////set APIs
-  /**
-   * Localizable name of the service 
-   * 
-   */
-  void SmfProvider::serviceName(QString& name)
+ }
+QList<QString> SmfProvider::supportedInterfaces() const
+ {
+	return m_serviceTypes;
+ }
+/**
+ * List of languages supported by this service provider
+ * @return a QStringList of languages supported by this service 
+ * provider in 2 letter ISO 639-1 format.
+ */
+QStringList SmfProvider::supportedLanguages() const
+	{
+	return m_supportedLanguages;
+	}
+void SmfProvider::setServiceName(QString& name)
 	  {
 	  m_serviceName = name;
 	  }
-  
-  /**
-   * Logo of the service
-   * 
-   */
-  void SmfProvider::serviceIcon(QImage& image)
+void SmfProvider::setServiceIcon(QImage& image)
 	  {
 	  m_serviceIcon = image;
 	  }
-  
-  /**
-   * Readable service description
-   * 
-   */
-  void SmfProvider::description(QString& desc)
+void SmfProvider::setDescription(QString& desc)
 	  {
 	  m_description = desc;
 	  }
-  
-  /*
-   * Website of the service
-   */
-  void SmfProvider::serviceUrl(QUrl& url)
+void SmfProvider::setServiceUrl(QUrl& url)
 	  {
 	  m_serviceUrl = url;
 	  }
-  
-  /**
-   * URL of the application providing this service
-   */
-  void SmfProvider::applicationUrl(QUrl& url)
+void SmfProvider::setApplicationUrl(QUrl& url)
 	  {
 	  m_appUrl = url;
 	  }
-  
-  /**
-   * service types - list of interfaces that this provider support
-   */
- void SmfProvider::serviceTypes( QStringList& types)
+void SmfProvider::setSupportedInterfaces( QStringList& types)
 	 {
 	 m_serviceTypes = types;
 	 }
- /**
-  * Externalization
-  */
- QDataStream &operator<<(QDataStream& out, const SmfProvider& base)
+/**
+ * Sets the list of languages supported by this service provider
+ * @param lang A QStringList of languages supported by this service 
+ * provider in 2 letter ISO 639-1 format.
+ */
+void SmfProvider::setSupportedLanguages( QStringList& lang )
+	{
+	m_supportedLanguages = lang;
+	}
+
+QDataStream &operator<<(QDataStream& out, const SmfProvider& base)
  	{
-// 	base.writeLog("operator<<");
-// 	base.writeLog("base info:-");
-// 	base.writeLog(base.m_serviceName);
- //	base.writeLog(base.m_serviceIcon);
-// 	base.writeLog(base.m_description);
-// 	base.writeLog(base.m_serviceUrl);
-// 	base.writeLog(base.m_appUrl);
-// 	
- 	
- 	out<<base.m_serviceName;
+	out<<base.m_serviceName;
  	out<<base.m_serviceIcon;
  	out<<base.m_description;
  	out<<base.m_serviceUrl;
  	out<<base.m_appUrl;
  	return out; 
  	}
-
- /**
-  * Internalization
-  */
- QDataStream &operator>>(QDataStream& in, SmfProvider& base)
+QDataStream &operator>>(QDataStream& in, SmfProvider& base)
  	{
-// 	base.writeLog("operator>>");
-
- 	
  	in>>base.m_serviceName;
  	in>>base.m_serviceIcon;
  	in>>base.m_description;
  	in>>base.m_serviceUrl;
  	in>>base.m_appUrl;
-// 	base.writeLog("After writing,base info:-");
-// 	base.writeLog(base.m_serviceName);
-// //	base.writeLog(base.m_serviceIcon);
-// 	base.writeLog(base.m_description);
-// 	base.writeLog(base.m_serviceUrl);
-// 	base.writeLog(base.m_appUrl);
  	return in; 
  	}

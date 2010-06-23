@@ -6,3 +6,5 @@ syntax: regexp
 ^.*\.moc$
 ^.*Makefile.*$
 ^bin/.*$
+^tmp
+^.*\bld.inf

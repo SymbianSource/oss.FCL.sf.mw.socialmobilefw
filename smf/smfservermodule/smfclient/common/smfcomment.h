@@ -23,7 +23,7 @@
 #include <QDateTime>
 #include <qdatastream.h>
 #include <QSharedData>
-#include <smfclientglobal.h>
+#include "smfclientglobal.h"
 #include <QMetaType>
 
 class SmfCommentPrivate;

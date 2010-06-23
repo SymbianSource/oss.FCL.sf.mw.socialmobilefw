@@ -73,7 +73,6 @@ private:
    */
   QList<SmfProvider>* m_providerList;
   
-
 };
 
 

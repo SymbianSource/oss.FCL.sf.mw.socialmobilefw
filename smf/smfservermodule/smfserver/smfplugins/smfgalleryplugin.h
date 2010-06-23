@@ -23,6 +23,7 @@
 #include <smfpluginbase.h>
 #include <smfpicture.h>
 #include <smfcomment.h>
+#include <smfpicturealbum.h>
 
 /**
  * @ingroup smf_plugin_group
@@ -59,15 +60,32 @@ public:
 	 * Destructor
 	 */
 	virtual ~SmfGalleryPlugin( ) {}
+
+	/**
+	 * Method to get a list of albums
+	 * @param aRequest [out] The request data to be sent to network
+	 * @param aNames The subject or any keywords to be used to filter albums with that name
+	 * @param aUser The user whose albums are requested
+	 * @param aPageNum The page to be extracted
+	 * @param aItemsPerPage Number of items per page
+	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 */
+	virtual SmfPluginError albums( SmfPluginRequestData &aRequest, 
+			const QStringList &aNames, 
+			const SmfContact *aUser, 
+			const int aPageNum = SMF_FIRST_PAGE,
+			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
 	/**
 	 * Method to get a list of pictures
 	 * @param aRequest [out] The request data to be sent to network
+	 * @param aAlbums The album(s) whose pictures are being requested
 	 * @param aPageNum The page to be extracted
 	 * @param aItemsPerPage Number of items per page
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
 	virtual SmfPluginError pictures( SmfPluginRequestData &aRequest, 
+			const SmfPictureAlbumList &aAlbums, 
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
@@ -84,19 +102,23 @@ public:
 	 * Method to upload a picture
 	 * @param aRequest [out] The request data to be sent to network
 	 * @param aImage The image to be uploaded
+	 * @param aAlbum the optional destination album name
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
 	virtual SmfPluginError upload( SmfPluginRequestData &aRequest,
-			const SmfPicture &aImage ) = 0;
+			const SmfPicture &aImage,
+			const SmfPictureAlbum* aAlbum = NULL ) = 0;
 	
 	/**
 	 * Method to upload a list of pictures
 	 * @param aRequest [out] The request data to be sent to network
 	 * @param aImages The list of images to be uploaded
+	 * @param aAlbum the optional destination album name
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
 	virtual SmfPluginError upload( SmfPluginRequestData &aRequest,
-			const QList<SmfPicture> &aImages ) = 0;
+			const QList<SmfPicture> &aImages, 
+			const SmfPictureAlbum* aAlbum = NULL ) = 0;
 	
 	/**
 	 * Method to post comment on a picture is available
@@ -123,6 +145,6 @@ public:
 		
 	};
 
-Q_DECLARE_INTERFACE( SmfGalleryPlugin, "org.symbian.smf.plugin.gallery/v1.0" );
+Q_DECLARE_INTERFACE( SmfGalleryPlugin, "org.symbian.smf.plugin.gallery/v0.2" );
 
 #endif /* SMFGALLERYPLUGIN_H_ */

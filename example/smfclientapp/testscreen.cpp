@@ -35,10 +35,10 @@ TestScreen::TestScreen(QWidget *parent)
 	SmfProvider smfP(providerList->at(0));
 	
 	writeLog("0th SmfProvider=");
-	writeLog(smfP.m_description);
-	writeLog(smfP.m_serviceUrl.toString());
-	writeLog(smfP.m_appUrl.toString());
-	m_postProvider = new SmfPostProvider(&smfP);
+	writeLog(smfP.description());
+		writeLog(smfP.serviceUrl().toString());
+		writeLog(smfP.applicationUrl().toString());
+		m_postProvider = new SmfPostProvider(&smfP);
 	//connect to appropriate slot
 	connect(m_postProvider,
 			SIGNAL(postsAvailable(SmfPostList*, SmfError, SmfResultPage)),
@@ -61,9 +61,10 @@ void TestScreen::friendsButtonClicked()
 	SmfProvider smfP(providerList->at(providerIndex));
 	
 	writeLog("0th SmfProvider=");
-	writeLog(smfP.m_description);
-	writeLog(smfP.m_serviceUrl.toString());
-	writeLog(smfP.m_appUrl.toString());
+	writeLog(smfP.description());
+		writeLog(smfP.serviceUrl().toString());
+		writeLog(smfP.applicationUrl().toString());
+		
 	m_contactFetcher = new SmfContactFetcher(&smfP);
 	//connect to appropriate slot
 	connect(m_contactFetcher,SIGNAL(friendsListAvailable(SmfContactList*, SmfError , SmfResultPage)),
@@ -84,9 +85,10 @@ void TestScreen::postsButtonClicked()
 	SmfProvider smfP(providerList->at(providerIndex));
 	
 	writeLog("0th SmfProvider=");
-	writeLog(smfP.m_description);
-	writeLog(smfP.m_serviceUrl.toString());
-	writeLog(smfP.m_appUrl.toString());
+	writeLog(smfP.description());
+		writeLog(smfP.serviceUrl().toString());
+		writeLog(smfP.applicationUrl().toString());
+		
 	m_postProvider = new SmfPostProvider(&smfP);
 //	//connect to appropriate slot
 	connect(m_postProvider,
@@ -150,13 +152,8 @@ void TestScreen::showFriends(SmfContactList* frnds, SmfError err, SmfResultPage)
 //		QString nick = name.value("Nickname");
 		QString fname;
 		QString lname;
-#ifdef OLDER_QT_MOBILITY
-		fname = name.first();
-		lname = name.last();
-#else
 		fname = name.firstName();
 		lname = name.lastName();
-#endif
 		
 		ui.listWidget->addItem(fname);
 //		QMessageBox::information(this,QString("First Name"),fname,QMessageBox::Ok);

@@ -14,9 +14,6 @@
  * 
  * Description:
  * The group class represents an instance of a group as per SN site terminolgy
- *
- *  Created on: Apr 16, 2010
- *      Author: manasij
  */
 	
 #include "smfgroup.h"

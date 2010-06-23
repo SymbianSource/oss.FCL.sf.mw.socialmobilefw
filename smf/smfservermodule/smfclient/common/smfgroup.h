@@ -20,20 +20,26 @@
 #ifndef SMFGROUP_H_
 #define SMFGROUP_H_
 
-#include <smfcontact.h>
+#include "smfcontact.h"
 #include <qdatastream.h>
 #include <QSharedData>
 #include "smfclientglobal.h"
 #include <QMetaType>
 #include "smfgroup_p.h"
 
-
+/**
+ * Max number of members per group
+ */
+const int MaxMemberPerGroup = 1000;
+/**
+ * Max size for one SmfGroup
+ */
+const int MaxSmfGroupSize = MaxSmfContactSize*MaxMemberPerGroup;
 /**
  * @ingroup smf_common_group
  * The group class represents an instance of a group as per SN site terminolgy
  */
 
-//QList<SmfGroup> gives error for serialization if its derived from QObject
 class  SMFCLIENT_EXPORT SmfGroup //: public QObject
 	{
 	//Q_OBJECT

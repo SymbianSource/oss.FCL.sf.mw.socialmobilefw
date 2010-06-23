@@ -20,12 +20,12 @@
 #ifndef SMFEVENT_H_
 #define SMFEVENT_H_
 
-#include <smflocation.h>
-#include <smfartists.h>
+#include "smflocation.h"
+#include "smfartists.h"
 #include <QStringList>
-#include <qdatastream.h>
+#include <QDatastream>
 #include <QSharedData>
-#include <smfclientglobal.h>
+#include "smfclientglobal.h"
 #include <QMetaType>
 
 class SmfEventPrivate;

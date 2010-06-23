@@ -1,25 +1,24 @@
-/*! \file
-    \brief File containing class description for DataStoreManager class.
-
-    Copyright (c) 2010 Sasken Communication Technologies Ltd.
-    All rights reserved.
-    This component and the accompanying materials are made available
-    under the terms of the "{License}"
-    which accompanies  this distribution, and is available
-    at the URL "{LicenseUrl}".
-
-    \author Jaspinder Singh, Sasken Communication Technologies Ltd - Initial contribution
-
-    \version 0.1
-
-*/
+/**
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0" 
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
+ *
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * 
+ */
 
 #include <dsm.h>
 #include <QDebug>
 
 // Static data initialization
-DataStoreManager* DataStoreManager::m_dsm_instance = NULL;
-const QString DataStoreManager::db_name = "dsm.db";
+DataStoreManager* DataStoreManager::dsmInstance = NULL;
+const QString DataStoreManager::dbName = "dsm.db";
 DataStoreManagerState DataStoreManager::state = CLOSED;
 
 //! \fn getDataStoreManager()
@@ -31,15 +30,13 @@ DataStoreManagerState DataStoreManager::state = CLOSED;
     \return Pointer to the current instantiation of DataStoreManager.
 */
 DataStoreManager* DataStoreManager::getDataStoreManager(){
-    if(m_dsm_instance == NULL){
-        m_dsm_instance = new DataStoreManager(DataStoreManager::db_name);
-        if(!(m_dsm_instance->InitializeDataBase())){
+    if(dsmInstance == NULL){
+    dsmInstance = new DataStoreManager(DataStoreManager::dbName);
+        if(!(dsmInstance->InitializeDataBase())){
             return NULL;
         }
-
     }
-
-    return  m_dsm_instance;
+    return  dsmInstance;
 }
 
 //! \fn ~DataStoreManager()
@@ -51,7 +48,7 @@ DataStoreManager* DataStoreManager::getDataStoreManager(){
 DataStoreManager::~DataStoreManager(){
     db.close();
     state = CLOSED;
-    delete m_dsm_instance;
+    delete dsmInstance;
 }
 
 //! \fn getState()
@@ -68,536 +65,928 @@ DataStoreManagerState DataStoreManager::getState() const{
     \brief  Get the last error message from the DataStoreManager object.
     \return The last error message string of the DSM object.
 */
-QString DataStoreManager::getError() const{
-    return m_last_msg;
+QString DataStoreManager::getErrorText() const{
+    return lastMsg;
 }
 
-/* Refactor this. Think Signals. */
-QList <SMFSocialProfile> DataStoreManager::getAllRelated(const SMFUserProfile& user_profile) {
-    QList <SMFSocialProfile> related_profiles;
-    int usr_id = user_profile.userID();
+SmfRelationId DataStoreManager::create(SmfProvider *aProvider, SmfContact *aContact){
 
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-            return related_profiles;
-            /* Do something to signal an error. Just returning an empty list is NOT ok */
-        }
-    }
-
-    QSqlQuery qry;
-    qry.prepare("SELECT social_profiles.social_profile_id , social_profiles.user_id , social_profiles.sns_id , "
-                " social_profiles.profile_url , social_profiles.screen_alias"
-                " FROM social_profiles JOIN user_profiles WHERE user_profiles.user_id = social_profiles.user_id"
-                " AND social_profiles.user_id = :user_id");
-    qry.bindValue(":user_id", usr_id);
-
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        /* Do something to signal an error. Just returning an empty list is NOT ok */
-        return related_profiles;
-    }
-
-    while(qry.next())
-    {
-        SMFSocialProfile _profile(qry.value(2).toInt()/* sns ID*/,
-                                  qry.value(1).toInt() /* user ID */,
-                                  qry.value(3).toString()/* url */,
-                                  qry.value(4).toString()/* alias */);
-        related_profiles << _profile;
-
-    }
-/*
-    for( int i = 0; i < related_profiles.size(); i++){
-        qDebug() << related_profiles.at(i).associatedSnsID() << ", " << related_profiles.at(i).associatedUserID()
-                << related_profiles.at(i).profileURL() << related_profiles.at(i).screenAlias() ;
-    }
-*/
-    qry.finish();
-    db.close();
-
-    return related_profiles;
-
+	QString userId, contactUrl, localId, managerUri, presenceState, presenceText, statusText;
+	QDateTime dateTime;
+	Int64 timeStampInSeconds;
+	
+	QContactGuid guid = aContact->value("Guid").value<QContactGuid>();
+	userId = guid.guid();
+	
+	QContactUrl url = aContact->value("Url").value<QContactUrl>();
+	contactUrl = url.url();
+	
+	QContactId contactId = aContact->value("ContactId").value<QContactId>();
+	localId =  contactId.localId() ;
+	managerUri = contactId.managerUri();
+	
+	QContactTimestamp time = aContact->value("Timestamp").value<QContactTimestamp>();
+	dateTime = time.created();
+	//Returns the datetime as the number of seconds that have passed since 1970-01-01T00:00:00, Coordinated Universal Time (Qt::UTC).
+	timeStampInSeconds =  dateTime.toTime_t() ;
+		
+	QContactPresence presence = aContact->value("Presence").value<QContactPresence>();	
+	presenceState = QString::number( (int)presence.presenceState() );
+	presenceText = presence.presenceStateText();
+	statusText = presence.customMessage();
+	
+	QString snsName = aProvider->serviceName();
+	QString snsUrl = (aProvider->serviceUrl()).toString();
+	QString snsDesc = aProvider->description();
+		
+	
+	const int contactID = addContactToTable( userId, contactUrl, localId, managerUri, snsName, snsDesc, snsUrl, presenceState, presenceText , statusText, timeStampInSeconds);
+	return QString::number( addRelationToTable( contactID ) );
 }
 
-
-SMFSocialProfile DataStoreManager::getRelatedByService(const SMFUserProfile& user_profile, const SMFSocialNetworkingSite& sns){
-
-    SMFSocialProfile _profile;
-    int usr_id = user_profile.userID();
-    int sns_id = sns.snsID();
-
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-            return _profile;
-            /* Do something to signal an error. Just returning an empty list is NOT ok */
-        }
-    }
-
-    QSqlQuery qry;
-    qry.prepare("SELECT social_profiles.social_profile_id , social_profiles.user_id , social_profiles.sns_id , "
-                " social_profiles.profile_url , social_profiles.screen_alias"
-                " FROM social_profiles JOIN user_profiles WHERE user_profiles.user_id = social_profiles.user_id"
-                " AND social_profiles.user_id = :user_id AND social_profiles.sns_id = :sns_id");
-    qry.bindValue(":user_id", usr_id);
-    qry.bindValue(":sns_id", sns_id);
-
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        /* Do something to signal an error. Just returning an empty list is NOT ok */
-        return _profile;
-    }
-
-    if(qry.next()) {
-        _profile.setAssociatedSnsID(qry.value(2).toInt());
-        _profile.setAssociatedUserID(qry.value(1).toInt());
-        _profile.setProfileURL(qry.value(3).toString());
-        _profile.setScreenAlias(qry.value(4).toString());
-    }
-/*
-    qDebug() << _profile.associatedSnsID() << ", " << _profile.associatedUserID() << ", "
-            << _profile.profileURL() << ", "<< _profile.screenAlias() ;
-*/
-    qry.finish();
-    db.close();
-
-    return _profile;
+SmfError DataStoreManager::associate( 	SmfRelationId aRelation,	
+										const SmfContact* aContact, 
+										SmfProvider* aProvider){
+	
+	if( ! relationIfExist( aRelation.toInt()) )
+		return SmfErrInvalidRelation;
+		
+	QString userId, contactUrl, localId, managerUri, presenceState, presenceText, statusText;
+	QDateTime dateTime;
+	Int64 timeStampInSeconds;
+	
+	QContactGuid guid = aContact->value("Guid").value<QContactGuid>();
+	userId = guid.guid();
+	
+	QContactUrl url = aContact->value("Url").value<QContactUrl>();
+	contactUrl = url.url();
+	
+	QContactId contactId = aContact->value("ContactId").value<QContactId>();
+	localId =  contactId.localId() ;
+	managerUri = contactId.managerUri();
+	
+	QContactTimestamp time = aContact->value("Timestamp").value<QContactTimestamp>();
+	dateTime = time.created();
+	//Returns the datetime as the number of seconds that have passed since 1970-01-01T00:00:00, Coordinated Universal Time (Qt::UTC).
+	timeStampInSeconds =  dateTime.toTime_t() ;
+		
+	QContactPresence presence = aContact->value("Presence").value<QContactPresence>();	
+	presenceState = presence.presenceState();
+	presenceText = presence.presenceStateText();
+	statusText = presence.customMessage();
+	
+	QString snsName = aProvider->serviceName();
+	QString snsUrl = (aProvider->serviceUrl()).toString();
+	QString snsDesc = aProvider->description();
+		
+	const int contactID = addContactToTable( userId, contactUrl, localId, managerUri, snsName, snsDesc, snsUrl, presenceState, presenceText , statusText, timeStampInSeconds);
+	if( socialProfileBaseID <= addRelationToTable( contactID,  aRelation.toInt() )  )
+		return  SmfNoError ;
+	else
+		return SmfDbOpeningError;
 }
 
-/* Cannot return something like this. Make this async */
-SMFUserProfile DataStoreManager::getUserProfile(const QString& name, const QString& contact_id){    
-    SMFUserProfile _profile;
+/** remove contact from a relation */
+SmfError DataStoreManager::remove(SmfRelationId aRelation, const SmfContact* aContact){
+	
+	int contactId, relationId;
+	QString userId, contactUrl, localId, managerUri;
+	
+	relationId = aRelation.toInt();
+	 
+	if(SmfDbOpeningError == openDB())
+			return SmfDbOpeningError;
 
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-            return _profile;
-            /* Do something to signal an error. Just returning an empty list is NOT ok */
-        }
-    }
+	QSqlQuery qry;
+			
+	QContactGuid guid = aContact->value("Guid").value<QContactGuid>();
+	userId = guid.guid();
+	
+	if ( ! userId.isNull() )
+	{
+		QContactUrl url = aContact->value("Url").value<QContactUrl>();
+		contactUrl = url.url();				
+		
+	qry.prepare("SELECT contactId FROM contact where userId=:userId AND contactUrl=:contactUrl");	
+	qry.bindValue(":userId", userId);
+	qry.bindValue(":contactUrl", contactUrl);
+	}
+	else
+	{
+		QContactId contactId = aContact->value("ContactId").value<QContactId>();
+		localId =  contactId.localId() ;
+		managerUri = contactId.managerUri();
+		
+		qry.prepare("SELECT contactId FROM contact where localId=:localId AND managerUri=:managerUri");	
+		qry.bindValue(":localId", localId);
+		qry.bindValue(":managerUri", managerUri);
+	}
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
 
-    QSqlQuery qry;
-    qry.prepare("SELECT user_id , name , contact_id FROM user_profiles WHERE name=:name  AND contact_id=:contact_id");
-    qry.bindValue(":name", name);
-    qry.bindValue(":contact_id", contact_id);
-
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        /* Do something to signal an error. Just returning an empty list is NOT ok */
-        return _profile;
-    }
-
-    if(qry.next()){
-        _profile.setName(qry.value(1).toString());
-        _profile.setContactID(qry.value(2).toString());
-        _profile.setUserID(qry.value(0).toInt());
-    }
-
-    qry.finish();
-    db.close();
-
-    return _profile;
+	if(qry.next())
+		contactId = qry.value(0).toInt();
+		
+	deleteContactFromTable(relationId, contactId);
+	
+	qry.finish();
+	db.close();
+	return 	SmfNoError;		
+		
 }
 
-/*! Fetches the Social Networking site identified by \a name */
-SMFSocialNetworkingSite DataStoreManager::getSNSEntry(const QString& name){
-    SMFSocialNetworkingSite sns;
+/** returns first relation item in the relation when exists, NULL otherwise */
+SmfRelationItem* DataStoreManager::searchById(const SmfRelationId aRelation){
 
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-            return sns;
-            /* Do something to signal an error. Just returning an empty list is NOT ok */
-        }
-    }
+	const int relationId = aRelation.toInt();
+	int contactId, contactIndex;
+	
+	if(SmfDbOpeningError == openDB())
+			return NULL;
 
-    QSqlQuery qry;
-    qry.prepare("SELECT sns_id, sns_name, sns_url FROM sns_base WHERE sns_name=:name");
-    qry.bindValue(":name", name);
+	QSqlQuery qry;
+	qry.prepare("SELECT contactId, contactIndex FROM relation where relationId=:relationId LIMIT 1");	
+	qry.bindValue(":relationId", relationId);
+		
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return NULL; 
 
-    if(!qry.exec()){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        return sns;
-    }
+	if(qry.next()){
+		contactId = qry.value(0).toInt();
+		contactIndex = qry.value(1).toInt();
+	}
+	
+	qry.prepare("SELECT * FROM contact where contactId=:contactId");
+	qry.bindValue(":contactId", contactId);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+			return NULL; 
 
-    if(qry.next()){
-        sns.setSnsID(qry.value(0).toInt());
-        sns.setSnsName(qry.value(1).toString());
-        sns.setSnsURL(qry.value(2).toString());
-    }
-
-    qry.finish();
-    db.close();
-
-    return sns;
+	if(qry.next())
+		createRelationItem(qry, contactIndex);	
+		
+	qry.finish();
+	db.close();
+	return iSmsfRelationItem;
+	
 }
 
-/* Actually all these 'save' functions can be written as a template */
-void DataStoreManager::saveUserProfile(const SMFUserProfile& user_profile){
+SmfRelationItem* DataStoreManager::getContact(SmfRelationId aRelation, quint32 aIndex){
+	
+	const int relationId = aRelation.toInt();
+	int contactId;
+	
+	if(SmfDbOpeningError == openDB())
+			return NULL;
 
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-        }
-    }
+	QSqlQuery qry;
+	qry.prepare("SELECT contactId FROM relation where relationId=:relationId AND contactIndex=:contactIndex");	
+	qry.bindValue(":relationId", relationId);
+	qry.bindValue(":contactIndex", aIndex);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return NULL; 
 
-    QSqlQuery qry;
-    qry.prepare("UPDATE user_profiles"
-                " SET name=:name , contact_id=:contact_id"
-                " WHERE user_id=:user_id");
-    qry.bindValue(":name", user_profile.name());
-    qry.bindValue(":contact_id", user_profile.contactID());
-    qry.bindValue(":user_id", user_profile.userID());
+	if(qry.next()){
+		contactId = qry.value(0).toInt();
+	}
+	
+	qry.prepare("SELECT * FROM contact where contactId=:contactId");
+	qry.bindValue(":contactId", contactId);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+			return NULL; 
 
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-    }
-
-    qry.finish();
-    db.close();
+	if(qry.next())
+		createRelationItem(qry, aIndex);	
+		
+	qry.finish();
+	db.close();
+	return iSmsfRelationItem;	
 }
 
-void DataStoreManager::saveSocialProfile(const SMFSocialProfile& social_profile){
+/** returns relation Id for a given contacts if exists, NULL otherwise */
+SmfRelationId DataStoreManager::searchByContact( SmfContact aContact){
 
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-        }
-    }
+	int contactId, relationId;
+	QString userId, contactUrl, localId, managerUri;
+	 
+	if(SmfDbOpeningError == openDB())
+			return QString();
 
-    QSqlQuery qry;
-    qry.prepare("UPDATE social_profiles"
-                " SET user_id=:user_id, sns_id=:sns_id, profile_url=:profile_url, screen_alias=:screen_alias"
-                " WHERE social_profile_id=:social_profile_id");
-    qry.bindValue(":user_id", social_profile.associatedUserID());
-    qry.bindValue(":sns_id", social_profile.associatedSnsID());
-    qry.bindValue(":profile_url", social_profile.profileURL());
-    qry.bindValue(":screen_alias", social_profile.screenAlias());
-    qry.bindValue(":social_profile_id", social_profile.profileID());
+	QSqlQuery qry;
+	
+	QContactGuid guid = aContact.value("Guid").value<QContactGuid>();
+	userId = guid.guid();
+	
+	if ( ! userId.isNull() )
+	{
+		QContactUrl url = aContact.value("Url").value<QContactUrl>();
+		contactUrl = url.url();				
+		
+	qry.prepare("SELECT contactId FROM contact where userId=:userId AND contactUrl=:contactUrl");	
+	qry.bindValue(":userId", userId);
+	qry.bindValue(":contactUrl", contactUrl);
+	}
+	else
+	{
+		QContactId contactId = aContact.value("ContactId").value<QContactId>();
+		localId =  contactId.localId() ;
+		managerUri = contactId.managerUri();
+		
+		qry.prepare("SELECT contactId FROM contact where localId=:localId AND managerUri=:managerUri");	
+		qry.bindValue(":localId", localId);
+		qry.bindValue(":managerUri", managerUri);
+	}
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return QString(); 
 
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-    }
+	if(qry.next())
+		contactId = qry.value(0).toInt();
+		
+	qry.prepare("SELECT relationId FROM relation where contactId=:contactId");	
+		qry.bindValue(":contactId", contactId);	
+		
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+			return QString(); 
 
-    qry.finish();
-    db.close();
+	if(qry.next()){
+		relationId = qry.value(0).toInt();	
+	}
+	
+	qry.finish();
+	db.close();
+	return QString::number( relationId );			
+	
 }
 
-void DataStoreManager::saveSNSEntry(const SMFSocialNetworkingSite& sns){
+/** contacts and their provider */
+DSMContactPckg* DataStoreManager::get(SmfRelationId aRelation, quint32 aIndex){
+	
+	const int relationId = aRelation.toInt();
+	int contactId;
+	
+	if(SmfDbOpeningError == openDB())
+			return NULL;
 
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-        }
-    }
+	QSqlQuery qry;
+	qry.prepare("SELECT contactId FROM relation where relationId=:relationId AND contactIndex=:contactIndex");	
+	qry.bindValue(":relationId", relationId);
+	qry.bindValue(":contactIndex", aIndex);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return NULL; 
 
-    QSqlQuery qry;
-    qry.prepare("UPDATE sns_base"
-                " SET sns_name=:sns_name, sns_url=:sns_url"
-                " WHERE sns_id=:sns_id");
-    qry.bindValue(":sns_name", sns.snsName());
-    qry.bindValue(":sns_url", sns.snsURL());
-    qry.bindValue(":sns_id", sns.snsID());
+	if(qry.next()){
+		contactId = qry.value(0).toInt();
+	}
+	
+	qry.prepare("SELECT * FROM contact where contactId=:contactId");
+	qry.bindValue(":contactId", contactId);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+			return NULL; 
 
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-    }
-
-    qry.finish();
-    db.close();
-
+	if(qry.next()){
+		iDSMContactPckgItem = new DSMContactPckg;
+		
+		iDSMContactPckgItem->userId = qry.value(0).toString(); 
+		iDSMContactPckgItem->contactUrl = qry.value(1).toString(); 
+		iDSMContactPckgItem->localId = qry.value(2).toString(); 
+		iDSMContactPckgItem->managerUri = qry.value(3).toString(); 
+		iDSMContactPckgItem->snsName = qry.value(4).toString(); 
+		iDSMContactPckgItem->snsDesc = qry.value(5).toString();  
+		iDSMContactPckgItem->snsUrl = qry.value(6).toString(); 
+		iDSMContactPckgItem->presenceState = qry.value(7).toString(); 
+		iDSMContactPckgItem->presenceText = qry.value(8).toString(); 
+		iDSMContactPckgItem->statusText = qry.value(9).toString(); 
+		iDSMContactPckgItem->timeStamp = qry.value(10).toLongLong(); 
+		iDSMContactPckgItem->contactIndex = relationId;
+		iDSMContactPckgItem->relationId = aIndex;
+	}
+	
+	qry.finish();
+	db.close();
+	return iDSMContactPckgItem;
 }
 
-void DataStoreManager::modifyRelation(SMFSocialProfile& sns, SMFUserProfile& new_user_profile){
-    sns.setAssociatedUserID(new_user_profile.userID());
+/** list of contacts and their provider */
+QList<SmfRelationItem> DataStoreManager::getAll(SmfRelationId aRelation){
+	QList<SmfRelationItem> relationItemList;
+	const int relationId = aRelation.toInt();
+	int contactId, contactIndex;
+	
+	if(SmfDbOpeningError == openDB())
+			return relationItemList;
+
+	QSqlQuery qry;
+	qry.prepare("SELECT contactId, contactIndex FROM relation where relationId=:relationId");	
+	qry.bindValue(":relationId", relationId);
+		
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return relationItemList; 
+
+	while(qry.next()){
+		contactId = qry.value(0).toInt();
+		contactIndex = qry.value(1).toInt();
+		
+		QSqlQuery innerqry;
+		innerqry.prepare("SELECT * FROM contact where contactId=:contactId");
+		innerqry.bindValue(":contactId", contactId);
+		
+		if(SmfDbQueryExecutonError == executeQuery(innerqry))
+				return relationItemList; 
+
+		if(innerqry.next()){
+			createRelationItem(innerqry, contactIndex);
+			relationItemList << *iSmsfRelationItem;
+		}
+		innerqry.finish();
+	}// end while
+	
+	qry.finish();
+	db.close();
+	return relationItemList;	
 }
 
-
-int DataStoreManager::addUserProfile(SMFUserProfile& user_profile){
-    int user_id = user_profile.userID();
-
-    /* Check Required to identify multiple Entries */
-
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-            return user_id;
-        }
-    }
-
-    QSqlQuery qry;
-    qry.prepare("INSERT INTO user_profiles (name, contact_id) VALUES (:name, :contact_id)");
-    qry.bindValue(":name", user_profile.name());
-    qry.bindValue(":contact_id", user_profile.contactID());
-
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        return user_id;
-    }
-
-    qry.prepare("SELECT user_id FROM user_profiles WHERE name=:name AND contact_id=:contact_id");
-    qry.bindValue(":name", user_profile.name());
-    qry.bindValue(":contact_id", user_profile.contactID());
-
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        return user_id;
-    }
-
-    if(qry.next()){
-        user_id = qry.value(0).toInt();
-        user_profile.setUserID(user_id);
-    }
-
-    qry.finish();
-    db.close();
-
-    return user_id;
-
-
+void DataStoreManager::createRelationItem( QSqlQuery & aQry, int aIndex){
+			
+	SmfContact * smfContact;
+	SmfProvider * smfProvider;
+	QString snsName, snsDesc;
+	QUrl snsUrl;
+	
+	QVariant userId = QVariant::fromValue( aQry.value(0).toString() );
+	QVariant contactUrl = QVariant::fromValue(aQry.value(1).toString() ); 
+	
+	QString StrLocalId =  aQry.value(2).toString() ;
+	QString StrManagerUri = aQry.value(3).toString() ;	
+	QContactId qContactId;
+	qContactId.setLocalId( StrLocalId.toInt() );
+	qContactId.setManagerUri( StrManagerUri );	    
+	QVariant contactId = QVariant::fromValue(qContactId);	
+	
+	int presenceState = aQry.value(7).toInt() ; 	
+	QString presenceStateText = aQry.value(8).toString() ;
+	QString statusText = aQry.value(9).toString();
+	QContactPresence qContactPresence;
+	qContactPresence.setPresenceState(static_cast<QContactPresence::PresenceState>(presenceState));
+	qContactPresence.setPresenceStateText(presenceStateText);
+	qContactPresence.setCustomMessage(statusText);
+	QVariant contactPresence  = QVariant::fromValue(qContactPresence);
+	
+	QDateTime dateTime;	
+	dateTime.setTime_t ( aQry.value(10).toLongLong() ) ;
+	QContactTimestamp qContactTimestamp;
+	qContactTimestamp.setCreated(dateTime);
+	QVariant timeStamp = QVariant::fromValue( qContactTimestamp );
+	
+	smfContact = new SmfContact;
+	smfContact->setValue("Guid", userId);
+	smfContact->setValue("Url", contactUrl);
+	smfContact->setValue("ContactId", contactId);
+	smfContact->setValue("Presence", contactPresence);	
+	smfContact->setValue("Timestamp", timeStamp);
+	
+	smfProvider = new SmfProvider;
+	snsName = aQry.value(4).toString();
+	snsDesc = aQry.value(5).toString();;
+	snsUrl = aQry.value(6).toUrl();
+	
+	smfProvider->setServiceName( snsName );
+	smfProvider->setDescription( snsDesc );
+	smfProvider->setServiceUrl( snsUrl );
+	
+	iSmsfRelationItem = new SmfRelationItem;	
+	iSmsfRelationItem->setIndex( aIndex );
+	iSmsfRelationItem->setProvider(*(smfProvider) );
+	iSmsfRelationItem->setContact(*( smfContact ));	
+}
+uint DataStoreManager::count(SmfRelationId relation){
+	
+	const int relationId = relation.toInt();
+	return count( relationId );
 }
 
-int DataStoreManager::deleteUserProfile( SMFUserProfile& user_profile){
-
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-            return -1;
-        }
-    }
-
-    QSqlQuery qry;
-    qry.prepare("DELETE FROM user_profiles WHERE user_id=:user_id");
-    qry.bindValue(":user_id", user_profile.userID());
-
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        return -1;
-    }
-
-    qry.finish();
-    db.close();
-
-    return 0;
+SmfError DataStoreManager::deleteRelation(SmfRelationId relation){
+	const int relationId = relation.toInt();
+	return deleteRelationFromTable( relationId );
 }
 
-int DataStoreManager::addSocialProfile(SMFSocialProfile& social_profile){
-    int social_prof_id = social_profile.profileID();
+QList<SmfRelationId> DataStoreManager::getAllRelations(){
+	QList<SmfRelationId> relationList;
+					
+	if(SmfDbOpeningError == openDB())
+		return relationList;
 
-    /* Check Required to identify multiple entries */
+	QSqlQuery qry;
+	qry.prepare("SELECT DISTINCT relationId FROM relation");	
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return relationList; 
 
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-            return social_prof_id;
-        }
-    }
+	while(qry.next()){
+		relationList << qry.value(0).toString();
+	}
 
-    /*  There might be a request to add a social profile with either user and/or sns profile(s)
-        not stored in the database. What to do in that case? Automatically store the other profiles too?
-    */
-    QSqlQuery qry;
-    qry.prepare("INSERT INTO social_profiles (user_id, sns_id, profile_url, screen_alias) "
-                "VALUES (:user_id, :sns_id, :profile_url, :screen_alias)");
-    qry.bindValue(":user_id", social_profile.associatedUserID());
-    qry.bindValue(":sns_id", social_profile.associatedSnsID());
-    qry.bindValue(":profile_url", social_profile.profileURL());
-    qry.bindValue(":screen_alias", social_profile.screenAlias());
-
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        return social_prof_id;
-    }
-
-    qry.prepare("SELECT social_profile_id FROM social_profiles  "
-                "WHERE user_id=:user_id AND sns_id=:sns_id AND profile_url=:profile_url AND screen_alias=:screen_alias");
-    qry.bindValue(":user_id", social_profile.associatedUserID());
-    qry.bindValue(":sns_id", social_profile.associatedSnsID());
-    qry.bindValue(":profile_url", social_profile.profileURL());
-    qry.bindValue(":screen_alias", social_profile.screenAlias());
-
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        return social_prof_id;
-    }
-
-    if(qry.next()){
-        social_prof_id = qry.value(0).toInt();
-        social_profile.setProfileID(social_prof_id);
-    }
-
-    qry.finish();
-    db.close();
-
-    return social_prof_id;
+	qry.finish();
+	db.close();
+	return relationList;			
 }
 
-int DataStoreManager::deleteSocialProfile(SMFSocialProfile& social_profile){
-
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-            return -1;
-        }
-    }
-
-    QSqlQuery qry;
-    qry.prepare("DELETE FROM social_profiles WHERE social_profile_id=:social_profile_id");
-    qry.bindValue(":social_profile_id", social_profile.profileID());
-
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        return -1;
-    }
-
-    qry.finish();
-    db.close();
-
-    return 0;
+int DataStoreManager::openDB(){
+	if (!(db.isOpen())){
+		if(!(db.open())){
+			state = ERROR;
+			lastMsg = db.lastError().text();
+			return SmfDbOpeningError;
+		}
+	}
+	return SmfNoError;	
 }
 
-int DataStoreManager::addSNSEntry( SMFSocialNetworkingSite& sns){
-    int sns_id = sns.snsID();
-
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-            return sns_id;
-        }
-    }
-
-    QSqlQuery qry;
-    qry.prepare("INSERT INTO sns_base (sns_name, sns_url) VALUES (:sns_name, :sns_url)");
-    qry.bindValue(":sns_name", sns.snsName());
-    qry.bindValue(":sns_url", sns.snsURL());
-
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        return sns_id;
-    }
-
-    qry.prepare("SELECT sns_id FROM sns_base WHERE sns_name=:sns_name AND sns_url=:sns_url");
-    qry.bindValue(":sns_name", sns.snsName());
-    qry.bindValue(":sns_url", sns.snsURL());
-
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        return sns_id;
-    }
-
-    if(qry.next()){
-        sns_id = qry.value(0).toInt();
-        sns.setSnsID(sns_id);
-    }
-
-    qry.finish();
-    db.close();
-
-    return sns_id;
-}
-
-int DataStoreManager::deleteSNSEntry(SMFSocialNetworkingSite& sns){
-
-    if (!(db.isOpen())){
-        if(!(db.open())){
-            state = ERROR;
-            m_last_msg = db.lastError().text();
-            return -1;
-        }
-    }
-
-    QSqlQuery qry;
-    qry.prepare("DELETE FROM sns_base WHERE sns_id=:sns_id");
-    qry.bindValue(":sns_id", sns.snsID());
-
-    if(!(qry.exec())){
-        m_last_msg = qry.lastError().text();
-        qry.finish();
-        return -1;
-    }
-
-    qry.finish();
-    db.close();
-
-    return 0;
-}
-
-int DataStoreManager::createRelation(const SMFUserProfile& user_profile, SMFSocialProfile& social_profile){
-    social_profile.setAssociatedUserID(user_profile.userID());
-    /* Save the socialProfile */
-    //saveSocialProfile(social_profile);
-    return 0;
-}
-
-int DataStoreManager::deleteRelation(const SMFUserProfile&,  SMFSocialProfile& social_profile){
-    social_profile.setAssociatedUserID(-1);
-    /* Save the profile */
-    //saveSocialProfile(social_profile);
-    return 0;
+int DataStoreManager::executeQuery(QSqlQuery& qry){
+	 if(!(qry.exec())){
+		lastMsg = qry.lastError().text();
+		qry.finish();
+		return SmfDbQueryExecutonError;
+	}
+	return SmfNoError;
 }
 
 
-DataStoreManager::DataStoreManager(const QString& db_name, QObject* parent):QObject(parent){
+
+DataStoreManager::DataStoreManager(const QString& dbName, QObject* parent):QObject(parent){
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(db_name);
+    db.setDatabaseName(dbName);
 }
 
 bool DataStoreManager::InitializeDataBase(){
 
     if(!db.open()){
         state = ERROR;
-        m_last_msg = db.lastError().text();
+        lastMsg = db.lastError().text();
         return FALSE;
     }
     else
         state = READY;
+    
+    const int tableCount = 2;
 
-    QSqlQuery create_tables[3];
+    QSqlQuery smfDsmTables[tableCount];
 
-    create_tables[0].prepare("CREATE TABLE IF NOT EXISTS user_profiles (user_id INTEGER PRIMARY KEY AUTOINCREMENT , name TEXT, contact_id TEXT)");
-    create_tables[1].prepare("CREATE TABLE IF NOT EXISTS sns_base (sns_id INTEGER PRIMARY KEY AUTOINCREMENT , sns_name TEXT, sns_url TEXT)");
-    create_tables[2].prepare("CREATE TABLE IF NOT EXISTS social_profiles (social_profile_id INTEGER PRIMARY KEY AUTOINCREMENT , user_id INTEGER, sns_id INTEGER, profile_url TEXT, screen_alias TEXT)");
+    smfDsmTables[0].prepare("CREATE TABLE IF NOT EXISTS contact (contactId INTEGER PRIMARY KEY AUTOINCREMENT,"
+																  "contactGuid TEXT,"	 
+																  "contactUrl TEXT,"
+																  "localId TEXT,"
+																  "managerUri TEXT,"
+																  "snsName TEXT,"
+																  "snsDesc TEXT,"
+																  "snsUrl TEXT),"
+																  "presenceState INTEGER,"
+																  "presenceText TEXT,"
+																  "timeStamp INTEGER )");
+    
+    smfDsmTables[1].prepare("CREATE TABLE IF NOT EXISTS relation (relationId INTEGER,"
+																 " contactId INTEGER,"
+																 " contactIndex INTEGER)" );
+    
 
-
-
-    for(int i = 0; i < 3; i++){
-        if(!create_tables[i].exec()){
+    for(int i = 0; i < tableCount; i++){
+        if(!smfDsmTables[i].exec()){
             state = ERROR;
-            m_last_msg = create_tables[i].lastError().text();
+            lastMsg = smfDsmTables[i].lastError().text();
             return FALSE;
         }
-        create_tables[i].finish();
+        smfDsmTables[i].finish();
     }
 
     db.close();
     state = CLOSED;
     return TRUE;
+}
+
+
+int DataStoreManager::addContactToTable( 	const QString &aLocalId, 
+												const QString &aManagerUri,
+												const QString &aSnsName,
+												const QString &aSnsDesc,
+												const QString &aSnsUrl){
+	
+	int contactId;
+	
+	if(SmfDbOpeningError == openDB())
+		return SmfDbOpeningError;
+
+	QSqlQuery qry;
+	qry.prepare("INSERT INTO contact (userId, contactUrl, localId , managerUri, snsName,"
+									" snsDesc, snsUrl, presenceState, presenceText, statusText, timeStamp )"
+									" VALUES (:userId, :contactUrl, :localId , :managerUri, :snsName,"
+									" :snsDesc, :snsUrl, :presenceState, :presenceText, :statusText, :timeStamp )");
+	qry.bindValue(":userId", NULL);
+	qry.bindValue(":contactUrl", NULL);
+	qry.bindValue(":localId", aLocalId);
+	qry.bindValue(":managerUri", aManagerUri);
+	qry.bindValue(":snsName", aSnsName);
+	qry.bindValue(":snsDesc", aSnsDesc);
+	qry.bindValue(":snsUrl", aSnsUrl);
+	qry.bindValue(":presenceState", NULL);
+	qry.bindValue(":presenceText", NULL);
+	qry.bindValue(":statusText", NULL);
+	qry.bindValue(":timeStamp", 0);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+
+	qry.prepare("SELECT contactId FROM contact WHERE localId=:localId AND managerUri=:managerUri");
+	qry.bindValue(":localId", aLocalId);
+	qry.bindValue(":managerUri", aManagerUri);
+
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+
+	if(qry.next()){
+		contactId = qry.value(0).toInt();
+	}
+
+	qry.finish();
+	db.close();
+	return contactId;
+	
+}
+
+int DataStoreManager::addContactToTable( const QString &aUserId, 
+									const QString &aContactUrl,
+									const QString &aLocalId,
+									const QString &aManagerUri,
+									const QString &aSnsName,
+									const QString &aSnsDesc, 
+									const QString &aSnsUrl,
+									const QString &aPresenceState,
+									const QString &aPresenceText,
+									const QString &aStatusText,
+									const Int64 aTimeStamp ){
+	
+	int contactId;
+		
+	if(SmfDbOpeningError == openDB())
+		return SmfDbOpeningError;
+
+	QSqlQuery qry;
+	qry.prepare("INSERT INTO contact (userId, contactUrl, localId , managerUri, snsName,"
+									" snsDesc, snsUrl, PresenceState, PresenceText, statusText, timeStamp )"
+									" VALUES (:userId, :contactUrl, :localId , :managerUri, :snsName,"
+									" :snsDesc, :snsUrl, :PresenceState, :PresenceText, statusText, :timeStamp )");
+	
+	qry.bindValue(":userId", aUserId);		qry.bindValue(":contactUrl", aContactUrl);
+	qry.bindValue(":localId", aLocalId);				qry.bindValue(":managerUri", aManagerUri);
+	qry.bindValue(":snsName", aSnsName);				qry.bindValue(":snsDesc", aSnsDesc);
+	qry.bindValue(":snsUrl", aSnsUrl);					qry.bindValue(":PresenceState", aPresenceState);
+	qry.bindValue(":PresenceText", aPresenceText);		qry.bindValue(":statusText", aStatusText);
+	qry.bindValue(":timeStamp", aTimeStamp);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+
+	qry.prepare("SELECT contactId FROM contact WHERE (localId=:localId AND managerUri=:managerUri) "
+												"OR (aContactGuid=:aContactGuid AND aContactUrl=:aContactUrl)");
+	qry.bindValue(":localId", aLocalId);				qry.bindValue(":managerUri", aManagerUri);
+	qry.bindValue(":userId", aUserId);		qry.bindValue(":aContactUrl", aContactUrl);
+
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+
+	if(qry.next()){
+		contactId = qry.value(0).toInt();
+	}
+
+	qry.finish();
+	db.close();
+	return contactId;	
+}
+
+SmfError DataStoreManager::removeContactFromTable(const int aContactId){
+	
+	if(SmfDbOpeningError == openDB())
+		return SmfDbOpeningError;
+
+	QSqlQuery qry;
+	qry.prepare("DELETE FROM contact WHERE contactId=:contactId");
+	qry.bindValue(":contactId", aContactId);
+
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+
+	qry.finish();
+	db.close();
+
+	return SmfNoError;
+}
+
+
+
+TBool DataStoreManager::contactIfExist( const int aContactId){
+	
+	TBool contactExist = EFalse;
+	if(SmfDbOpeningError == openDB())
+		return EFalse;
+
+	QSqlQuery qry;
+	qry.prepare("SELECT contactId FROM contact WHERE contactId=:contactId");
+	qry.bindValue(":contactId", aContactId);
+
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return EFalse; 
+
+	if( qry.first() )
+		contactExist = ETrue;
+		
+	qry.finish();
+	db.close();
+
+	return contactExist;
+}
+
+TBool DataStoreManager::relationIfExist( const int aRelationId){
+	
+	TBool contactExist = EFalse;
+	if(SmfDbOpeningError == openDB())
+		return EFalse;
+
+	QSqlQuery qry;
+	qry.prepare("SELECT relationId FROM relation WHERE relationId=:relationId");
+	qry.bindValue(":relationId", aRelationId);
+
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return EFalse; 
+
+	if( qry.first() )
+		contactExist = ETrue;
+		
+	qry.finish();
+	db.close();
+
+	return contactExist;
+}
+
+
+const int DataStoreManager::findMaxIndexValue(const int aRelationId ){
+	
+	int contactIndex = 0;
+	
+	if(SmfDbOpeningError == openDB())
+		return SmfDbOpeningError;
+
+	QSqlQuery qry;
+	qry.prepare("SELECT MAX( contactIndex ) FROM ("
+							"SELECT contactIndex FROM relation WHERE (relationId=:relationId ))");
+	qry.bindValue(":relationId", aRelationId);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+
+	if(qry.next()){
+		contactIndex = qry.value(0).toInt();
+	}
+
+	qry.finish();
+	db.close();
+	return contactIndex;	
+}
+
+const int DataStoreManager::findMaxRelationId( ){
+	
+	int maxRelationId = socialProfileBaseID;
+	
+	if(SmfDbOpeningError == openDB())
+		return SmfDbOpeningError;
+
+	QSqlQuery qry;
+	qry.prepare("SELECT MAX( relationId ) FROM relation");
+		
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+
+	if(qry.next()){
+		maxRelationId = qry.value(0).toInt();
+	}
+
+	qry.finish();
+	db.close();
+	return maxRelationId;	
+}
+
+const int DataStoreManager::addRelationToTable(const int aContactId, int aRelationId ){
+	
+	int relationId, contactIndex;
+	
+	if( aRelationId == ENewRelation ){
+			relationId = findMaxRelationId() + 1;
+			contactIndex = 0;
+		}
+	else{
+			relationId = aRelationId;
+			contactIndex = 1 + ( findMaxIndexValue( aRelationId ) ) ;
+		}
+	
+	if(SmfDbOpeningError == openDB())
+		return SmfDbOpeningError;
+
+	QSqlQuery qry;
+	qry.prepare("INSERT INTO relation (relationId, contactId, contactIndex )"
+									" VALUES (:relationId, :contactId, :contactIndex )");
+	qry.bindValue(":relationId", relationId);
+	qry.bindValue(":contactId", aContactId);
+	qry.bindValue(":contactIndex", contactIndex);
+		
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+
+	qry.finish();
+	db.close();
+	return relationId;	
+}
+
+int DataStoreManager::searchContactId(const int aRelationId, const int aIndex){
+	
+	int contactId = SmfDbQueryExecutonError;
+		
+	if(SmfDbOpeningError == openDB())
+		return SmfDbOpeningError;
+
+	QSqlQuery qry;
+	qry.prepare("SELECT contactId FROM relation WHERE (relationId=:relationId AND contactIndex = :contactIndex)");
+	
+	qry.bindValue(":relationId", aRelationId);
+	qry.bindValue(":contactIndex", aIndex);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+
+	if(qry.next()){
+		contactId = qry.value(0).toInt();
+	}
+
+	qry.finish();
+	db.close();
+	return contactId;		
+}
+
+
+int DataStoreManager::searchRelationId(const int aContactId){
+
+	int relationId = SmfDbQueryExecutonError;
+			
+	if(SmfDbOpeningError == openDB())
+		return SmfDbOpeningError;
+
+	QSqlQuery qry;
+	qry.prepare("SELECT relationId FROM relation WHERE ( contactId = :contactId)");	
+	qry.bindValue(":contactId", aContactId);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+
+	if(qry.next()){
+		relationId = qry.value(0).toInt();
+	}
+
+	qry.finish();
+	db.close();
+	return relationId;		
+}
+
+
+QList<int> DataStoreManager::searchContactIdList(const int aRelationId){
+	
+	QList<int> contactList;
+				
+	if(SmfDbOpeningError == openDB())
+		return contactList;
+
+	QSqlQuery qry;
+	qry.prepare("SELECT contactId FROM relation WHERE ( relationId = :relationId)");	
+	qry.bindValue(":relationId", aRelationId);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return contactList; 
+
+	while(qry.next()){
+		contactList << qry.value(0).toInt();
+	}
+
+	qry.finish();
+	db.close();
+	return contactList;		
+}
+
+
+SmfError DataStoreManager::deleteRelationFromTable(const int aRelationId){
+
+	int contactIndex;
+	if(SmfDbOpeningError == openDB())
+		return SmfDbOpeningError;
+
+	QSqlQuery qry;
+	qry.prepare("SELECT contactId FROM relation WHERE relationId = :relationId ");	
+	qry.bindValue(":relationId", aRelationId);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+	
+	while(qry.next()){
+		contactIndex = qry.value(0).toInt();
+		QSqlQuery innerQry;
+		innerQry.prepare("DELETE FROM contact WHERE  contactId=:contactId ");	
+		innerQry.bindValue(":contactId", contactIndex);
+		
+		if(SmfDbQueryExecutonError == executeQuery(innerQry))
+			return SmfDbQueryExecutonError; 
+		innerQry.finish();
+	}
+	
+	qry.prepare("DELETE FROM relation WHERE ( relationId = :relationId)");	
+	qry.bindValue(":relationId", aRelationId);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+
+	qry.finish();
+	db.close();
+	return SmfNoError;		
+}
+
+SmfError DataStoreManager::deleteContactFromTable(const int aRelationId, const int aContactId){
+	
+	int contactIndex = SmfDbContactNotExist;
+	
+	if(SmfDbOpeningError == openDB())
+		return SmfDbOpeningError;
+
+	QSqlQuery qry;
+	qry.prepare("SELECT contactIndex FROM relation WHERE ( relationId = :relationId AND contactId=:contactId)");	
+	qry.bindValue(":relationId", aRelationId);
+	qry.bindValue(":contactId", aContactId);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return SmfDbQueryExecutonError; 
+	
+	if(qry.next()){
+		contactIndex = qry.value(0).toInt();
+		
+		qry.prepare("DELETE FROM relation WHERE ( relationId = :relationId AND contactId=:contactId)");	
+		qry.bindValue(":relationId", aRelationId);
+		qry.bindValue(":contactId", aContactId);
+		
+		if(SmfDbQueryExecutonError == executeQuery(qry))
+			return SmfDbQueryExecutonError;
+		
+		qry.prepare("DELETE FROM contact WHERE  contactId=:contactId ");	
+		qry.bindValue(":contactId", aContactId);
+		
+		if(SmfDbQueryExecutonError == executeQuery(qry))
+			return SmfDbQueryExecutonError; 
+	}
+	
+	manageContactIndex(aRelationId, contactIndex );
+	
+	qry.finish();
+	db.close();
+	return SmfNoError;	
+}
+
+
+void DataStoreManager::manageContactIndex(const int aRelationId, const int aContactIndex ){
+	
+	QSqlQuery qry;
+	qry.prepare("UPDATE relation SET contactIndex = contactIndex - 1 "
+				"WHERE ( relationId = :relationId AND contactIndex > :contactIndex )");	
+	qry.bindValue(":relationId", aRelationId);
+	qry.bindValue(":contactIndex", aContactIndex);	
+	executeQuery(qry);
+	qry.finish();		
+}
+
+uint DataStoreManager::count(const int aRelationId){
+	uint count = -1;
+	
+	if(SmfDbOpeningError == openDB())
+		return count;
+
+	QSqlQuery qry;
+	qry.prepare("SELECT count(*) FROM relation WHERE ( relationId = :relationId)");	
+	qry.bindValue(":relationId", aRelationId);
+	
+	if(SmfDbQueryExecutonError == executeQuery(qry))
+		return count; 
+
+	if(qry.next()){
+		count = qry.value(0).toInt();
+	}
+
+	qry.finish();
+	db.close();
+	return count;			
 }

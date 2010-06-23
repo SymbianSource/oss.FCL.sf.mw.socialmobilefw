@@ -80,6 +80,21 @@ public:
 	 */
 	virtual QImage applicationIcon( ) const = 0;
 	
+	
+	/**
+	* Method to get the list of interfaces that this provider support
+	* @return List of supported Interafces
+	*/
+	virtual QList<QString> supportedInterfaces( ) const = 0;
+	
+	/**
+	* Method to get the list of languages supported by this service provider
+	* @return a QStringList of languages supported by this service 
+	* provider in 2 letter ISO 639-1 format.
+	*/
+	virtual QStringList supportedLanguages( ) const = 0;
+	
+	
 	/**
 	 * Method to get the Plugin specific ID
 	 * @return The Plugin specific ID
@@ -106,6 +121,6 @@ public:
 	virtual QString smfRegistrationId( ) const = 0;
 	};
 
-Q_DECLARE_INTERFACE( SmfProviderBase, "org.symbian.smf.plugin.smfproviderbase/v1.0" );
+Q_DECLARE_INTERFACE( SmfProviderBase, "org.symbian.smf.plugin.smfproviderbase/v0.2" );
 
 #endif /* SMFPROVIDERBASE_H_ */

@@ -21,6 +21,7 @@
 #define SMFSERVERGLOBAL_H_
 
 #include <QString>
+
 /**
  * Enum declaration for Network status information
  */
@@ -43,29 +44,6 @@ enum SmfTransportInitializeResult
 	SmfTransportInitNoError							// value = 2
 	};
 
-/**
- * The enumeration used to indicate result of plugin manager operations
- */
-enum SmfPluginManagerResult
-	{
-	SmfPluginNoError = 0,
-	SmfPluginNotFound,
-	SmfPluginNotLoaded,
-	SmfPluginLoaded,
-	SmfPluginLoadError,
-	SmfPluginAuthorised,
-	SmfPluginNotAuthorised,
-	SmfPluginRequestCreated,
-	SmfPluginRequestCreationFailed,
-	SmfPluginUnknownService,
-	SmfPluginRequestSendingFailed,
-	SmfPluginSOPCheckFailed,
-	SmfPluginServiceError,
-	SmfPluginResponseParsed,
-	SmfPluginResponseParseFailure,
-	SmfPluginSendRequestAgain,
-	SmfPluginUnknownError
-	};
 
 /**
  * The structure used to track the data usage of each plugins

@@ -1,6 +1,7 @@
 TEMPLATE  = 	subdirs
 
 SUBDIRS   =	util \
-                smfserver \
-                smfclient \
-                tests
+		smfclient \
+		smfserver \
+		tests
+CONFIG += ordered

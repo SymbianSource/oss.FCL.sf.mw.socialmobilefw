@@ -11,11 +11,11 @@
  *
  * Contributors:
  * Manasij Roy, Nalina Hariharan
- * Description:
- * SMF Server implementation for platforms other than Symbian.
- * Uses  QLocalServer-QLocalSocket classes
- *
- */
+* Description:
+* SMF Server implementation for platforms other than Symbian.
+* Uses  QLocalServer-QLocalSocket classes
+*
+*/
 
 #ifndef SMFSERVERQT_P_H
 #define SMFSERVERQT_P_H
@@ -39,10 +39,13 @@ public:
 
     bool start();
     int sessionListCount() const;
-    void writeLog(QString log) const;
+    //void writeLog(QString log) const;
     void clientAuthorizationFinished(bool success);
     int findAndServiceclient(int requestID,QByteArray* parsedData,SmfError error);
 
+    ~SmfServerQt() {}
+    bool start() {return false;}
+    int sessionListCount() const {return 0;}
 private slots:
     void newClientConnected();
     void removeFromList();
@@ -57,6 +60,11 @@ inline SmfServer *SmfServerQt::wrapper() const
 {
     return m_generic;
 }
+    
+private:
+    SmfServerQt *iServer;
+    QLocalSocket *iClientConnection;
 
+};
 
 #endif // SMFSERVERQT_P_H

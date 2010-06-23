@@ -9,6 +9,9 @@
  * Initial Contributors:
  * Chandradeep Gandhi, Sasken Communication Technologies Ltd - 
  *
+ * Contributors:
+ * Manasij Roy, Nalina Hariharan
+ * 
  * Description:
  * Interface specification for plugins that implements social activity related services
  *
@@ -17,10 +20,10 @@
 #define SMFACTIVITYFETCHERPLUGIN_H_
 
 #include <smfpluginbase.h>
-#include <smfactivity.h>
+#include <smfactions.h>
 
 // Forward declaration
-class SmfPluginManagerUtil;
+class SmfContact;
 
 /**
  * @ingroup smf_plugin_group
@@ -36,23 +39,13 @@ class SmfActivityFetcherPlugin : public SmfPluginBase
 	{
 public:
 	/**
-	 * Constructor 	
-	 * @param aUtil The SmfPluginManagerUtil instance. The plugins can 
-	 * call the method getAuthKeys() of this class, with its pluginID to 
-	 * get the OAuth keys, keys are returned only if this plugin is 
-	 * authorised by Smf franework
-	 * 
-	 */
-	SmfActivityFetcherPlugin( SmfPluginManagerUtil* aUtil);
-
-	/**
 	 * Destructor
 	 */
-	~SmfActivityFetcherPlugin();
+	virtual ~SmfActivityFetcherPlugin( ) {}
 
 	/**
 	 * Method to get the list of self activities, e.g. shown in own wall
-	 * @param aRequest [out] The request data plugin generated (to be sent to network)
+	 * @param aRequest [out] The request data that plugin generates (to be sent to network)
 	 * @param aPageNum[in] The page to be extracted
 	 * @param aItemsPerPage[in] Number of items per page
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
@@ -86,6 +79,18 @@ public:
 			QList<SmfActivityObjectType> &aFilters,
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
+	
+	/**
+	 * Customised method for SmfActivityFetcherPlugin interface
+	 * @param aRequest [out] The request data to be sent to network
+	 * @param aOperation The operation type (should be known between 
+	 * the client interface and the plugin)
+	 * @param aData The data required to form the request (The type 
+	 * of data should be known between client and the plugin)
+	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 */
+	virtual SmfPluginError customRequest( SmfPluginRequestData &aRequest, 
+			const int &aOperation, QByteArray *aData ) = 0;
 	
 	};
 

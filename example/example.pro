@@ -1,5 +1,7 @@
 TEMPLATE  = 	subdirs
 
-SUBDIRS   =	fbpostproviderplugin \
+SUBDIRS   =	AuthApp \
+		fbcontactfetcherplugin \
+		fbpostproviderplugin \
 		flickrcontactfetcherplugin \
 		smfclientapp

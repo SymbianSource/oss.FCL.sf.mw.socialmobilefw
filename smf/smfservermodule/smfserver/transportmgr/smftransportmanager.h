@@ -23,7 +23,7 @@
 #define SMFTRANSPORTMANAGER_H_
 
 // Include files
-#include <smfserverglobal.h>
+#include "smfserverglobal.h"
 
 // Qt mobility classes
 #include <qnetworkconfigmanager.h>
@@ -58,7 +58,6 @@ public slots:
 	 * Method to initialize the transport component before 
 	 * executing a web query
 	 * @return SmfTransportInitializeResult
-	 * @see smfglobal.h
 	 */
 	SmfTransportInitializeResult initializeTransport ( );
 	
@@ -91,7 +90,6 @@ private:
 	 * Method that checks if the phone is in home network or in roaming.
 	 * @param aStatus [out] An output parameter indicating the current network 
 	 * status as SmfNetworkStatus
-	 * @see smfglobal.h
 	 */
 	void getCurrentNetworkStatus ( SmfNetworkStatus &aStatus );
 	
@@ -116,12 +114,13 @@ private:
 	/*
 	 * Member variable - QNetworkConfigurationManager instance
 	 */
-	QNetworkConfigurationManager m_netwConfigMngr;
+	QNetworkConfigurationManager *m_netwConfigMngr;
 	
 	/*
 	 * Member variable - QSystemNetworkInfo instance
 	 */
-	QSystemNetworkInfo m_systemInfo;
+	QSystemNetworkInfo *m_systemInfo;
+	
 	};
 
 #endif /* SMFTRANSPORTMANAGER_H_ */

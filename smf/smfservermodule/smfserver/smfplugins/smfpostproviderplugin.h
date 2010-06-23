@@ -192,6 +192,6 @@ public:
 	
 	};
 
-Q_DECLARE_INTERFACE( SmfPostProviderPlugin, "org.symbian.smf.plugin.contact.posts/v1.0" );
+Q_DECLARE_INTERFACE( SmfPostProviderPlugin, "org.symbian.smf.plugin.contact.posts/v0.2" );
 
 #endif /* SMFPOSTPROVIDERPLUGIN_H_ */

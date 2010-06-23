@@ -160,7 +160,7 @@ public:
 	/**
 	 * Debugging
 	 */
-	void writeLog(QString log)const;
+	//void writeLog(QString log)const;
 //private:
     void ConstructL();
     SmfServer* iWrapper;
@@ -206,7 +206,7 @@ public:
 	 * Called by the SmfServer when client authorization finishes.
 	 * @param success success of the authorization
 	 */
-	void clientAuthorizationFinished(bool success);
+	void clientathorizationFinished(bool success);
 protected:
     //TMessageParams ReadMessageAndRetrieveParams (const RMessage2 & aMessage);
     void PanicClient(const RMessage2 & aMessage, TInt aPanic) const;
@@ -228,11 +228,16 @@ protected:
      */
     void HandleCommonServiceL(const RMessage2 & aMessage);
     
+    /**
+     * Handles all DSM related messages
+     */
+    void HandleDSMServiceL(const RMessage2 & aMessage);
+    
     
 //private:
     SmfServerSymbian* iServer;
     RMessage2 iMessage;
-
+    TBuf<100> iErrBuf;
 	//this interface id will be provided by Smf client, will map Smf Client 
 	// interface hierarchy
 	SmfInterfaceID iInterfaceID;
@@ -240,7 +245,15 @@ protected:
 	TPtr iIntfNameSymbian16;
 	TBuf8<125> iInterfaceNametbuf;
 	TPtr8 iProviderSymbian;
+	TPtr8 iXtraDataPtr;
+	HBufC8* iDataForDSM;
+	TPtr8 iPtrDataForDSM;
+	HBufC8* iDataFromDSM;
+	TPtr8 iPtrDataFromDSM;
+	TBuf<100> iDSMErr;
+	TBuf<100> iMaxSize;
 	HBufC8* iProviderBuf;
+	HBufC8* iXtraDataBuf;
 	HBufC8* iIntfNameBuf;
 	QMap<SmfPluginID,SmfProvider> iPluginIDMap;
 	QList<SmfPluginID> iPluginIDList;
@@ -260,6 +273,8 @@ protected:
 	HBufC8* iBuf;
 	HBufC* iBuf16;
 	TPtr8 iPtrToBuf;
+	TPtr8 iPtrToDataForClient;
+	HBufC8* iDataForClient;
 	QByteArray byteArrayToClnt;
 	SmfProvider* providerToClnt;
 	TInt iError;

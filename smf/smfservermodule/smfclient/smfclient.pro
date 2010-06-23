@@ -4,11 +4,10 @@ QT += core \
     gui \
     network
 CONFIG += mobility
-MOBILITY = contacts \
+MOBILITY += contacts \
     location
 DEFINES += WRITE_LOG \
-    SMFCLIENT_LIB_EXPORT #\
-#    OLDER_QT_MOBILITY
+    SMFCLIENT_LIB_EXPORT 
 
 include(client/client.pri)
 include(common/common.pri)
@@ -18,20 +17,17 @@ include(common/common.pri)
     LIBS += -lqjson
 }
 
-# Private Headers
 HEADERS += $$PUBLIC_HEADERS \
     $$PRIVATE_HEADERS
-SOURCES += main.cpp
-
 symbian: { 
     TARGET.UID3 = 0xE08059D4
-    TARGET.CAPABILITY = ReadUserData \
+    TARGET.CAPABILITY = NetworkServices \
+    	ReadUserData \
         WriteUserData \
         LocalServices \
-        NetworkServices \
-        UserEnvironment
+        UserEnvironment \
+        ReadDeviceData \
+        WriteDeviceData
     TARGET.EPOCALLOWDLLDATA = 1
-    SOURCES += smfclient_reg.rss
     LIBS += -lqjson.dll
-} 
-
+}

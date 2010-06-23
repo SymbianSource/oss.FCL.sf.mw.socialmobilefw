@@ -78,6 +78,6 @@ public:
 	
 	};
 
-Q_DECLARE_INTERFACE( SmfMusicServicePlugin, "org.symbian.smf.plugin.music.service/v1.0" );
+Q_DECLARE_INTERFACE( SmfMusicServicePlugin, "org.symbian.smf.plugin.music.service/v0.2" );
 
 #endif /* SMFMUSICSERVICEPLUGIN_H_ */

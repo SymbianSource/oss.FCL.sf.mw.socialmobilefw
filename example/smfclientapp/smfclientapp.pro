@@ -9,21 +9,26 @@ QT += core \
 CONFIG += mobility
 MOBILITY = contacts \
     location
-HEADERS += displaywidget.h \
+HEADERS += posttestui.h \
+    displaywidget.h \
     testscreen.h \
     smfclientapp.h
-SOURCES += displaywidget.cpp \
+SOURCES += posttestui.cpp \
+    displaywidget.cpp \
     testscreen.cpp \
     smfclientapp_reg.rss \
     main.cpp \
     smfclientapp.cpp
-FORMS += displaywidget.ui \
+FORMS += posttestui.ui \
+    displaywidget.ui \
     smfclientapp.ui
 RESOURCES += 
-symbian:TARGET.UID3 = 0xE08059D4
+symbian:TARGET.UID3 = 0xE08059D6
 symbian:LIBS += -lsmfclient.dll
 symbian:TARGET.CAPABILITY = ReadUserData \
     WriteUserData \
     LocalServices \
     NetworkServices \
-    UserEnvironment
+    UserEnvironment \
+    ReadDeviceData \
+    WriteDeviceData

@@ -1,19 +1,36 @@
-/*
- * SmfClientGlobal.h
+/**
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0"
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  *
- *  Created on: Mar 22, 2010
- *      Author: manasij
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ *
+ * Contributors:
+ * Manasij Roy, Nalina Hariharan
+ *
+ * Description:
+ * Client DLL macro and server executable name
+ *
  */
 
 #ifndef SMFCLIENTGLOBAL_H_
 #define SMFCLIENTGLOBAL_H_
 
-#include <QtCore/QtGlobal>
+ #include <QtCore/QtGlobal>
 #include <QString>
+#ifdef Q_OS_SYMBIAN
+_LIT(KSmfServerName,"smfserver");
+_LIT(KSmfServerSemaphoreName,"smfserverSemaphore");
+_LIT(KSmfServerFilename,"smfserver");
+#else
 const QString KSmfServerName("smfserver");
 const QString KSmfServerSemaphoreName("smfserverSemaphore");
 const QString KSmfServerFilename("smfserver");
-
+#endif
 //TUid KSmfServerUID3 = { 0xE37E0269 };
 
  #ifdef SMFCLIENT_LIB_EXPORT

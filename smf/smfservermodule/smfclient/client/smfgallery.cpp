@@ -36,24 +36,31 @@
 	  }
 
   /**
-   * Get the picture listing asynchronously.
-   * The picturesAvailable() signal is emitted with SmfPictureList once the pictures have arrived.
+ * Get the album listing asynchronously.
+ * The albumsAvailable() signal is emitted with SmfPictureAlbumList once the albums have arrived.
    * When the list is big user can specify the page number and per page item data.
    * If not supplied by the user default values are used.
+ * @param names the subject or any keywords to be used to filter albums with that name
+ * @param user the user whose albums are requested 
    * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
    * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  void SmfGallery::pictures(int pageNum,int perPage)
+void SmfGallery::albums(QStringList names, SmfContact* user, int pageNum,int perPage)
 	  {
-	  m_private->pictures(pageNum,perPage);
+		m_private->albums(names,user, pageNum, perPage);	
 	  }
 
   /**
-   * Returns a user title/caption for the picture
+ * Get the picture listing asynchronously.
+ * The picturesAvailable() signal is emitted with SmfPictureList once the pictures have arrived.
+ * When the list is big user can specify the page number and per page item data.
+ * If not supplied by the user default values are used.
+ * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+ * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  QString SmfGallery::description(SmfPicture& picture)
+void SmfGallery::pictures(SmfPictureAlbumList &albums, int pageNum,int perPage)
 	  {
-	  m_private->description(picture);
+	m_private->pictures( albums, pageNum, perPage);
 	  }
 
   //APIs to get/set base provider info (SmfProvider)
@@ -71,9 +78,9 @@
 	 * uploadFinished() signal is emitted with the success value of the upload
 	 * @param image the image to be uploaded
 	 */
-   void SmfGallery::upload(SmfPicture* image) 
+void SmfGallery::upload(SmfPicture* image, SmfPictureAlbum* album)
 	   {
-	   m_private->upload(image);
+	m_private->upload(image,album);
 	   }
 
 	/**
@@ -81,9 +88,10 @@
 	 * uploadFinished() signal is emitted with the success value of the upload
 	 * @param images the list image to be uploaded
 	 */
-   void SmfGallery::upload(SmfPictureList* images) 
+
+void SmfGallery::upload(SmfPictureList* images, SmfPictureAlbum* album) 
 	   {
-	   m_private->upload(images);
+	m_private->upload(images,album);
 	   }
 
   /**
@@ -96,4 +104,22 @@
 	   {
 	   m_private->postComment(image,comment);
 	   }
-
+   
+QString SmfGallery::description(SmfPicture& picture)
+   {
+		Q_UNUSED(picture);
+   }
+/**
+ * Request for a custom operation.
+ * @param operationId OperationId
+ * @param customData Custom data to be sent
+ * Note:-Interpretation of operationId and customData is upto the concerned
+ * plugin and client application. service provider should provide some
+ * serializing-deserializing utilities for these custom data
+ */
+void SmfGallery::customRequest(const int& operationId,QByteArray* customData)
+	{
+	/*to be implemented*/
+	Q_UNUSED(operationId);
+	Q_UNUSED(customData);
+	}

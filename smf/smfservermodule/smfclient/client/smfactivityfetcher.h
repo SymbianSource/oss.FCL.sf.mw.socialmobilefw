@@ -27,7 +27,7 @@
 #include "smfactions.h"
 
 typedef QList<SmfActivityEntry> SmfActivityEntryList;
-
+class SmfActivityFetcherPrivate;
 /**
  * @ingroup smf_client_group
  * Basic activity service ("org.symbian.smf.client.activity.fetcher")
@@ -72,10 +72,13 @@ signals:
 	/**
 	 * Signals availability of the result of the previous query
 	 */
-	void resultsAvailable(SmfActivityEntryList* entries, QString error, SmfResultPage resultPage);
-
+	void resultsAvailable(SmfActivityEntryList* entries, SmfError error, SmfResultPage resultPage);
+private:
+	SmfActivityFetcherPrivate* m_private;
+	SmfProvider* m_baseProvider;
+	friend class SmfActivityFetcherPrivate;
 	};
 
-SMF_SERVICE_NAME(SmfGallery, "org.symbian.smf.client.activity.fetcher\0.2")
+SMF_SERVICE_NAME(SmfActivityFetcher, "org.symbian.smf.client.activity.fetcher\0.2")
 
 #endif /* SMFACTIVITYFETCHER_H_ */

@@ -13,43 +13,43 @@
  * Manasij Roy, Nalina Hariharan
  *
  * Description:
- * The SmfEvent class represents an event
+ * Music related services
  *
  */
 
 #ifndef SMFMUSIC_H
-#define SMMUSIC_H
-
-#include <QObject>
+#define SMFMUSIC_H
 
 #include <qmobilityglobal.h>
 #include <qgeopositioninfo.h>
-
 #include "smfglobal.h"
 #include "smfprovider.h"
 #include "smfcontact.h"
 #include "smfevent.h"
+#include "smfmusicfingerprint.h"
+#include "smfmusicrating.h"
+#include "smfcomment.h"
+#include "smfsubtitle.h"
 
-class SmfProvider; //basic Smf service Provider info
-class SmfContact; // Smf contact
-class SmfMusicRating;//rating value from 0..31 - services would map accordingly
-class SmfMusicProfile; //user profile containing music usage and interest info, extends SmfContact
-class SmfTrackInfo; //id, title, album, artist, genre, tag, director,release year, rating, comment info
-class SmfMusicFingerPrint; //generation is not in scope of smf
-class SmfVenue;
-class SmfEvent;
-class SmfPlaylist;
-class SmfLyricsService;
-class SmfLyrics;
-class SmfSubtitle;
-class SmfSubtitleSearchFilter;
+#include "smfmusicprofile.h"
+#include "smfalbum.h"
+#include "smfartists.h"
+#include "smfgroup.h"
+#include "smflyrics.h"
+#include "smfplaylist.h"
+#include "smftrackinfo.h"
+#include "smflocation.h"
+class SmfMusicServicePrivate;
+class SmfMusicSearchPrivate;
+class SmfLyricsServicePrivate;
+class SmfPlaylistServicePrivate;
+class SmfMusicEventsPrivate;
+
+using namespace QtMobility;
 
 typedef QList<SmfMusicProfile> SmfMusicProfileList;
 typedef QList<SmfTrackInfo> SmfTrackInfoList;
-typedef QList<SmfEvent> SmfEventsList;
-typedef QList<SmfProvider> SmfProviderList;
 typedef QList<SmfPlaylist> SmfPlaylistList;
-typedef QList<SmfVenue> SmfVenueList;
 typedef QList<SmfLyrics> SmfLyricsList;
 typedef QList<SmfSubtitle> SmfSubtitleList;
 /**
@@ -70,7 +70,7 @@ public:
    SmfMusicService(SmfProvider* baseProvider = 0);
   ~SmfMusicService();
 
-public:
+public slots:
 
   /**
    * Gets self profile information asynchronously.
@@ -86,7 +86,7 @@ public:
    * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
    * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  void searchUser(SmfVenue venue,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE) ;
+  void searchUser(SmfLocation venue,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE) ;
 
   /**
    * Gets the base provider info
@@ -99,11 +99,16 @@ signals:
 	 * Notification on arrival of the self profile as result of userinfo().
 	 * @param profile The self profile
 	 */
-	void userInfoAvailable(SmfMusicProfile* profile, QString error);
-
-	void searchInfoAvailable(SmfMusicProfileList& profileList, QString error,SmfResultPage resultPage);
+	void userInfoAvailable(SmfMusicProfile* profile, SmfError error);
+	/**
+	 * Notification on arrival of search info
+	 * @param profileList List of music profiles
+	 */
+	void searchInfoAvailable(SmfMusicProfileList& profileList, SmfError error,SmfResultPage resultPage);
 private:
   SmfProvider* m_baseProvider;
+  SmfMusicServicePrivate* m_private;
+  friend class SmfMusicServicePrivate;
 };
 SMF_SERVICE_NAME(SmfMusicService, "org.symbian.smf.client.music.service\0.2")
 
@@ -126,8 +131,6 @@ public:
   ~SmfMusicSearch();
 
 public:
-  // Get the track listing - might be made asynchrnous later
-
   /**
    * Searches for music recommendations similar to a particulartrack asynchronously.
    * The signal trackSearchAvailable() is emitted with SmfTrackInfoList
@@ -187,8 +190,8 @@ public slots:
 	 * @param track Track to post
 	 */
   void postCurrentPlaying(SmfTrackInfo track)  ;
-  //int postRating(SmfTrackInfo track, SmfMusicRating rate)  ;
-  //int postComments(SmfTrackInfo track, SmfComment comment)  ;
+  void postRating(SmfTrackInfo track, SmfMusicRating rate)  ;
+  void postComments(SmfTrackInfo track, SmfComment comment)  ;
 
 signals:
 	/**
@@ -197,7 +200,7 @@ signals:
 	 * In that case this signal is emitted multiple times.
 	 * @param resultPage Page number info
 	 */
-	void trackSearchAvailable(SmfTrackInfoList* result, QString error,SmfResultPage resultPage);
+	void trackSearchAvailable(SmfTrackInfoList* result, SmfError error,SmfResultPage resultPage);
 
 	/**
 	 *  Emitted when the search result for a store is available.
@@ -205,59 +208,14 @@ signals:
 	 *  In that case this signal is emitted multiple times.
 	 *  @param resultPage Page number info
 	 */
-	void storeSearchAvailable(SmfProviderList* result, QString error, SmfResultPage resultPage);
+	void storeSearchAvailable(SmfProviderList* result, SmfError error, SmfResultPage resultPage);
+	void postfinished(SmfError error);
 private:
   SmfProvider* m_baseProvider;
+  SmfMusicSearchPrivate* m_private;
+  friend class SmfMusicSearchPrivate;
 };
 SMF_SERVICE_NAME(SmfMusicSearch, "org.symbian.smf.client.music.search\0.2")
-
-
-/**
- * Remote playlist
- */
-class SMFCLIENT_EXPORT SmfPlaylist : public QObject
-	{
-	Q_OBJECT
-
-public:
-	SmfPlaylist();
-	~SmfPlaylist();
-
-	/**
-	 * Gets tracks in the playlist
-	 */
-	SmfTrackInfoList* getTrackList();
-
-	/**
-	 * Gets playlist title
-	 */
-	QString getPlayListTitle();
-
-	/**
-	 * Gets the creation date
-	 */
-	QDateTime getCreationDate();
-
-	/**
-	 * Sets tracks in the playlist
-	 */
-	void setTrackList(SmfTrackInfoList* trackList);
-
-	/**
-	 * Sets playlist title
-	 */
-	void setPlayListTitle(QString title);
-
-	/**
-	 * Sets creation date
-	 */
-	void setCreationDate(QDateTime time);
-
-private:
-	SmfTrackInfoList* m_trackList;
-	QString m_title;
-	QDateTime m_creationDate;
-	};
 
 
 /**
@@ -346,13 +304,15 @@ signals:
 	 * In that case this signal is emitted multiple times.
 	 * @param resultPage Page number info
 	 */
-	void playlistsListAvailable(SmfPlaylistList*, QString error, SmfResultPage resultPage);
+	void playlistsListAvailable(SmfPlaylistList*, SmfError error, SmfResultPage resultPage);
 	/**
 	 * Signals remote updation of playlist with success value
 	 */
-    int playlistUpdated(bool success) ;
+    void playlistUpdated(SmfError success) ;
 private:
   SmfProvider* m_baseProvider;
+  SmfPlaylistServicePrivate* m_private;
+  friend class SmfPlaylistServicePrivate;
 };
 SMF_SERVICE_NAME(SmfPlaylistService, "org.symbian.smf.client.music.playlist\0.2")
 
@@ -383,17 +343,17 @@ public:
    * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
    * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  void events(QtMobility::QContactGeolocation location,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ;
+  void events(QContactGeoLocation location,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ;
 
   /**
    * Gets list of venues of a particular location asynchronously.
-   * venuesAvailable() signal is emitted with SmfVenueList once its arrived.
+   * venuesAvailable() signal is emitted with SmfLocationList once its arrived.
    * When the list is big user can specify the page number and per page item data.
    * If not supplied by the user default values are used.
    * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
    * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  void venues(QtMobility::QContactGeolocation location,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ; // basic list of venue objects
+  void venues(QContactGeoLocation location,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ; // basic list of venue objects
 
   /**
    * Gets list of events in a particular venue asynchronously.
@@ -403,7 +363,7 @@ public:
    * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
    * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
    */
-  void events(SmfVenue venue,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ; // basic list of events objects
+  void events(SmfLocation venue,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE)  ; // basic list of events objects
 
 
   //APIs to get/set base provider info (SmfProvider)
@@ -421,14 +381,14 @@ public slots:
 	 * eventsUpdated() signal can be checked for success value.
 	 * @param SmfEventsList List of events to be posted
 	 */
-	 void postEvents(SmfEventsList events);
+	 void postEvents(SmfEventList events);
 
 signals:
 
 	/**
 	 * Notification of the success of request to post an event
 	 */
-	void eventsUpdated(bool success);
+	void eventsUpdated(SmfError success);
 
 	/**
 	 * Notification on arrival of event lists
@@ -436,7 +396,7 @@ signals:
 	 * In that case this signal is emitted multiple times.
 	 * @param resultPage Page number info
 	 */
-	void eventsAvailable(SmfEventsList* list, QString error, SmfResultPage resultPage);
+	void eventsAvailable(SmfEventList* list, SmfError error, SmfResultPage resultPage);
 
 	/**
 	 *  Notification on arrival of venues lists
@@ -444,9 +404,11 @@ signals:
 	 * In that case this signal is emitted multiple times.
 	 * @param resultPage Page number info
 	 */
-	void venuesAvailable(SmfVenueList* list, QString error, SmfResultPage resultPage);
+	void venuesAvailable(SmfLocationList* list, SmfError error, SmfResultPage resultPage);
 private:
   SmfProvider* m_baseProvider;
+  SmfMusicEventsPrivate* m_private;
+  friend class SmfMusicEventsPrivate;
 };
 SMF_SERVICE_NAME(SmfMusicEvents, "org.symbian.smf.client.music.events\0.2")
 
@@ -495,11 +457,6 @@ public:
    * Gets the base provider info
    */
   SmfProvider* getProvider()  ;
-
-
-public slots:
-
-
 signals:
 
 	/**
@@ -508,7 +465,7 @@ signals:
 	 * In that case this signal is emitted multiple times.
 	 * @param resultPage Page number info
 	 */
-	void lyricsAvailable(SmfLyricsList* list, QString error, SmfResultPage resultPage);
+	void lyricsAvailable(SmfLyricsList* list, SmfError error, SmfResultPage resultPage);
 
 	/**
 	 * Notification on arrival of subtitle based on filter.
@@ -516,9 +473,11 @@ signals:
 	 * In that case this signal is emitted multiple times.
 	 * @param resultPage Page number info
 	 */
-	void subtitleAvailable(SmfSubtitleList* list, QString error, SmfResultPage resultPage);
+	void subtitleAvailable(SmfSubtitleList* list, SmfError error, SmfResultPage resultPage);
 private:
   SmfProvider* m_baseProvider;
+  SmfLyricsServicePrivate* m_private;
+  friend class SmfLyricsServicePrivate;
 };
 SMF_SERVICE_NAME(SmfLyricsService, "org.symbian.smf.client.music.lyrics\0.2")
 

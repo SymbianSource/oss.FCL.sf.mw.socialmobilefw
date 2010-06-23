@@ -21,8 +21,8 @@
 #ifndef SMFPLUGINMANAGERUTIL_H_
 #define SMFPLUGINMANAGERUTIL_H_
 
-#include <smfpluginbase.h>
-#include <smfserverglobal.h>
+#include "smfpluginbase.h"
+#include "smfserverglobal.h"
 
 // Forward declaration
 class SmfPluginManager;
@@ -64,14 +64,31 @@ private:
 	 * @param aOperation The type of operation to be performed
 	 * @param aInputData The data required to create the web query
 	 * @param aReqData [out] The request data created by the plugin
-	 * @param aResult [out] SmfPluginManagerResult, The result of the operation
-	 * @see smfglobal.h
+	 * @param aResult [out] SmfError, The result of the operation
+	 * It can be :-
+	 * SmfPluginNoError (if plugin has created the request successfully)
+	 * SmfPluginUnknownPluginService (if plugin service is not known or unsupported)
+	 * SmfPluginRequestCreationFailed (if request creation has failed)
 	 */
 	void createRequest ( QObject* aInstance, 
 			const SmfRequestTypeID &aOperation, 
 			QByteArray &aInputData,
 			SmfPluginRequestData &aReqData,
-			SmfPluginManagerResult &aResult );
+			SmfError &aResult );
+	
+	/**
+	 * Method to create a web query to fetch activities
+	 * @param aPlugin The instance of the loaded plugin that performs the 
+	 * contact fetch operation.
+	 * @param aOperation The type of operation to be performed
+	 * @param aInputData The data required to create the web query
+	 * @param aReqData [out] The request data created by the plugin
+	 * @return SmfPluginError
+	 */
+	SmfPluginError createActivityFetcherRequest ( QObject *aPlugin, 
+			const SmfRequestTypeID &aOperation, 
+			QByteArray &aInputData,
+			SmfPluginRequestData &aReqData );
 
 	/**
 	 * Method to create a web query to fetch contact details.
@@ -80,15 +97,12 @@ private:
 	 * @param aOperation The type of operation to be performed
 	 * @param aInputData The data required to create the web query
 	 * @param aReqData [out] The request data created by the plugin
-	 * @param aResult [out] SmfPluginManagerResult, The result of the operation
 	 * @return SmfPluginError
-	 * @see smfglobal.h
 	 */
 	SmfPluginError createContactFetcherRequest ( QObject *aPlugin, 
 			const SmfRequestTypeID &aOperation, 
 			QByteArray &aInputData,
-			SmfPluginRequestData &aReqData,
-			SmfPluginManagerResult &aResult );
+			SmfPluginRequestData &aReqData );
 	
 	/**
 	 * Method to create a web query to do post operation on contacts 
@@ -98,15 +112,12 @@ private:
 	 * @param aOperation The type of operation to be performed
 	 * @param aInputData The data required to create the web query
 	 * @param aReqData [out] The request data created by the plugin
-	 * @param aResult [out] SmfPluginManagerResult, The result of the operation
 	 * @return SmfPluginError
-	 * @see smfglobal.h
 	 */
 	SmfPluginError createContactPostRequest ( QObject *aPlugin, 
 			const SmfRequestTypeID &aOperation, 
 			QByteArray &aInputData,
-			SmfPluginRequestData &aReqData,
-			SmfPluginManagerResult &aResult );
+			SmfPluginRequestData &aReqData );
 
 	/**
 	 * Method to create a web query to do music lyrics or subtitle search
@@ -115,15 +126,12 @@ private:
 	 * @param aOperation The type of operation to be performed
 	 * @param aInputData The data required to create the web query
 	 * @param aReqData [out] The request data created by the plugin
-	 * @param aResult [out] SmfPluginManagerResult, The result of the operation
 	 * @return SmfPluginError
-	 * @see smfglobal.h
 	 */
 	SmfPluginError createMusicLyricsRequest ( QObject *aPlugin, 
 			const SmfRequestTypeID &aOperation, 
 			QByteArray &aInputData,
-			SmfPluginRequestData &aReqData,
-			SmfPluginManagerResult &aResult );
+			SmfPluginRequestData &aReqData );
 
 
 	/**
@@ -133,15 +141,12 @@ private:
 	 * @param aOperation The type of operation to be performed
 	 * @param aInputData The data required to create the web query
 	 * @param aReqData [out] The request data created by the plugin
-	 * @param aResult [out] SmfPluginManagerResult, The result of the operation
 	 * @return SmfPluginError
-	 * @see smfglobal.h
 	 */
 	SmfPluginError createMusicEventsRequest ( QObject *aPlugin, 
 			const SmfRequestTypeID &aOperation, 
 			QByteArray &aInputData,
-			SmfPluginRequestData &aReqData,
-			SmfPluginManagerResult &aResult );
+			SmfPluginRequestData &aReqData );
 
 	/**
 	 * Method to create a web query to do music search operation 
@@ -150,15 +155,12 @@ private:
 	 * @param aOperation The type of operation to be performed
 	 * @param aInputData The data required to create the web query
 	 * @param aReqData [out] The request data created by the plugin
-	 * @param aResult [out] SmfPluginManagerResult, The result of the operation
 	 * @return SmfPluginError
-	 * @see smfglobal.h
 	 */
 	SmfPluginError createMusicSearchRequest ( QObject *aPlugin, 
 			const SmfRequestTypeID &aOperation, 
 			QByteArray &aInputData,
-			SmfPluginRequestData &aReqData,
-			SmfPluginManagerResult &aResult );
+			SmfPluginRequestData &aReqData );
 
 
 	/**
@@ -169,15 +171,12 @@ private:
 	 * @param aOperation The type of operation to be performed
 	 * @param aInputData The data required to create the web query
 	 * @param aReqData [out] The request data created by the plugin
-	 * @param aResult [out] SmfPluginManagerResult, The result of the operation
 	 * @return SmfPluginError
-	 * @see smfglobal.h
 	 */
 	SmfPluginError createMusicServiceRequest ( QObject *aPlugin, 
 			const SmfRequestTypeID &aOperation, 
 			QByteArray &aInputData,
-			SmfPluginRequestData &aReqData,
-			SmfPluginManagerResult &aResult );
+			SmfPluginRequestData &aReqData );
 
 
 	/**
@@ -187,15 +186,12 @@ private:
 	 * @param aOperation The type of operation to be performed
 	 * @param aInputData The data required to create the web query
 	 * @param aReqData [out] The request data created by the plugin
-	 * @param aResult [out] SmfPluginManagerResult, The result of the operation
 	 * @return SmfPluginError
-	 * @see smfglobal.h
 	 */
 	SmfPluginError createMusicPlaylistRequest ( QObject *aPlugin, 
 			const SmfRequestTypeID &aOperation, 
 			QByteArray &aInputData,
-			SmfPluginRequestData &aReqData,
-			SmfPluginManagerResult &aResult );
+			SmfPluginRequestData &aReqData );
 
 	/**
 	 * Method to create a web query to do gallery related operation
@@ -204,15 +200,12 @@ private:
 	 * @param aOperation The type of operation to be performed
 	 * @param aInputData The data required to create the web query
 	 * @param aReqData [out] The request data created by the plugin
-	 * @param aResult [out] SmfPluginManagerResult, The result of the operation
 	 * @return SmfPluginError
-	 * @see smfglobal.h
 	 */
 	SmfPluginError createGalleryRequest ( QObject *aPlugin, 
 			const SmfRequestTypeID &aOperation, 
 			QByteArray &aInputData,
-			SmfPluginRequestData &aReqData,
-			SmfPluginManagerResult &aResult );
+			SmfPluginRequestData &aReqData );
 	
 	/**
 	 * Method called by Plugin Manager when network response is available
@@ -225,10 +218,9 @@ private:
 	 * containing the data parsed by the plugins
 	 * @param aRetType [out] The Plugin return value
 	 * @param aPageResult [out] The page information filled by the plugins
-	 * @return SmfPluginManagerResult, The result of the operation
-	 * @see smfglobal.h
+	 * @return SmfError, The result of the operation
 	 */
-	SmfPluginManagerResult responseAvailable ( SmfPluginBase *aInstance,
+	SmfError responseAvailable ( SmfPluginBase *aInstance,
 			const SmfRequestTypeID &aOperation,
 			const SmfTransportResult &aTransportResult, 
 			QByteArray *aResponse,
@@ -246,6 +238,22 @@ private:
 	void serializeResult ( const SmfRequestTypeID &aOperation, 
 			QVariant* aResult,
 			QDataStream &aDataStream );
+	
+	/**
+	 * Method to convert SmfPluginError Error to the type SmfError 
+	 * @param aPluginError The Error code returned by the plugin
+	 * @param aSMFError [out] The Smf specific common error code
+	 */
+	void convertPluginErrorType( const SmfPluginError &aPluginError,  
+			SmfError &aSMFError );
+	
+	/**
+	 * Method to convert SmfTransportResult Error to the type SmfError 
+	 * @param aTMError The Error code returned by the TM
+	 * @param aSMFError [out] The Smf specific common error code
+	 */
+	void convertNetworkErrorType( const SmfTransportResult &aTMError,  
+			SmfError &aSMFError );
 
 	friend class SmfPluginManager;
 	

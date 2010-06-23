@@ -31,7 +31,10 @@
 #include <smfcomment.h>
 
 class SmfPicturePrivate;
-
+/**
+ * Max size for one SmfPicture
+ */
+const int MaxSmfPictureSize = 1000;
 /**
  * SmfPictureVisibility enumeration
  */
@@ -52,9 +55,12 @@ class SMFCLIENT_EXPORT SmfPicture
 	{
 public:
 	/**
-	 * Constructor with default argument
+	 * Constructor with default argument.
+	 * @param aDownloaded This flag is to know whether the content is downloaded
+	 * in the device(if true). If false it signifies that SmfPicture contains
+	 * a link/url to the location of the content
 	 */
-	SmfPicture( );
+	SmfPicture(/*bool aDownloaded = false*/ );
 	
 	/**
 	 * Copy Constructor
@@ -139,7 +145,14 @@ public:
 	 * @return The ID value 
 	 */
 	QString id( ) const;
-		
+	
+	/**
+	 * Gets download flag. This flag is to know whether the content is downloaded
+	 * in the device(if true). If false it signifies that SmfPicture contains
+	 * a link/url to the location of the content
+	 */
+	bool downloadFlag();
+			
 	/**
 	 * Method to set a picture owner
 	 * @param aOwner The owner of the picture

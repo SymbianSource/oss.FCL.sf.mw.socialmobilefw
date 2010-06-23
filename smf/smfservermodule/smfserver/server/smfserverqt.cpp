@@ -45,13 +45,13 @@ bool SmfServerQt::start()
     const QString KServerName("SmfServerQt");
     if (m_server->listen(KServerName))
     {
-        writeLog(QString(m_server->serverName() + ": listening for connections."));
+        qDebug()<<(QString(m_server->serverName() + ": listening for connections."));
         return true;
     }
     else
     {
-        writeLog(QString(KServerName + ": failed to start"));
-        writeLog(QString(m_server->errorString()));
+        qDebug()<<(QString(KServerName + ": failed to start"));
+        qDebug()<<(QString(m_server->errorString()));
         return false;
     }
 }
@@ -64,10 +64,10 @@ int SmfServerQt::sessionListCount() const
     return m_sessions.count();
 }
 
-void SmfServerQt::writeLog(QString log) const
+/*void SmfServerQt::writeLog(QString log) const
 {
     qDebug() << log.toAscii().constData();
-}
+}*/
 
 /**
  * Called by the SmfServer when client authorization finishes.
@@ -86,12 +86,12 @@ void SmfServerQt::newClientConnected()
     QLocalSocket *client(m_server->nextPendingConnection());
     if (!client)
     {
-        writeLog("SmfServerQt::newClientConnected(): no socket - client may have dropped.");
+        qDebug()<<("SmfServerQt::newClientConnected(): no socket - client may have dropped.");
         return;
     }
 
     // Create a new session for this client.
-    writeLog("Client connected.");
+    qDebug()<<("Client connected.");
 
     m_sessions.append(new SmfServerQtSession(client, this));
 }

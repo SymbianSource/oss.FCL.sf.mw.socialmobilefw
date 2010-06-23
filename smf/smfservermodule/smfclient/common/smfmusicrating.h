@@ -22,7 +22,7 @@
 #define SMFMUSICRATING_H_
 
 #include <QSharedData>
-#include <smfclientglobal.h>
+#include "smfclientglobal.h"
 #include <QMetaType>
 
 class SmfTrackInfo;

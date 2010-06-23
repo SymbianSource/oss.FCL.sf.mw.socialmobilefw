@@ -1,5 +1,7 @@
 TEMPLATE  = 	subdirs
 
-SUBDIRS   =	smfservermodule \
-		# smfsettingsui \
-                # smfcredentialmgr
+SUBDIRS   =	smfcredentialmgr \
+		smfsettingsui \
+		smfservermodule 
+		
+CONFIG += ordered

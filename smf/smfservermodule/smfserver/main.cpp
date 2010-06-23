@@ -31,18 +31,82 @@
 #include <QtCore>
 #include <QCoreApplication>
 #include "smfserver.h"
+#ifdef SETTINGS_TEST
+#include "smfsettingshandler.h"
+#include <QFile>
+#include <QTextStream>
+#include <QMap>
+#endif
+
+void debugOutput(QtMsgType type, const char *msg)
+	{
+	QFile logFile("c://data//SmfLog.txt");
+	Q_ASSERT(logFile.open( QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append ));
+	QTextStream stream(&logFile);
+	
+	switch (type)
+		{
+		case QtDebugMsg:
+			stream<<msg<<"\n";
+			break;
+
+		case QtWarningMsg:
+			stream<<"Warning: ";
+			stream<<msg<<"\n";
+			break;
+			
+		case QtCriticalMsg:
+			stream<<"Critical: ";
+			stream<<msg<<"\n";
+			break;
+			
+		case QtFatalMsg:
+			stream<<"Fatal: ";
+			stream<<msg<<"\n";
+			break;
+			
+		default:;
+		}
+	}
+
 
 int main(int argc, char *argv[])
 {
+	qInstallMsgHandler(debugOutput);
+	
     QCoreApplication a(argc, argv);
-    SmfServer* server = new SmfServer(&a);
-    int status = -1;
-
-    if (server)
-    {
-        server->startServer();
-        status = a.exec();
-    }
-
-    return status;
+#ifndef SETTINGS_TEST
+	SmfServer* server = new SmfServer();
+	server->startServer();
+#else	
+	SmfSettingsHandler* settingsHandler = new SmfSettingsHandler();
+	////////////////////test1//////////////////////////////////////
+	//100 MB
+	QString maxData = QString::number(100000000);
+	settingsHandler->SetMaxDataTransferLimit(maxData);
+	
+	QString getmaxData = settingsHandler->GetMaxDataTransferLimit();
+	////////////////////test1//////////////////////////////////////
+	
+	////////////////////test2//////////////////////////////////////
+	QString pluginname = "SamplePlugin";
+	QString pluginstatus = "Authorized";
+	settingsHandler->SetPluginDetails(pluginname,pluginstatus);
+	
+	QMap<QString,QString> getData;
+	settingsHandler->GetPluginDetails(getData);
+	QString pluginstatus2 = getData.value(pluginname);
+	////////////////////test2//////////////////////////////////////
+	
+	QFile file("c:\\data\\getCRKeys.txt");
+    if (!file.open(QIODevice::Append | QIODevice::Text))
+	         ;
+    QTextStream out(&file);
+    out << getmaxData << "\n";
+    out << pluginstatus2 << "\n";
+    file.close();
+	a.exit(0);
+#endif
+	
+    return a.exec();
 }

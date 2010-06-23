@@ -42,6 +42,7 @@ public:
 		m_comments.clear();
 		m_tags.clear();
 		m_url.clear();
+		isDownloaded = false;
 	}
 	/**
 	 * Constructor
@@ -55,6 +56,8 @@ public:
 		m_tags.clear();
 		m_url.clear();
 		m_picture = aImage;
+		//false by default
+		isDownloaded = false;
 	}
 	
 	/**
@@ -72,7 +75,11 @@ public:
 		m_comments ( aOther.m_comments ),
 		m_tags ( aOther.m_tags ),
 		m_url ( aOther.m_url ),
-		m_picture ( aOther.m_picture )	{ }
+		m_picture ( aOther.m_picture ),
+		isDownloaded(aOther.isDownloaded)
+			{
+		
+			}
 	
 	/**
 	 * Destructor
@@ -91,7 +98,13 @@ public:
 	QStringList m_tags;		// tags
 	QUrl m_url;				// url
 	QImage m_picture;		// picture data as bytearray
-	
+	/**
+	 * Flag whether the content is actually available in device - 
+	 * if this is false then only the url/link to the media is available 
+	 * in the class - clients can use the link to download the content/visit 
+	 * the site.
+	 */
+	bool isDownloaded;
 };
 
 #endif /* SMFPICTURE_P_H_ */

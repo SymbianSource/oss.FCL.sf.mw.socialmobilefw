@@ -30,9 +30,17 @@ public:
 	 * Constructor
 	 */
 	SmfPlaylistPrivate( ) { 
-		m_trackList.clear(); 
+		m_version.clear();
 		m_title.clear();
+		m_author.clear();
+		m_comments.clear();
+		m_info.clear();
+		m_location.clear();
 		m_playlistId.clear();
+		m_image.clear();
+		m_license.clear();
+		m_attribution.clear();
+		m_trackList.clear();
 	}
 	
 	/**
@@ -41,10 +49,20 @@ public:
 	 */
 	SmfPlaylistPrivate( const SmfPlaylistPrivate &aOther ) : 
 		QSharedData ( aOther ), 
-		m_trackList ( aOther.m_trackList ), 
+		m_version ( aOther.m_version ), 
 		m_title ( aOther.m_title ),
+		m_author ( aOther.m_author ),
+		m_comments ( aOther.m_comments ), 
+		m_info ( aOther.m_info ),
+		m_location ( aOther.m_location ),
+		m_playlistId ( aOther.m_playlistId ), 
+		m_image ( aOther.m_image ),
 		m_creationDate ( aOther.m_creationDate ),
-		m_playlistId ( aOther.m_playlistId ) 	{ }
+		m_license ( aOther.m_license ), 
+		m_attribution ( aOther.m_attribution ),
+		m_metadata ( aOther.m_metadata ),
+		m_extension ( aOther.m_extension ),
+		m_trackList ( aOther.m_trackList ) { }
 	
 	/**
 	 * Destructor
@@ -53,10 +71,27 @@ public:
 		{
 		}
   
-	QList<SmfTrackInfo> m_trackList;// list of tracks
-	QString m_title;				// playlist name
-	QDateTime m_creationDate;		// creation date
-	QString m_playlistId;
+	/**
+	 * Data members
+	 */
+	QString m_version;				// playlist version
+	QString m_title;				// playlist title
+	QString m_author;				// playlist creator
+	QList<SmfComment> m_comments;	// comments about the playlist
+	QUrl m_info;					// URI of a web page to find out more about this playlist
+	QUrl m_location;				// The Source URI for this playlist
+	QString m_playlistId;			// The playlist ID
+	QUrl m_image;					// URI of an image to display in the absence of an 
+									// image for playlist's tracks
+	QDateTime m_creationDate;		// creation date of the playlist
+	QUrl m_license;					// URI of a resource that describes the license under 
+									// which this playlist was released
+	QList<QUrl> m_attribution;		// An ordered list of URIs. The purpose is to satisfy licenses 
+									// allowing modification but requiring attribution
+	QVariantMap m_metadata;			// The meta element allows metadata fields to be added to XSPF
+	QVariantMap m_extension; 		// The extension element allows non-XSPF XML 
+									// to be included in XSPF documents
+	QList<SmfTrackInfo> m_trackList;// list of tracks in the playlist
 	
 };
 

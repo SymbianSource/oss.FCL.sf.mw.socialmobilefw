@@ -109,6 +109,6 @@ public:
 	
 	};
 
-Q_DECLARE_INTERFACE( SmfMusicEventsPlugin, "org.symbian.smf.plugin.music.events/v1.0" );
+Q_DECLARE_INTERFACE( SmfMusicEventsPlugin, "org.symbian.smf.plugin.music.events/v0.2" );
 
 #endif /* SMFMUSICEVENTSPLUGIN_H_ */
