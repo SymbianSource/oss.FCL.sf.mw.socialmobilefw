@@ -6,7 +6,8 @@ QT += core \
     webkit \
     xml
 LIBS += -lsmfcredmgrclient
-HEADERS += progressbar.h \
+HEADERS += inc/keys.h \
+    progressbar.h \
     inc/requestSP.h \
     inc/xmlParser.h \
     inc/sessionSP.h \
@@ -27,7 +28,8 @@ FORMS += progressbar.ui \
     AuthApp.ui
 RESOURCES += 
 symbian: { 
+    TARGET.EPOCHEAPSIZE = 0x020000 \
+        0x3200000
     TARGET.UID3 = 0xEFE2FD23 # Symbian specific, unprotected uid3 from symbiansigned.com
     TARGET.CAPABILITY = NetworkServices # Symbian specific, we just need network access
-    #ICON = smfdemo.svg
 }

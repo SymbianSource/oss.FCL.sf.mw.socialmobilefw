@@ -19,19 +19,23 @@
 #include <QDebug>
 #include <QMessageBox>
 
+#include "keys.h"
 
 AuthApp::AuthApp(QWidget *parent)
     : QMainWindow(parent),
     ui(new Ui::AuthAppClass)
 {
+	qDebug()<<"Inside AuthApp::AuthApp()";
 	ui->setupUi(this);
     //iFBSession = FBSession::sessionForApplication("df51def3e750a350ddb961a70b5ab5ab", "3b86a756f77967dea4674f080fa5d345", QString());
-    iFBSession = FBSession::sessionForApplication("ed6d6d36813f0fbae8061776beb68daf", "fb10f1c758fc285b2a6113344ef4c893", QString());		//NArasimha's APP
-	//iFBSession = FBSession::sessionForApplication("077fd6b8881f39c2dc23207323cca439", "cb13436999afde9338ecd8b0bfb82508", QString());		//Nalina's App
+    //iFBSession = FBSession::sessionForApplication("ed6d6d36813f0fbae8061776beb68daf", "fb10f1c758fc285b2a6113344ef4c893", QString());		//NArasimha's APP
+	iFBSession = FBSession::sessionForApplication(kApiKey,kApiSecret, QString());		//Nalina's App
+	//iFBSession = FBSession::sessionForApplication("114354298600019", "fb10f1c758fc285b2a6113344ef4c893", QString());//Sid's App
+	//iFBSession = FBSession::sessionForApplication("283d4e964b2754505cbbcf69c1d68f3c", "eb8723a3b5921250df442f9695e6bd29", QString());//Sid's App
 	connect (iFBSession,SIGNAL(sessionDidLogin(QString)), this, SLOT(sessionDidLogin(QString)));
     connect (iFBSession, SIGNAL(sessionDidLogout()), this, SLOT(sessionDidLogout()));
     
-    CheckforLogin();
+    //CheckforLogin();
 }
 
 AuthApp::~AuthApp()
@@ -53,6 +57,7 @@ void AuthApp::changeEvent(QEvent *e)
 }
 void AuthApp::CheckforLogin()
 {
+	qDebug()<<"Inside AuthApp::CheckforLogin()";
 	iLoginDialog = NULL;
 	if ( !( iFBSession->resume() ) ){
 		ui->buttonForget->setDisabled(true);
@@ -61,12 +66,13 @@ void AuthApp::CheckforLogin()
 }
 void AuthApp::on_pushButton_clicked()
 {
+	qDebug()<<"Inside AuthApp::on_pushButton_clicked()";
 	iLoginDialog = new FBLoginDialog();
 	iLoginDialog->show();
 }
 void AuthApp::sessionDidLogin(QString sessionkey)
 {
-
+	qDebug()<<"Inside AuthApp::sessionDidLogin()";
     if (iLoginDialog )
     {
 		QMessageBox msgbox;
@@ -89,6 +95,7 @@ void AuthApp::sessionDidLogin(QString sessionkey)
 
 void AuthApp::sessionDidLogout()
 {
+	qDebug()<<"Inside AuthApp::sessionDidLogout()";
     QMessageBox msgbox;
     msgbox.setText("logged out successfully!!");
     msgbox.exec();
@@ -104,5 +111,6 @@ void AuthApp::requestFailedWithFacebookError ( const FBError& aError )
 
 void AuthApp::on_buttonForget_clicked()
 {
+	qDebug()<<"Inside AuthApp::on_buttonForget_clicked()";
     iFBSession->logout();
 }

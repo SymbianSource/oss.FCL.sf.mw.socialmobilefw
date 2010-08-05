@@ -21,13 +21,12 @@
 #define _FLICKRCONTACTFETCHERPLUGIN_H
 
 // Include files
+#include <QDateTime>
 #include <smfcontactfetcherplugin.h>
-#include <smfpluginutil.h>
 
 // Forward declarations
 class FlickrProviderBase;
 class QVariant;
-class QNetworkReply;
 
 
 /**
@@ -137,10 +136,8 @@ public: // From SmfPluginBase interface
 	/**
 	 * The first method to be called in the plugin that implements this interface.
 	 * If this method is not called, plugin may not behave as expected.
-	 * Plugins are expected to save the aUtil handle and use and when required.
-	 * @param aUtil The instance of SmfPluginUtil
 	 */
-	void initialize( SmfPluginUtil *aUtil );
+	void initialize( );
 	
 	/**
 	 * Method to get the provider information
@@ -180,10 +177,19 @@ private:
 	 * @return The md5 hash of the base string
 	 */
 	QString generateSignature( const QString aBaseString );
+	
+	/**
+	 * Method to interpret the key sets obtained from credential manager 
+	 * @param aApiKey [out] The api key
+	 * @param aApiSecret [out] The api secret
+	 * @param aAuthToken [out] The auth token provided by Flickr
+	 */
+	void fetchKeys(	QString &aApiKey, 
+			QString &aApiSecret, 
+			QString &aAuthToken );
     
 private:
 	FlickrProviderBase *m_provider;
-	SmfPluginUtil *m_util;
 	};
 
 
@@ -295,6 +301,7 @@ private:
 	QString m_smfRegToken;
 	QList<QString> m_supportedInterfaces;
 	QStringList m_supportedLangs;
+	QDateTime m_validity;
 	};
 
 #endif /*_FLICKRCONTACTFETCHERPLUGIN_H*/

@@ -163,6 +163,7 @@ void TestScreen::showFriends(SmfContactList* frnds, SmfError err, SmfResultPage)
 	}
 void TestScreen::showPosts(SmfPostList* postlist, SmfError error, SmfResultPage resultPage)
 	{
+	Q_UNUSED(resultPage)
 	writeLog("TestScreen::showPosts");
 	ui.listWidget->clear();
 	writeLog("TestScreen::showPosts count=");

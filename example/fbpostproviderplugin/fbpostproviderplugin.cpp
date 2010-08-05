@@ -25,6 +25,8 @@
 #include <QVariant>
 #include <QListIterator>
 #include <QDebug>
+#include <QSettings>
+#include <smfpluginutil.h>
 #ifdef SMF_XMLPARSING
 #include <QXmlStreamReader>
 #endif
@@ -39,6 +41,12 @@ SmfContact contact;
 QString currentId;
 #endif
 QMap<QString, QString> idNameMap;
+QMap<QString, QString> idPicMap;
+
+
+// Todo:- Macro added for limiting items fetched to recent 5
+// Remove after demo
+#define SETLIMITOFFIVEFORSMFDEMO 1
 
 /**
  * Method called by plugins to generate a signature string from a base string
@@ -57,6 +65,54 @@ QString FBPostProviderPlugin::generateSignature(const QString aBaseString)
     QString returnString (md5Hash);
     return returnString;
 	}
+
+
+/**
+ * Method to interpret the key sets obtained from credential manager 
+ * @param aApiKey [out] The api key
+ * @param aApiSecret [out] The api secret
+ * @param aSessionKey [out] The session key
+ * @param aSessionSecret [out] The session secret
+ */
+void FBPostProviderPlugin::fetchKeys( QString &aApiKey, 
+		QString &aApiSecret, 
+		QString &aSessionKey, 
+		QString &aSessionSecret )
+	{
+	qDebug()<<"Inside FBPostProviderPlugin::fetchKeys()";
+
+	qDebug()<<"Reg Token = "<<m_provider->m_smfRegToken;
+	qDebug()<<"Expiry Date as int = "<<m_provider->m_validity.toTime_t();
+	
+	SmfAuthParams keys;
+	SmfPluginUtil util;
+	util.getAuthKeys(keys, m_provider->m_smfRegToken, 
+			m_provider->m_validity, m_provider->m_pluginId);
+	
+	qDebug()<<"Number of key-value pairs = "<<keys.count();
+	
+    QByteArray keyName;
+    keyName.append("ApiKey");
+	aApiKey.append(keys.value(keyName));
+	
+    keyName.clear();
+    keyName.append("ApiSecret");
+	aApiSecret.append(keys.value(keyName));
+	
+	keyName.clear();
+    keyName.append("SessionKey");
+	aSessionKey.append(keys.value(keyName));
+	
+	keyName.clear();
+    keyName.append("SessionSecret");
+	aSessionSecret.append(keys.value(keyName));
+	
+	qDebug()<<"Api Key = "<<aApiKey;
+	qDebug()<<"Api Secret = "<<aApiSecret;
+	qDebug()<<"session Key = "<<aSessionKey;
+	qDebug()<<"session Secret = "<<aSessionSecret;
+	}
+
 
 /**
  * Destructor
@@ -101,7 +157,10 @@ qint32 FBPostProviderPlugin::maxItems( ) const
 QVector<QTextFormat> FBPostProviderPlugin::supportedFormats ( ) const
 	{
 	qDebug()<<"Inside FBPostProviderPlugin::supportedFormats()";
+	QTextFormat f1, f2;
 	QVector<QTextFormat> data;
+	data.append(f1);
+	data.append(f2);
 	return data;
 	}
 
@@ -113,7 +172,7 @@ QVector<QTextFormat> FBPostProviderPlugin::supportedFormats ( ) const
 bool FBPostProviderPlugin::supportsAppearence ( ) const
 	{
 	qDebug()<<"Inside FBPostProviderPlugin::supportsAppearence()";
-	return false;
+	return true;
 	}
 
 /**
@@ -129,14 +188,16 @@ SmfPluginError FBPostProviderPlugin::retrieve( SmfPluginRequestData &aRequest,
 		const int aPageNum , 
 		const int aItemsPerPage  )
 	{
-	Q_UNUSED(aUser)
 	qDebug()<<"Inside FBPostProviderPlugin::retrieve()";
+	
+	if(0 != aUser->value("Guid").value<QContactGuid>().guid().size())
+		chance = 1;
 	
 	//// Currently considering for self contact , ie, omitting aUser
 	if(0 == chance)
 		return getFacebookUserId(aRequest);
 	else
-		return getPosts(aRequest, aPageNum , aItemsPerPage);
+		return getPosts(aRequest, aUser, aPageNum , aItemsPerPage);
 	}
 
 
@@ -152,32 +213,12 @@ SmfPluginError FBPostProviderPlugin::getFacebookUserId(
 	
 	SmfPluginError error = SmfPluginErrUserNotLoggedIn;
 	
-#if 1
-// Reading the keys, CSM Stubbed - START
-	QFile file("c:\\data\\FacebookKeys.txt");
-	if (!file.open(QIODevice::ReadOnly))
-		{
-		qDebug()<<"File to read the keys could not be opened";
-		return error;
-		}
-	
-	qDebug()<<"Key file read, going to parse the key values from file";
-	
-	QByteArray arr = file.readAll();
-	QList<QByteArray> list = arr.split('\n');
-	file.close();
-
-	QString apiKey(list[0]);
-	QString apiSecret(list[1]);
-	QString sessionKey(list[2]);
-	QString sessionSecret(list[3]);
-	
-	qDebug()<<"Api Key = "+apiKey;
-	qDebug()<<"Api Secret = "+apiSecret;
-	qDebug()<<"session Key = "+sessionKey;
-	qDebug()<<"session Secret = "+sessionSecret;
-// Reading the keys, CSM Stubbed - END
-#endif
+	// Get the key sets from SMF Plugin Utility class.
+	QString apiKey;
+	QString apiSecret;
+	QString sessionKey;
+	QString sessionSecret;
+	fetchKeys(apiKey, apiSecret, sessionKey, sessionSecret);
 	
 	// Get the current date and time and convert it to sec as a string
 	QString call_id = QString::number(QDateTime::currentDateTime().toTime_t(), 10);
@@ -226,16 +267,19 @@ SmfPluginError FBPostProviderPlugin::getFacebookUserId(
 /**
  * Method to get the user's posts
  * @param aRequest [out] The request data to be sent to network
+ * @param aUser The user's contact in this SP, omit for self contact
  * @param aPageNum The page to be extracted
  * @param aItemsPerPage Number of items per page
  * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
  */
 SmfPluginError FBPostProviderPlugin::getPosts( 
 		SmfPluginRequestData &aRequest,
+		const SmfContact *aUser, 
 		const int aPageNum , 
 		const int aItemsPerPage  )
 	{
 	qDebug()<<"Inside FBPostProviderPlugin::getPosts()";
+	qDebug()<<"Required guid = "<<aUser->value("Guid").value<QContactGuid>().guid();
 	qDebug()<<"aPageNum = "<<aPageNum;
 	qDebug()<<"aItemsPerPage = "<<aItemsPerPage;
 	
@@ -250,32 +294,12 @@ SmfPluginError FBPostProviderPlugin::getPosts(
 	
 	qDebug()<<"Valid arguments";
 	
-#if 1
-// Reading the keys, CSM Stubbed - START
-	QFile file("c:\\data\\FacebookKeys.txt");
-	if (!file.open(QIODevice::ReadOnly))
-		{
-		qDebug()<<"File to read the keys could not be opened";
-		return SmfPluginErrUserNotLoggedIn;
-		}
-	
-	qDebug()<<"Key file read, going to parse the key values from file";
-	
-	QByteArray arr = file.readAll();
-	QList<QByteArray> list = arr.split('\n');
-	file.close();
-	
-	QString apiKey(list[0]);
-	QString apiSecret(list[1]);
-	QString sessionKey(list[2]);
-	QString sessionSecret(list[3]);
-	
-	qDebug()<<"Api Key = "+apiKey;
-	qDebug()<<"Api Secret = "+apiSecret;
-	qDebug()<<"session Key = "+sessionKey;
-	qDebug()<<"session Secret = "+sessionSecret;
-// Reading the keys, CSM Stubbed - END
-#endif
+	// Get the key sets from SMF Plugin Utility class.
+	QString apiKey;
+	QString apiSecret;
+	QString sessionKey;
+	QString sessionSecret;
+	fetchKeys(apiKey, apiSecret, sessionKey, sessionSecret);
 	
 	// Get the current date and time and convert it to sec as a string
 	QString call_id = QString::number(QDateTime::currentDateTime().toTime_t(), 10);
@@ -289,17 +313,23 @@ SmfPluginError FBPostProviderPlugin::getPosts(
 #else
 	baseString.append("format=JSON");
 #endif
+	
+#ifdef SETLIMITOFFIVEFORSMFDEMO  // Hard coding the number of posts fetched as recent 5
+	qDebug()<<"Hardcoding pagenumber and itemperpage to fetch 5 recent posts";
+	int val = 5;
+	baseString.append("limit="+QString::number(val));
+#else
 	if(0 == aPageNum)
-		{
-		//baseString.append("limit="+QString::number((aItemsPerPage*(aPageNum+1)), 10));
-		qDebug()<<"Hardcoding pagenumber and itemperpage to fetch 5 posts";
-		int val = 5;
-		baseString.append("limit="+QString::number(val));
-		}
+		baseString.append("limit="+QString::number((aItemsPerPage*(aPageNum+1)), 10));
 	else
 		baseString.append("limit="+QString::number((aItemsPerPage*aPageNum), 10));
+#endif
+
 	baseString.append("method=stream.get");
 	baseString.append("session_key="+sessionKey);
+	if(0 != aUser->value("Guid").value<QContactGuid>().guid().size())
+		baseString.append("source_ids="+aUser->value("Guid").value<QContactGuid>().guid());
+	else
 	baseString.append("source_ids="+uid);
 	baseString.append("ss=1");
 	baseString.append("v=1.0");
@@ -314,17 +344,23 @@ SmfPluginError FBPostProviderPlugin::getPosts(
 #else
 	url.addQueryItem("format", "JSON");
 #endif
+		
+#ifdef SETLIMITOFFIVEFORSMFDEMO  // Hard coding the number of posts fetched as recent 5
+	qDebug()<<"Hardcoding pagenumber and itemperpage to fetch 5 recent posts";
+	val = 5;
+	url.addQueryItem("limit", QString::number(val));
+#else
 	if(0 == aPageNum)
-		{
-//		url.addQueryItem("limit", QString::number((aItemsPerPage*(aPageNum+1)), 10));
-		qDebug()<<"Hardcoding pagenumber and itemperpage to fetch 5 posts";
-		int val = 5;
-		url.addQueryItem("limit", QString::number(val));
-		}
+		url.addQueryItem("limit", QString::number((aItemsPerPage*(aPageNum+1)), 10));
 	else
 		url.addQueryItem("limit", QString::number((aItemsPerPage*aPageNum), 10));
+#endif
+
 	url.addQueryItem("method", "stream.get");
 	url.addQueryItem("session_key", sessionKey);
+	if(0 != aUser->value("Guid").value<QContactGuid>().guid().size())
+		url.addQueryItem("source_ids",aUser->value("Guid").value<QContactGuid>().guid());
+	else
 	url.addQueryItem("source_ids",uid);
 	url.addQueryItem("ss", "1");
 	url.addQueryItem("v", "1.0");	
@@ -406,32 +442,12 @@ SmfPluginError FBPostProviderPlugin::postDirected( SmfPluginRequestData &aReques
 	
 	qDebug()<<"Valid arguments";
 			
-#if 1
-// Reading the keys, CSM Stubbed - START
-	QFile file("c:\\data\\FacebookKeys.txt");
-	if (!file.open(QIODevice::ReadOnly))
-		{
-		qDebug()<<"File to read the keys could not be opened";
-		return SmfPluginErrUserNotLoggedIn;
-		}
-	
-	qDebug()<<"Key file read, going to parse the key values from file";
-	
-	QByteArray arr = file.readAll();
-	QList<QByteArray> list = arr.split('\n');
-	file.close();
-	
-	QString apiKey(list[0]);
-	QString apiSecret(list[1]);
-	QString sessionKey(list[2]);
-	QString sessionSecret(list[3]);
-	
-	qDebug()<<"Api Key = "<<apiKey;
-	qDebug()<<"Api Secret = "<<apiSecret;
-	qDebug()<<"session Key = "<<sessionKey;
-	qDebug()<<"session Secret = "<<sessionSecret;
-// Reading the keys, CSM Stubbed - END
-#endif
+	// Get the key sets from SMF Plugin Utility class.
+	QString apiKey;
+	QString apiSecret;
+	QString sessionKey;
+	QString sessionSecret;
+	fetchKeys(apiKey, apiSecret, sessionKey, sessionSecret);
 			
 	// Get the current date and time and convert it to sec as a string
 	QString call_id = QString::number(QDateTime::currentDateTime().toTime_t(), 10);
@@ -570,14 +586,9 @@ SmfPluginError FBPostProviderPlugin::customRequest( SmfPluginRequestData &aReque
 /**
  * The first method to be called in the plugin that implements this interface.
  * If this method is not called, plugin may not behave as expected.
- * Plugins are expected to save the aUtil handle and use and when required.
- * @param aUtil The instance of SmfPluginUtil
  */
-void FBPostProviderPlugin::initialize( SmfPluginUtil *aUtil )
+void FBPostProviderPlugin::initialize( )
 	{
-	// Save the SmfPluginUtil handle
-	m_util = aUtil;
-	
 	// Create an instance of FlickrProviderBase
 	m_provider = new FBProviderBase;
 	m_provider->initialize();
@@ -630,7 +641,20 @@ SmfPluginError FBPostProviderPlugin::responseAvailable(
 	
 	QByteArray response(*aResponse);
 	delete aResponse;
-	qDebug()<<"FB response = "<<QString(response);
+	
+	QFile respFile("c://data//SmfPluginFBPostResponse.txt");
+	if(!respFile.open(QIODevice::WriteOnly))
+		{
+		qDebug()<<"File to write the response could not be opened, so writing to this file";
+		qDebug()<<"Flickr response = "<<QString(response);
+		}
+	else
+		{
+		respFile.write(response);
+		respFile.close();
+		qDebug()<<"Writing FB response to a file named 'SmfPluginFBPostResponse.txt'";
+		}
+	
 	qDebug()<<"FB response size = "<<response.size();
 	
 	if(SmfTransportOpNoError == aTransportResult)
@@ -679,10 +703,11 @@ SmfPluginError FBPostProviderPlugin::responseAvailable(
 					qDebug()<<"Response contains error, so parse and get the error code";
 					
 					bool ok;
-					QVariant result = m_util->parse(response, &ok);
+					SmfPluginUtil util;
+					QVariant result = util.parse(response, &ok);
 					if (!ok) 
 						{
-						qDebug()<<"An error occurred during json parsing, error = "<<m_util->errorString();
+						qDebug()<<"An error occurred during json parsing, error = "<<util.errorString();
 						aRetType = SmfRequestError;
 						return SmfPluginErrParsingFailed;
 						}
@@ -813,7 +838,8 @@ SmfPluginError FBPostProviderPlugin::responseAvailable(
 				qDebug()<<"Json parsing";
 				
 				bool ok;
-				QVariantMap result = m_util->parse(response, &ok).toMap();
+				SmfPluginUtil util;
+				QVariantMap result = util.parse(response, &ok).toMap();
 				if (!ok) 
 					{
 					qDebug()<<"An error occurred during json parsing";
@@ -873,7 +899,9 @@ SmfPluginError FBPostProviderPlugin::responseAvailable(
 						QVariantMap map2 = iter2.next().toMap();
 						qDebug()<<"owner's id = "<<map2["id"].toString();
 						qDebug()<<"owner's name = "<<map2["name"].toString();
+						qDebug()<<"owner's profile image url = "<<map2["pic_square"].toString();
 						idNameMap.insert(map2["id"].toString(), map2["name"].toString());
+						idPicMap.insert(map2["id"].toString(), map2["pic_square"].toString());
 						}
 					
 					// Loop for setting the "Name" of actor_id
@@ -886,6 +914,13 @@ SmfPluginError FBPostProviderPlugin::responseAvailable(
 						qDebug()<<"Name = "<<contactName.firstName();
 						QVariant nameVar = QVariant::fromValue(contactName);
 						contact.setValue("Name", nameVar);
+						
+						QContactAvatar avatar;
+						QUrl url(idPicMap.value(contact.value("Guid").value<QContactGuid>().guid()));
+						avatar.setImageUrl(url);
+						qDebug()<<"Profile Image Url = "<<url.toString();
+						QVariant urlVar = QVariant::fromValue<QContactAvatar>(avatar);
+						contact.setValue("Avatar", urlVar);
 						
 						list[i].setOwner(contact);
 						}
@@ -936,7 +971,8 @@ SmfPluginError FBPostProviderPlugin::responseAvailable(
 					}
 #else
 				bool ok;
-				QVariantMap result = m_util->parse(response, &ok).toMap();
+				SmfPluginUtil util;
+				QVariantMap result = util.parse(response, &ok).toMap();
 				if (!ok) 
 					{
 					qDebug()<<"Response cannot be parsed";
@@ -1106,12 +1142,14 @@ QString FBProviderBase::smfRegistrationId( ) const
 void FBProviderBase::initialize()
 	{
 	m_serviceName = "Facebook";
-	m_description = "Facebook plugin description";
+	m_description = "Facebook post plugin description";
 	m_serviceUrl = QUrl(QString("http://api.facebook.com"));
 	m_pluginId = "fbpostproviderplugin.qtplugin";
-	m_authAppId = "Facebook AuthAppId";
-	m_smfRegToken = "Facebook RegToken";
+	m_authAppId = "0xEFE2FD23";
 	m_supportedInterfaces.append("org.symbian.smf.plugin.contact.posts/v0.2");
+	QSettings iSettings;
+	m_smfRegToken = iSettings.value("FBCMRegToken").toString();
+	m_validity = iSettings.value("FBExpiryTime").toDateTime();
 	}
 
 

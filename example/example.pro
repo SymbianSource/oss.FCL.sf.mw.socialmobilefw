@@ -1,7 +1,11 @@
 TEMPLATE  = 	subdirs
-
 SUBDIRS   =	AuthApp \
+		FlickrAuthApp \
+		fbactivityfetcherplugin \
 		fbcontactfetcherplugin \
 		fbpostproviderplugin \
 		flickrcontactfetcherplugin \
-		smfclientapp
+		flickrgalleryplugin \
+		smfclientapp \
+		DemoGUI
+CONFIG += ordered

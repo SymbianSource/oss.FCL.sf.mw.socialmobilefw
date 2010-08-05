@@ -36,7 +36,7 @@ symbian: {
     	ReadDeviceData \
     	WriteDeviceData
     
-   LIBS += -lsmfclient.dll
+   LIBS += -lsmfcommon
 }
 
 target.path += $$[QT_INSTALL_PLUGINS]/smf/plugin/contact.fetcher

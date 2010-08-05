@@ -15,6 +15,7 @@
 * Base class of All dialogs
 */
 
+#define EMULATORTESTING // UnComment for Emulator build
 
 #include <QNetworkCookie>
 #include <QNetworkRequest>
@@ -64,7 +65,7 @@ void FBDialog::createControls()
     progressbar = new QProgressBar(this);
     
     layout->addWidget(iWebView);
-    layout->addWidget(progressbar);
+    //layout->addWidget(progressbar);
     
     setLayout(layout);
     
@@ -87,6 +88,7 @@ void FBDialog::createControls()
 }
 QString FBDialog::generateURL( const QString& aUrl, const QHash<QString, QString>& aParams) const
 {
+	qDebug()<<"Inside FBDialog::generateURL()";
     QString url ( aUrl );
 
     QStringList pairs;
@@ -111,6 +113,7 @@ QString FBDialog::generateURL( const QString& aUrl, const QHash<QString, QString
 
 QByteArray FBDialog::generatePostBody (const QHash<QString, QString>& aParams) const
 {
+	qDebug()<<"Inside FBDialog::generatePostBody()";
     QByteArray body;
 
     if (!aParams.count())
@@ -143,6 +146,7 @@ void FBDialog::postDismissCleanup()
 }
 
 void FBDialog::dismiss (bool /*aAnimated*/) {
+	qDebug()<<"Inside FBDialog::dismiss()";
     dialogWillDisappear();
     iLoadingUrl.clear();
 
@@ -153,6 +157,7 @@ void FBDialog::dismiss (bool /*aAnimated*/) {
 
 void FBDialog::dismissWithSuccess( bool aSuccess, bool aAnimated)
 {
+	qDebug()<<"Inside FBDialog::dismissWithSuccess()";
   if (aSuccess) {
         emit dialogDidSucceed();
   } else {
@@ -164,6 +169,7 @@ void FBDialog::dismissWithSuccess( bool aSuccess, bool aAnimated)
 
 void FBDialog::dismissWithError (const FBError& aError, bool aAnimated)
 {
+	qDebug()<<"Inside FBDialog::dismissWithError()";
   emit dialogDidFailWithError( aError );
   dismiss(aAnimated);
 }
@@ -188,11 +194,13 @@ void FBDialog::slotproxyAuthenticationRequired( const QNetworkProxy& proxy, QAut
 void FBDialog::cancel()
 {}
 
-void FBDialog::load() {}
+void FBDialog::load() {
+	qDebug()<<"Inside FBDialog::load()";
+}
 
 void FBDialog::show()
 {
-
+	qDebug()<<"Inside FBDialog::show()";
     load();
     showMaximized();
     dialogWillAppear();
@@ -201,6 +209,7 @@ void FBDialog::show()
 
 void FBDialog::loadURL(const QString& aUrl, QNetworkAccessManager::Operation aMethod, const QHash<QString, QString>& aGetParams, const QHash<QString, QString>&  aPostParams)
 {   
+	qDebug()<<"Inside FBDialog::loadURL()";
     //proxysettings();
     iIgnorePageLoadCompleteEvent = false;
 
@@ -228,24 +237,38 @@ void FBDialog::loadURL(const QString& aUrl, QNetworkAccessManager::Operation aMe
         request.setHeader (QNetworkRequest::ContentTypeHeader, contentType);
         body = generatePostBody (aPostParams);
     }
-	#ifdef __WINSCW__ 
     proxysettings();
-	#endif
     
     qDebug()<< "Check URL : " << iLoadingUrl;
 
     iWebView->load ( request, aMethod, body);
-
+    
 }
 void FBDialog::proxysettings()
 {
-
+#ifdef EMULATORTESTING
 	qDebug()<<"proxysettings";
+	
+	// Reading the keys, CSM Stubbed - START
+	QFile file("c:\\data\\DoNotShare.txt");
+	if (!file.open(QIODevice::ReadOnly))
+		{
+		qDebug()<<"File to read the windows username and password could not be opened, returning!!!";
+		return;
+		}
+	
+	QByteArray arr = file.readAll();
+	QList<QByteArray> list = arr.split(' ');
+	file.close();
+	
+	QString username(list[0]);
+	QString password(list[1]);
+	
     QString httpProxy = "10.1.0.214";//ipwproxy.sasken.com
     QString httpPort = "3128";
 
-    QString httpUser ="";/* This could be taken thru an QDialog implmentation to remove the Hard coding */
-    QString httpPass ="";/* This could be taken thru an QDialog implmentation to remove the Hard coding */
+    QString httpUser =username;/* This could be taken thru an QDialog implmentation to remove the Hard coding */
+    QString httpPass =password;/* This could be taken thru an QDialog implmentation to remove the Hard coding */
 
     /*==Classes used from Network Module==*/
     QNetworkProxy proxy;
@@ -257,7 +280,7 @@ void FBDialog::proxysettings()
     proxy.setPassword(httpPass);
 
     QNetworkProxy::setApplicationProxy(proxy);
-
+#endif
 }
 void FBDialog::dialogWillAppear() {}
 
@@ -272,13 +295,16 @@ void FBDialog::linkClicked ( const QUrl & url )
  {
 
         qDebug() << "Loading the url: " <<  url;
+        
         proxysettings();
+			
         iWebView->load(url);
 }
 
 void FBDialog::loadStarted()
 {
     qDebug() << "Load started: " << iWebView->url();
+    layout->addWidget(progressbar);
     progressbar->setVisible(true);
 }
 void FBDialog::loadProgress(int progress)
@@ -289,10 +315,15 @@ void FBDialog::GetSessionKey(const QUrl& aUrl)
 {
 
 }
+void FBDialog::FetchKeyFromUrl(const QUrl& aUrl)
+{
+
+}
 void FBDialog::loadFinished ( bool ok )
 {
     qDebug() << "Load " << (ok ? "" : "un") << "successfull for: " << iWebView->url();
     progressbar->setVisible(false);
+    layout->removeWidget(progressbar);
     if (ok)
     {
 		QString PAth = iWebView->url().toString();
@@ -307,6 +338,7 @@ void FBDialog::loadFinished ( bool ok )
 			
 			if(URL.contains("auth_token"))
 				{
+					qDebug() << "URL contains auth token";
 					iWebView->setHidden(true);
 					QMessageBox msgbox;
 					QString msg ("Logged in Success!!!Complete the Authorization?");
@@ -317,8 +349,13 @@ void FBDialog::loadFinished ( bool ok )
 						
 					}
 				}
+			else if(URL.contains("session_key") && URL.contains("uid"))
+				{
+					FetchKeyFromUrl(iWebView->url());
+				}
 			else
 				{
+					qDebug() << "URL doesnt have auth_token field";
 					iWebView->setHidden(true);
 					QMessageBox msgbox;
 					QString msg ("Permissions Success!!!continue login?");

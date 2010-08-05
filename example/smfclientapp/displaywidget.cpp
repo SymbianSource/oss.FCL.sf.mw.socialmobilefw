@@ -147,6 +147,7 @@ void DisplayWidget::serviceSelected()
 	}
 void DisplayWidget::showPosts(SmfPostList* postlist, SmfError error, SmfResultPage resultPage)
 	{
+	Q_UNUSED(resultPage)
 	writeLog("TestScreen::showPosts");
 	ui.listWidget->clear();
 	ui.listWidget->setVerticalScrollBar(ui.verticalScrollBar_list);

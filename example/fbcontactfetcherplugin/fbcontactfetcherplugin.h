@@ -21,13 +21,13 @@
 #define _FBCONTACTFETCHERPLUGIN_H
 
 // Include files
+#include <QDateTime>
 #include <smfcontactfetcherplugin.h>
-#include <smfpluginutil.h>
 
 // Forward declarations
 class FBContactProviderBase;
 class QVariant;
-class QNetworkReply;
+
 
 /**
  * The Plugin class that fetches contacts from the logged in user's 
@@ -137,10 +137,8 @@ public: // From SmfPluginBase interface
 	/**
 	 * The first method to be called in the plugin that implements this interface.
 	 * If this method is not called, plugin may not behave as expected.
-	 * Plugins are expected to save the aUtil handle and use and when required.
-	 * @param aUtil The instance of SmfPluginUtil
 	 */
-	void initialize( SmfPluginUtil *aUtil );
+	void initialize( );
 	
 	/**
 	 * Method to get the provider information
@@ -203,9 +201,20 @@ private:
 			const int aPageNum, 
 			const int aItemsPerPage );
 	
+	/**
+	 * Method to interpret the key sets obtained from credential manager 
+	 * @param aApiKey [out] The api key
+	 * @param aApiSecret [out] The api secret
+	 * @param aSessionKey [out] The session key
+	 * @param aSessionSecret [out] The session secret
+	 */
+	void fetchKeys(	QString &aApiKey, 
+			QString &aApiSecret, 
+			QString &aSessionKey, 
+			QString &aSessionSecret );
+	
 private:
 	FBContactProviderBase *m_provider;
-	SmfPluginUtil *m_util;
 	};
 
 
@@ -318,6 +327,7 @@ private:
 	QString m_smfRegToken;
 	QList<QString> m_supportedInterfaces;
 	QStringList m_supportedLangs;
+	QDateTime m_validity;
 	};
 
 #endif /*_FBCONTACTFETCHERPLUGIN_H*/

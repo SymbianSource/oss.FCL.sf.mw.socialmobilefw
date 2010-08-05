@@ -1,7 +1,6 @@
 TEMPLATE = app
 TARGET = smfclientapp
-DEFINES += WRITE_LOG #\
-    #OLDER_QT_MOBILITY
+DEFINES += WRITE_LOG
 QT += core \
     gui \
     network \
@@ -24,7 +23,7 @@ FORMS += posttestui.ui \
     smfclientapp.ui
 RESOURCES += 
 symbian:TARGET.UID3 = 0xE08059D6
-symbian:LIBS += -lsmfclient.dll
+symbian:LIBS += -lsmfclient -lsmfcommon
 symbian:TARGET.CAPABILITY = ReadUserData \
     WriteUserData \
     LocalServices \

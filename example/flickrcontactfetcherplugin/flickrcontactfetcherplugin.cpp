@@ -25,6 +25,8 @@
 #include <QMap>
 #include <QListIterator>
 #include <QDebug>
+#include <QSettings>
+#include <smfpluginutil.h>
 #ifdef SMF_XMLPARSING
 #include <QXmlStreamReader>
 #endif
@@ -39,6 +41,46 @@ FlickrContactFetcherPlugin::~FlickrContactFetcherPlugin( )
 	if(m_provider)
 		delete m_provider;
 	}
+
+/**
+ * Method to interpret the key sets obtained from credential manager 
+ * @param aApiKey [out] The api key
+ * @param aApiSecret [out] The api secret
+ * @param aAuthToken [out] The auth token provided by Flickr
+ */
+void FlickrContactFetcherPlugin::fetchKeys( QString &aApiKey, 
+		QString &aApiSecret, 
+		QString &aAuthToken )
+	{
+	qDebug()<<"Inside FlickrContactFetcherPlugin::fetchKeys()";
+
+	qDebug()<<"Reg Token = "<<m_provider->m_smfRegToken;
+	qDebug()<<"Expiry Date as int = "<<m_provider->m_validity.toTime_t();
+	
+	SmfAuthParams keys;
+	SmfPluginUtil util;
+	util.getAuthKeys(keys, m_provider->m_smfRegToken, 
+			m_provider->m_validity, m_provider->m_pluginId);
+	
+	qDebug()<<"Number of key-value pairs = "<<keys.count();
+	
+    QByteArray keyName;
+    keyName.append("ApiKey");
+	aApiKey.append(keys.value(keyName));
+	
+    keyName.clear();
+    keyName.append("ApiSecret");
+	aApiSecret.append(keys.value(keyName));
+	
+	keyName.clear();
+    keyName.append("AuthToken");
+    aAuthToken.append(keys.value(keyName));
+		
+	qDebug()<<"Api Key = "<<aApiKey;
+	qDebug()<<"Api Secret = "<<aApiSecret;
+	qDebug()<<"Auth Token = "<<aAuthToken;
+	}
+
 
 /**
  * Method to get the list of friends
@@ -64,30 +106,11 @@ SmfPluginError FlickrContactFetcherPlugin::friends( SmfPluginRequestData &aReque
 	
 	qDebug()<<"Valid arguments";
 	
-#if 1
-// Reading the keys, CSM Stubbed - START
-	QFile file("c:\\data\\FlickrKeys.txt");
-	if (!file.open(QIODevice::ReadOnly))
-		{
-		qDebug()<<"File to read the keys could not be opened";
-		return SmfPluginErrUserNotLoggedIn;
-		}
-	
-	qDebug()<<"Key file read, going to parse the key values from file";
-	
-	QByteArray arr = file.readAll();
-	QList<QByteArray> list = arr.split('\n');
-	file.close();
-	
-	QString apiKey(list[0]);
-	QString apiSecret(list[1]);
-	QString authToken(list[2]);
-	
-	qDebug()<<"Api Key = "<<apiKey;
-	qDebug()<<"Api Secret = "<<apiSecret;
-	qDebug()<<"Auth Token = "<<authToken;
-// Reading the keys, CSM Stubbed - END
-#endif
+	// Get the key sets from SMF Plugin Utility class.
+	QString apiKey;
+	QString apiSecret;
+	QString authToken;
+	fetchKeys(apiKey, apiSecret, authToken );
 	
 	// Create the API signature string
 	QString baseString;
@@ -274,14 +297,9 @@ SmfPluginError FlickrContactFetcherPlugin::customRequest( SmfPluginRequestData &
 /**
  * The first method to be called in the plugin that implements this interface.
  * If this method is not called, plugin may not behave as expected.
- * Plugins are expected to save the aUtil handle and use and when required.
- * @param aUtil The instance of SmfPluginUtil
  */
-void FlickrContactFetcherPlugin::initialize( SmfPluginUtil *aUtil )
+void FlickrContactFetcherPlugin::initialize( )
 	{
-	// Save the SmfPluginUtil handle
-	m_util = aUtil;
-	
 	// Create an instance of FlickrProviderBase
 	m_provider = new FlickrProviderBase;
 	m_provider->initialize();
@@ -335,7 +353,19 @@ SmfPluginError FlickrContactFetcherPlugin::responseAvailable(
 	
 	QByteArray response(*aResponse);
 	delete aResponse;
-	qDebug()<<"FB response = "<<QString(response);
+	
+	QFile respFile("c://data//SmfPluginFlickrContactResponse.txt");
+	if(!respFile.open(QIODevice::WriteOnly))
+		{
+		qDebug()<<"File to write the response could not be opened, so writing to this file";
+		qDebug()<<"Flickr response = "<<QString(response);
+		}
+	else
+		{
+		respFile.write(response);
+		respFile.close();
+		qDebug()<<"Writing FB response to a file named 'SmfPluginFlickrContactResponse.txt'";
+		}
 	qDebug()<<"FB response size = "<<response.size();
 	
 	if(SmfTransportOpNoError == aTransportResult)
@@ -381,7 +411,8 @@ SmfPluginError FlickrContactFetcherPlugin::responseAvailable(
 			
 			// For getting contacts from json response
 			bool ok;
-			QVariantMap result = m_util->parse(response, &ok).toMap();
+			SmfPluginUtil util;
+			QVariantMap result = util.parse(response, &ok).toMap();
 			if (!ok) {
 				qDebug()<<"An error occurred during json parsing";
 				aResult->setValue(list);
@@ -414,6 +445,7 @@ SmfPluginError FlickrContactFetcherPlugin::responseAvailable(
 				qDebug()<<"path_alias = "<<map2["path_alias"].toString();
 				qDebug()<<"location = "<<map2["location"].toString();
 				
+				// Contact Name
 				QContactName contactname;
 				QString username = map2["username"].toString();
 				qDebug()<<"Username = "<<username;
@@ -421,6 +453,35 @@ SmfPluginError FlickrContactFetcherPlugin::responseAvailable(
 				contactname.setLastName(username);
 				QVariant nameVar = QVariant::fromValue(contactname);
 				contact.setValue("Name",nameVar);
+				
+				// Contact's Flickr Specific ID to QContactGuid
+				QContactGuid guid;
+				guid.setGuid(map2["nsid"].toString());
+				QVariant guidVar = QVariant::fromValue(guid);
+				contact.setValue("Guid",guidVar);
+					
+				// Contact's profile image url
+				QUrl url;
+				if((0 == map2["iconfarm"].toInt()) && (0 == map2["iconserver"].toInt()))
+					url = QString("http://www.flickr.com/images/buddyicon.jpg");
+				else
+					{
+					QString str("http://farm");
+					str.append(map2["iconfarm"].toString());
+					str.append(".static.flickr.com/");
+					str.append(map2["iconserver"].toString());
+					str.append("/buddyicons/");
+					str.append(map2["nsid"].toString());
+					str.append(".jpg");
+					url = str;
+					}
+				QContactAvatar avatar;
+				qDebug()<<"Profile image URL = "<<url.toString();
+				avatar.setImageUrl(url);
+				QVariant avatarVar = QVariant::fromValue(avatar);
+				contact.setValue("Avatar",avatarVar);
+				
+				
 				list.append(contact);
 				}
 #endif
@@ -580,9 +641,11 @@ void FlickrProviderBase::initialize()
 	m_description = "Flickr contact fetcher plugin description";
 	m_serviceUrl = QUrl(QString("http://api.flickr.com"));
 	m_pluginId = "flickrcontactfetcherplugin.qtplugin";
-	m_authAppId = "Flickr AuthAppId";
-	m_smfRegToken = "Flickr RegToken";
+	m_authAppId = "0xE1D8C7D7";
 	m_supportedInterfaces.append("org.symbian.smf.plugin.contact.fetcher/v0.2");
+	QSettings iSettings;
+	m_smfRegToken = iSettings.value("CMFlickrRegToken").toString();
+	m_validity = iSettings.value("FlckrExpiryTime").toDateTime();
 	}
 
 

@@ -70,6 +70,7 @@ const QDateTime& FBRequest::timeStamp() const
 
 void FBRequest::connect()
 {
+	qDebug()<<"Inside FBRequest::connect()";
     emit requestLoading();
 
     QString url ;
@@ -139,6 +140,7 @@ QString FBRequest::urlForMethod (const QString& aMethod) const {
 
 QString FBRequest::generateGetURL() const
 {
+	qDebug()<<"Inside FBRequest::generateGetURL()";
     const QUrl url(iUrl);
     const QString queryPrefix = url.hasQuery() ? "&" : "?";
 
@@ -197,6 +199,7 @@ QString FBRequest::generateSig()
 
 void FBRequest::generatePostBody( QByteArray& body )
 {
+	qDebug()<<"Inside FBRequest::generatePostBody()";
     QString endLine = "\r\n--" + kStringBoundary + "\r\n";
     body.append( "--" + kStringBoundary.toUtf8() + "\r\n" ) ;
 
@@ -234,6 +237,7 @@ void FBRequest::generatePostBody( QByteArray& body )
 
 void FBRequest::handleResponseData( const QByteArray& aResponseData )
 {
+	qDebug()<<"Inside FBRequest::handleResponseData()";
     FBError error;
     QVariant result =  parseXMLResponse( aResponseData, error);
     if (error.code() != 0)
@@ -250,6 +254,7 @@ void FBRequest::handleResponseData( const QByteArray& aResponseData )
 
 void FBRequest::post( const QString& aUrl, const Dictionary& aParams)
 {
+	qDebug()<<"Inside FBRequest::post()";
     iUrl = aUrl;
     iParams = aParams;
 
@@ -258,7 +263,7 @@ void FBRequest::post( const QString& aUrl, const Dictionary& aParams)
 
 void FBRequest::cancel()
 {
-
+	qDebug()<<"Inside FBRequest::cancel()";
 }
 
 
@@ -303,6 +308,7 @@ void FBRequest::callWithDataParams (const QString& aMethod, const Dictionary& aP
 
 QVariant FBRequest::parseXMLResponse ( const QByteArray& aResponseData, FBError& aError)
 {
+	qDebug()<<"Inside FBRequest::handleResponseData()";
     QXmlInputSource input;
     input.setData(aResponseData);
 
@@ -348,7 +354,7 @@ void FBRequest::networkReplyError ( QNetworkReply::NetworkError aCode )
 
 void FBRequest::networkReplyFinished ()
 {
-
+qDebug()<<"Inside FBRequest::networkReplyFinished()";
     QNetworkReply* reply = static_cast<QNetworkReply*> ( sender() );
     QByteArray responseData = reply->readAll();
 

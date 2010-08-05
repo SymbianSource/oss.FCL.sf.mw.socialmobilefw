@@ -25,6 +25,8 @@
 #include <QFile>
 #include <QMap>
 #include <QListIterator>
+#include <QSettings>
+#include <smfpluginutil.h>
 #ifdef SMF_XMLPARSING
 #include <QXmlStreamReader>
 #endif
@@ -39,6 +41,9 @@ QString uids;
 SmfContact contact;
 #endif
 
+// Todo:- Macro added for limiting items fetched to recent 5
+// Remove after demo
+#define SETLIMITOFFIVEFORSMFDEMO 1
 
 /**
  * Destructor
@@ -48,6 +53,54 @@ FBContactFetcherPlugin::~FBContactFetcherPlugin( )
 	if(m_provider)
 		delete m_provider;
 	}
+
+/**
+ * Method to interpret the key sets obtained from credential manager 
+ * @param aApiKey [out] The api key
+ * @param aApiSecret [out] The api secret
+ * @param aSessionKey [out] The session key
+ * @param aSessionSecret [out] The session secret
+ * @param aAppId [out] The application ID
+ */
+void FBContactFetcherPlugin::fetchKeys( QString &aApiKey, 
+		QString &aApiSecret, 
+		QString &aSessionKey, 
+		QString &aSessionSecret )
+	{
+	qDebug()<<"Inside FBContactFetcherPlugin::fetchKeys()";
+
+	qDebug()<<"Reg Token = "<<m_provider->m_smfRegToken;
+	qDebug()<<"Expiry Date as int = "<<m_provider->m_validity.toTime_t();
+	
+	SmfAuthParams keys;
+	SmfPluginUtil util;
+	util.getAuthKeys(keys, m_provider->m_smfRegToken, 
+			m_provider->m_validity, m_provider->m_pluginId);
+	
+	qDebug()<<"Number of key-value pairs = "<<keys.count();
+	
+    QByteArray keyName;
+    keyName.append("ApiKey");
+	aApiKey.append(keys.value(keyName));
+	
+    keyName.clear();
+    keyName.append("ApiSecret");
+	aApiSecret.append(keys.value(keyName));
+	
+	keyName.clear();
+    keyName.append("SessionKey");
+	aSessionKey.append(keys.value(keyName));
+	
+	keyName.clear();
+    keyName.append("SessionSecret");
+	aSessionSecret.append(keys.value(keyName));
+	
+	qDebug()<<"Api Key = "<<aApiKey;
+	qDebug()<<"Api Secret = "<<aApiSecret;
+	qDebug()<<"session Key = "<<aSessionKey;
+	qDebug()<<"session Secret = "<<aSessionSecret;
+	}
+
 
 /**
  * Method to get the list of friends
@@ -66,7 +119,6 @@ SmfPluginError FBContactFetcherPlugin::friends( SmfPluginRequestData &aRequest,
 		return getFriendsUids(aRequest, aPageNum, aItemsPerPage);
 	else// if(1 == chance)
 		return getFriendsDetails(aRequest, aPageNum, aItemsPerPage);
-
 	}
 
 /**
@@ -93,32 +145,12 @@ SmfPluginError FBContactFetcherPlugin::getFriendsUids( SmfPluginRequestData &aRe
 	
 	qDebug()<<"Valid arguments";
 
-#if 1
-// Reading the keys, CSM Stubbed - START
-	QFile file("c:\\data\\FacebookKeys.txt");
-	if (!file.open(QIODevice::ReadOnly))
-		{
-		qDebug()<<"File to read the keys could not be opened";
-		return SmfPluginErrUserNotLoggedIn;
-		}
-	
-	qDebug()<<"Key file read, going to parse the key values from file";
-	
-	QByteArray arr = file.readAll();
-	QList<QByteArray> list = arr.split('\n');
-	file.close();
-	
-	QString apiKey(list[0]);
-	QString apiSecret(list[1]);
-	QString sessionKey(list[2]);
-	QString sessionSecret(list[3]);
-	
-	qDebug()<<"Api Key = "<<apiKey;
-	qDebug()<<"Api Secret = "<<apiSecret;
-	qDebug()<<"session Key = "<<sessionKey;
-	qDebug()<<"session Secret = "<<sessionSecret;
-// Reading the keys, CSM Stubbed - END
-#endif
+	// Get the key sets from SMF Plugin Utility class.
+	QString apiKey;
+	QString apiSecret;
+	QString sessionKey;
+	QString sessionSecret;
+	fetchKeys(apiKey, apiSecret, sessionKey, sessionSecret);
 		
 	// Get the current date and time and convert it to seconds as a string
 	QString call_id = QString::number(QDateTime::currentDateTime().toTime_t(), 10);
@@ -190,32 +222,12 @@ SmfPluginError FBContactFetcherPlugin::getFriendsDetails( SmfPluginRequestData &
 	
 	SmfPluginError error = SmfPluginErrUserNotLoggedIn;
 	
-#if 1
-// Reading the keys, CSM Stubbed - START
-	QFile file("c:\\data\\FacebookKeys.txt");
-	if (!file.open(QIODevice::ReadOnly))
-		{
-		qDebug()<<"File to read the keys could not be opened";
-		return error;
-		}
-	
-	qDebug()<<"Key file read, going to parse the key values from file";
-	
-	QByteArray arr = file.readAll();
-	QList<QByteArray> list = arr.split('\n');
-	file.close();
-	
-	QString apiKey(list[0]);
-	QString apiSecret(list[1]);
-	QString sessionKey(list[2]);
-	QString sessionSecret(list[3]);
-	
-	qDebug()<<"Api Key = "<<apiKey;
-	qDebug()<<"Api Secret = "<<apiSecret;
-	qDebug()<<"session Key = "<<sessionKey;
-	qDebug()<<"session Secret = "<<sessionSecret;
-// Reading the keys, CSM Stubbed - END
-#endif
+	// Get the key sets from SMF Plugin Utility class.
+	QString apiKey;
+	QString apiSecret;
+	QString sessionKey;
+	QString sessionSecret;
+	fetchKeys(apiKey, apiSecret, sessionKey, sessionSecret);
 		
 	// Get the current date and time and convert it to sec as a string
 	QString call_id = QString::number(QDateTime::currentDateTime().toTime_t(), 10);
@@ -224,7 +236,7 @@ SmfPluginError FBContactFetcherPlugin::getFriendsDetails( SmfPluginRequestData &
 	QString baseString;
 	baseString.append("api_key="+apiKey);
 	baseString.append("call_id="+call_id);
-	baseString.append("fields=uid,name,pic,pic_square");
+	baseString.append("fields=uid,name,pic,pic_square,status");
 #ifdef SMF_XMLPARSING
 	baseString.append("format=XML");
 #else
@@ -233,6 +245,23 @@ SmfPluginError FBContactFetcherPlugin::getFriendsDetails( SmfPluginRequestData &
 	baseString.append("method=users.getInfo");
 	baseString.append("session_key="+sessionKey);
 	baseString.append("ss=1");
+	
+#ifdef SETLIMITOFFIVEFORSMFDEMO // limiting to fetch only first 5 contact details
+	
+	QStringList firstFiveUids = uids.split(',');
+	uids.clear();
+	int i = 0;
+	while(i < 5)
+		{
+		uids.append(firstFiveUids.at(i));
+		uids.append(",");
+		i++;
+		}
+	if(firstFiveUids.count()>5)
+		uids.chop(1);
+	qDebug()<<"Limited to 5 uid string = "<<uids;
+#endif
+	
 	baseString.append("uids="+uids);
 	baseString.append("v=1.0");
 	baseString.append(sessionSecret);
@@ -241,7 +270,7 @@ SmfPluginError FBContactFetcherPlugin::getFriendsDetails( SmfPluginRequestData &
 	QUrl url("http://api.facebook.com/restserver.php?");
 	url.addQueryItem("api_key", apiKey);
 	url.addQueryItem("call_id", call_id);
-	url.addQueryItem("fields", "uid,name,pic,pic_square");
+	url.addQueryItem("fields", "uid,name,pic,pic_square,status");
 #ifdef SMF_XMLPARSING
 	url.addQueryItem("format", "XML");
 #else
@@ -417,14 +446,9 @@ SmfPluginError FBContactFetcherPlugin::customRequest( SmfPluginRequestData &aReq
 /**
  * The first method to be called in the plugin that implements this interface.
  * If this method is not called, plugin may not behave as expected.
- * Plugins are expected to save the aUtil handle and use and when required.
- * @param aUtil The instance of SmfPluginUtil
  */
-void FBContactFetcherPlugin::initialize( SmfPluginUtil *aUtil )
+void FBContactFetcherPlugin::initialize( )
 	{
-	// Save the SmfPluginUtil handle
-	m_util = aUtil;
-	
 	// Create an instance of FBContactProviderBase
 	m_provider = new FBContactProviderBase;
 	m_provider->initialize();
@@ -480,8 +504,21 @@ SmfPluginError FBContactFetcherPlugin::responseAvailable(
 	
 	QByteArray response(*aResponse);
 	delete aResponse;
-	qDebug()<<"FB response = "<<QString(response);
-	qDebug()<<"FB response size = "<<response.size();
+
+	QFile respFile("c://data//SmfPluginFBContactResponse.txt");
+	if(!respFile.open(QIODevice::WriteOnly))
+		{
+		qDebug()<<"File to write the response could not be opened, so writing to this file";
+		qDebug()<<"Flickr response = "<<QString(response);
+		}
+	else
+		{
+		respFile.write(response);
+		respFile.close();
+		qDebug()<<"Writing FB response to a file named 'SmfPluginFBContactResponse.txt'";
+		}
+	
+	qDebug()<<"Response size = "<<response.size();
 	
 	
 	if(SmfTransportOpNoError == aTransportResult)
@@ -518,8 +555,10 @@ SmfPluginError FBContactFetcherPlugin::responseAvailable(
 							uids.append(message);
 							uids.append(",");
 							count++;
+#ifdef SETLIMITOFFIVEFORSMFDEMO
 							if(5 == count)
 								break;
+#endif
 							}
 						else if("error_msg" == xml.name())
 							{
@@ -541,10 +580,11 @@ SmfPluginError FBContactFetcherPlugin::responseAvailable(
 					qDebug()<<"Response contains error, so parse and get the error code";
 					
 					bool ok;
-					QVariant result = m_util->parse(response, &ok);
+					SmfPluginUtil util;
+					QVariant result = util.parse(response, &ok);
 					if (!ok) 
 						{
-						qDebug()<<"An error occurred during json parsing, error = "<<m_util->errorString();
+						qDebug()<<"An error occurred during json parsing, error = "<<util.errorString();
 						aRetType = SmfRequestError;
 						return SmfPluginErrParsingFailed;
 						}
@@ -646,7 +686,8 @@ SmfPluginError FBContactFetcherPlugin::responseAvailable(
 				qDebug()<<"Json parsing";
 				
 				bool ok;
-				QVariant result = m_util->parse(response, &ok);
+				SmfPluginUtil util;
+				QVariant result = util.parse(response, &ok);
 				if (!ok) 
 					{
 					qDebug()<<"An error occurred during json parsing";
@@ -679,7 +720,11 @@ SmfPluginError FBContactFetcherPlugin::responseAvailable(
 						contact.setValue("Name",nameVar);
 						
 						QContactAvatar avatar;
-						QUrl url(map2["pic_square"].toString());
+						QUrl url;
+						if(0 != map2["pic_square"].toString().size())
+							url = map2["pic_square"].toString();
+						else
+							url = QString("http://static.ak.fbcdn.net/rsrc.php/z5HB7/hash/ecyu2wwn.gif");
 						avatar.setImageUrl(url);
 						QVariant avatarVar = QVariant::fromValue(avatar);
 						contact.setValue("Avatar", avatarVar);
@@ -688,6 +733,11 @@ SmfPluginError FBContactFetcherPlugin::responseAvailable(
 						guid.setGuid(map2["uid"].toString());
 						QVariant guidVar = QVariant::fromValue(guid);
 						contact.setValue("Guid", guidVar);
+						
+						QContactPresence presence;
+						presence.setCustomMessage(map2["status"].toString());
+						QVariant presVar = QVariant::fromValue(presence);
+						contact.setValue("Presence", presVar);
 						
 						
 #if 0 // tesing SmfContact serialization
@@ -1031,9 +1081,11 @@ void FBContactProviderBase::initialize()
 	m_description = "Facebook contact fetcher plugin description";
 	m_serviceUrl = QUrl(QString("http://api.facebook.com"));
 	m_pluginId = "fbcontactfetcherplugin.qtplugin";
-	m_authAppId = "Facebook AuthAppId";
-	m_smfRegToken = "Facebook RegToken";
+	m_authAppId = "0xEFE2FD23";
 	m_supportedInterfaces.append("org.symbian.smf.plugin.contact.fetcher/v0.2");
+	QSettings iSettings;
+	m_smfRegToken = iSettings.value("FBCMRegToken").toString();
+	m_validity = iSettings.value("FBExpiryTime").toDateTime();
 	}
 
 

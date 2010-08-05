@@ -49,7 +49,7 @@ public:
 protected:
     virtual void dialogWillDisappear();
     void GetSessionKey(const QUrl& aUrl);
-
+    void FetchKeyFromUrl(const QUrl& aUrl);
 private:
     void connectToGetSession(const QString& aToken);
     void loadLoginPage();

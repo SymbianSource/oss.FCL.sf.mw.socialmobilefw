@@ -29,8 +29,6 @@ class FBSession;
 class FBError;
 class QNetworkReply;
 
-#define __WINSCW__
-
 const QString KSuccessurl = "http://www.facebook.com/connect/login_success.html";
 /**
   * The base Dialoggg
@@ -146,7 +144,7 @@ public:
     void setTitle ( const QString& aTitle );
     
     virtual void GetSessionKey(const QUrl& aUrl);
-
+    virtual void FetchKeyFromUrl(const QUrl& aUrl);
 private:
     void createControls();
 

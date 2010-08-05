@@ -20,11 +20,15 @@
 #include <qfile.h>
 #include <QTimer>
 #include <qdebug.h>
+
+#include "keys.h"
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // global
 
 static const QString kAPIRestURL = "http://api.facebook.com/restserver.php";
 static const QString kAPIRestSecureURL = "https://api.facebook.com/restserver.php";
+
 
 static const int kMaxBurstRequests = 3;
 static const int kBurstDuration = 2;
@@ -93,6 +97,7 @@ bool FBSession::isConnected() const
 
 void FBSession::beginSession (const QString& aSessionKey, const QString& aSessionSecret, const QDateTime& aExpires )
 {
+	qDebug()<<"Inside FBSession::beginSession()";
     iSessionKey = aSessionKey;
     iSessionSecret = aSessionSecret;
 
@@ -104,10 +109,11 @@ void FBSession::beginSession (const QString& aSessionKey, const QString& aSessio
 
 bool FBSession::resume()
 {
-	QString CMRegToken = iSettings.value("CMRegToken").toString();
-	QDateTime ExpiryTime = iSettings.value("ExpiryTime").toDateTime();
+	qDebug()<<"Inside FBSession::resume()";
+	QString fbCMRegToken = iSettings.value("FBCMRegToken").toString();
+	QDateTime fbExpiryTime = iSettings.value("FBExpiryTime").toDateTime();
 	SmfAuthParams Params;
-	if(m_Client->AuthDataSet(CMRegToken,ExpiryTime,Params))
+	if(m_Client->AuthDataSet(fbCMRegToken,fbExpiryTime,Params))
 	{
 		QByteArray accessToken = Params.value("accessToken");
 		emit sessionDidLogin( accessToken );
@@ -117,13 +123,14 @@ bool FBSession::resume()
 }
 
 void FBSession::cancelLogin() {
+	qDebug()<<"Inside FBSession::cancelLogin()";
     if (!isConnected()) {
         emit sessionDidNotLogin();
     }
 }
 
 void FBSession::logout() {
-
+	qDebug()<<"Inside FBSession::logout()";
 	iExpirationDate = QDateTime();
 	iSessionKey.clear();
 	iSessionSecret.clear();
@@ -134,6 +141,7 @@ void FBSession::logout() {
 }
 
 void FBSession::send (FBRequest* aRequest) {
+	qDebug()<<"Inside FBSession::send()";
     performRequest (aRequest, true);
 }
 
@@ -142,15 +150,23 @@ void FBSession::send (FBRequest* aRequest) {
 // instance private functions
 void FBSession::save()
 {
-  
+	qDebug()<<"Inside FBSession::save()";
     SmfAuthParams Params;
-    Params.insert("accessToken",iSessionKey.toAscii());
+    Params.insert("ApiKey",kApiKey.toAscii());
+    Params.insert("ApiSecret",kApiSecret.toAscii());
+    Params.insert("AppId",kAppId.toAscii());
+    Params.insert("SessionKey",iSessionKey.toAscii());
+    Params.insert("SessionSecret",iSessionSecret.toAscii());
+    
     
     QList<QUrl> UrlList;
+    UrlList.append(QUrl("http://api.facebook.com"));
     UrlList.append(QUrl("http://www.facebook.com"));
     
     QStringList PluginList;
-    PluginList.append(QString("facebook"));
+    PluginList.append(QString("fbactivityfetcherplugin.qtplugin"));
+    PluginList.append(QString("fbcontactfetcherplugin.qtplugin"));
+    PluginList.append(QString("fbpostproviderplugin.qtplugin"));
     
     QString UID("0xEFE2FD23");
     
@@ -158,16 +174,21 @@ void FBSession::save()
     iExpirationDate = QDateTime::currentDateTime();
     iExpirationDate.addYears(1);
     
-    QString CMRegToken = m_Client->StoreAuthData(Params,iExpirationDate,UrlList,PluginList,UID,true);
+    QString fbCMRegToken = m_Client->StoreAuthData(Params,iExpirationDate,UrlList,PluginList,UID,true);
+    qDebug()<<"Reg token returned by auth app = "<<fbCMRegToken;
     
-    if(CMRegToken.size()){
-    	iSettings.setValue("CMRegToken", CMRegToken);
-    	iSettings.setValue("ExpiryTime", iExpirationDate);
+    iSettings.remove("FBCMRegToken");
+    iSettings.remove("FBExpiryTime");
+    
+    if(fbCMRegToken.size()){
+    	iSettings.setValue("FBCMRegToken", fbCMRegToken);
+    	iSettings.setValue("FBExpiryTime", iExpirationDate);
     }
 }
 
 void FBSession::unsave()
 {
+	qDebug()<<"Inside FBSession::unsave()";
 	//Delete saved keys from Credential Manager.
 }
 

@@ -21,13 +21,12 @@
 #define _FBPOSTPROVIDERPLUGIN_H
 
 // Include files
+#include <QDateTime>
 #include <smfpostproviderplugin.h>
-#include <smfpluginutil.h>
 
 // Forward declarations
 class FBProviderBase;
 class QVariant;
-class QNetworkReply;
 
 
 /**
@@ -179,10 +178,8 @@ public: // From SmfPluginBase interface
 	/**
 	 * The first method to be called in the plugin that implements this interface.
 	 * If this method is not called, plugin may not behave as expected.
-	 * Plugins are expected to save the aUtil handle and use and when required.
-	 * @param aUtil The instance of SmfPluginUtil
 	 */
-	void initialize( SmfPluginUtil *aUtil );
+	void initialize( );
 	
 	/**
 	 * Method to get the provider information
@@ -233,17 +230,30 @@ private:
 	/**
 	 * Method to get the user's posts
 	 * @param aRequest [out] The request data to be sent to network
+	 * @param aUser The user's contact in this SP, omit for self contact
 	 * @param aPageNum The page to be extracted
 	 * @param aItemsPerPage Number of items per page
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
 	SmfPluginError getPosts( SmfPluginRequestData &aRequest,
+			const SmfContact *aUser,
 			const int aPageNum , 
 			const int aItemsPerPage );
 	
+	/**
+	 * Method to interpret the key sets obtained from credential manager 
+	 * @param aApiKey [out] The api key
+	 * @param aApiSecret [out] The api secret
+	 * @param aSessionKey [out] The session key
+	 * @param aSessionSecret [out] The session secret
+	 */
+	void fetchKeys(	QString &aApiKey, 
+			QString &aApiSecret, 
+			QString &aSessionKey, 
+			QString &aSessionSecret );
+	
 private:
 	FBProviderBase *m_provider;
-	SmfPluginUtil *m_util;
 };
 
 
@@ -355,6 +365,7 @@ private:
 	QString m_smfRegToken;
 	QList<QString> m_supportedInterfaces;
 	QStringList m_supportedLangs;
+	QDateTime m_validity;
 	};
 
 #endif /*_FBPOSTPROVIDERPLUGIN_H*/
