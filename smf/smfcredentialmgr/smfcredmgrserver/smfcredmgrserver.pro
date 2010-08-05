@@ -12,6 +12,14 @@
 TEMPLATE = subdirs
 symbian:
     {
+    TARGET.CAPABILITY = NetworkServices \
+    	ReadUserData \
+    	WriteUserData \
+    	LocalServices \
+    	UserEnvironment \
+    	ReadDeviceData \
+    	WriteDeviceData
+
     BLD_INF_RULES.prj_mmpfiles = "group/smfcredmgrserver.mmp"
     }
 

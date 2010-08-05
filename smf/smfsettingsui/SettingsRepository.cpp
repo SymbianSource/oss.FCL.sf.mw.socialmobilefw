@@ -17,7 +17,7 @@
 
 #include "SettingsRepository.h"
 
-#ifdef __FOR_SYMBIAN__
+#ifdef __FOR_SYMBIAN_CR_USAGE__
 
 
 #include <e32base.h>

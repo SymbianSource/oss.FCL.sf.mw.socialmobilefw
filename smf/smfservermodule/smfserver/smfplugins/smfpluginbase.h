@@ -40,10 +40,8 @@ public:
 	/**
 	 * The first method to be called in the plugin that implements this interface.
 	 * If this method is not called, plugin may not behave as expected.
-	 * Plugins are expected to save the aUtil handle and use as and when required.
-	 * @param aUtil The instance of SmfPluginUtil
 	 */
-	virtual void initialize( SmfPluginUtil *aUtil ) = 0;
+	virtual void initialize( ) = 0;
 
 	/**
 	 * Method to get the provider information

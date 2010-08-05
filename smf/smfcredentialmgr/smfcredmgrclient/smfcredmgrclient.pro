@@ -29,6 +29,13 @@ symbian {
         smfcredmgrclientsession.h 
      
     BLD_INF_RULES.prj_exports += smfcredmgrclient.h
+    TARGET.CAPABILITY = NetworkServices \
+    	ReadUserData \
+    	WriteUserData \
+    	LocalServices \
+    	UserEnvironment \
+    	ReadDeviceData \
+    	WriteDeviceData
 }
 symbian::LIBS += -leuser \
     -lestor \

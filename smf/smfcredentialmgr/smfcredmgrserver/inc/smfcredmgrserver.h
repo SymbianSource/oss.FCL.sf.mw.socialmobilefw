@@ -7,36 +7,42 @@
  * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  *
  * Initial Contributors:
- * Pritam Roy Biswas, Sasken Communication Technologies Ltd - Initial contribution
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ * 
+ * Contributors:
+ * Pritam Roy Biswas, Sasken Communication Technologies Ltd
  *
  * Description:
  * Header file for Credential Manager Server.
  */
+
 #ifndef __SMFCREDMGRSERVER_H__
 #define __SMFCREDMGRSERVER_H__
 
 //  Include Files
-
 #include <e32base.h>
 
+// Forward declaration
 class CSmfCredMgrDb;
 
 //  Function Prototypes
-
 GLDEF_C TInt E32Main();
 
 // ----------------------------------------------------------------------------------------
 // Server's policy
 // ----------------------------------------------------------------------------------------
 static const TUint rangeCount = 1;
+
 static const TInt ranges[rangeCount] =
 	{
 	0
 	};
+
 static const TUint8 elementsIndex[rangeCount] =
 	{
 	CPolicyServer::EAlwaysPass
 	};
+
 static const CPolicyServer::TPolicy policy =
 	{
 	CPolicyServer::EAlwaysPass, //specifies all connect attempts should pass
@@ -48,19 +54,25 @@ static const CPolicyServer::TPolicy policy =
 
 /**
  * Class for Credential Manager Server.
- *  Derives from CPolicyServer.
+ * Derives from CPolicyServer.
  */
 class CSmfCredMgrServer : public CPolicyServer
 	{
 public:
 	/**
-	 * New Methods
+	 * NewL Method
+	 * @return The constructed CSmfCredMgrServer instance
 	 */
 	static CSmfCredMgrServer * NewL();
+	
+	/**
+	 * NewLC Method
+	 * @return The constructed CSmfCredMgrServer instance
+	 */
 	static CSmfCredMgrServer* NewLC();
 
 	/**
-	 * destructor
+	 * Destructor
 	 */
 	~CSmfCredMgrServer();
 
@@ -70,12 +82,11 @@ public:
 	 * is initiated by the client through a call to one of the 
 	 * RSessionBase::CreateSession() variants.
 	 */
-	CSession2
-			* NewSessionL(const TVersion& aVersion, const RMessage2& aMessage) const;
+	CSession2* NewSessionL(const TVersion& aVersion, const RMessage2& aMessage) const;
 
 private:
 	/**
-	 * constructor
+	 * Constructor
 	 */
 	CSmfCredMgrServer();
 

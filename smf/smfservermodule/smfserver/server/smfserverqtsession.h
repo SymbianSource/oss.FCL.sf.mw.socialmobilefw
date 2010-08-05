@@ -12,7 +12,6 @@
  * Contributors:
  * Manasij Roy, Nalina Hariharan
  *
- *
  * Description: Session implementation for Qt desktop builds
  *
  */
@@ -26,7 +25,7 @@
 class SmfServerQt;
 
 class SmfServerQtSession : public QObject
-{
+	{
     Q_OBJECT
 
 public:
@@ -47,6 +46,6 @@ private:
     int m_opCode;
     QLocalSocket *m_clientConnection;
     SmfServerQt *m_server;
-};
+	};
 
 #endif // SMFSERVERQTSESSION_H

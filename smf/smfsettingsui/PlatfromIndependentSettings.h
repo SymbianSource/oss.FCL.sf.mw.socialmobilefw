@@ -16,7 +16,7 @@
 */
 #include "SettingsConstants.h"
 
-#ifndef __FOR_SYMBIAN__
+#ifndef __FOR_SYMBIAN_CR_USAGE__
 
 #ifndef PLATFROMINDEPENDENTSETTINGS_H_
 #define PLATFROMINDEPENDENTSETTINGS_H_

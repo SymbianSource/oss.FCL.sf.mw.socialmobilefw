@@ -32,7 +32,7 @@ SmfTransportManager* SmfTransportManager::m_myInstance = NULL;
  */
 SmfTransportManager* SmfTransportManager::getInstance ( )
 	{
-	qDebug()<<("Inside SmfTransportManager::getInstance()");
+	qDebug()<<"Inside SmfTransportManager::getInstance()";
 	if(NULL == m_myInstance)
 		m_myInstance = new SmfTransportManager( );
 	return m_myInstance;
@@ -44,7 +44,7 @@ SmfTransportManager* SmfTransportManager::getInstance ( )
  */
 SmfTransportManager::SmfTransportManager ( )
 	{
-	qDebug()<<("Inside SmfTransportManager::SmfTransportManager()");
+	qDebug()<<"Inside SmfTransportManager::SmfTransportManager()";
 
 	m_systemInfo = new QSystemNetworkInfo(this);
 	
@@ -97,7 +97,7 @@ SmfTransportInitializeResult SmfTransportManager::initializeTransport ( )
 		
 		SmfNetworkStatus status;
 		getCurrentNetworkStatus(status);
-		qDebug()<<("getCurrentNetworkStatus() returned = "+QString::number(status));
+		qDebug()<<"getCurrentNetworkStatus() returned = "+QString::number(status);
 		switch(status)
 			{
 			// homenetwork

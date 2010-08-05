@@ -14,6 +14,7 @@
  *  Derives from CAtive to support asynchronous requests.
  *
  */
+
 //  Include Files
 #include <smfcredmgrcommon.h>
 #include <smfcredmgrclientdatastruct.h>
@@ -72,6 +73,7 @@ void CSmfCredMgrClientSymbian::DoCancel()
 TBool CSmfCredMgrClientSymbian::AuthDataSetL(QString RegToken,
 		QDateTime Validity, SmfAuthParams& AuthTokenSet)
 	{
+	RDebug::Printf("+In AuthDataSetL()");
 	CSmfFetchAuthTokenSet* fetchAuthTokenSetParams =
 			new (ELeave) CSmfFetchAuthTokenSet;
 
@@ -111,6 +113,12 @@ TBool CSmfCredMgrClientSymbian::AuthDataSetL(QString RegToken,
 
 	fetchAuthTokenSetParams->InternalizeL(dataBuf);
 
+
+	CleanupStack::PopAndDestroy(&dataBuf);
+	CleanupStack::PopAndDestroy(retBuf);
+	CleanupStack::PopAndDestroy(&stream);
+	CleanupStack::PopAndDestroy(buf);
+
 	//return EFalse if count is 0
 	if (fetchAuthTokenSetParams->iAuthTokenArray.Count() == 0)
 		{
@@ -120,12 +128,9 @@ TBool CSmfCredMgrClientSymbian::AuthDataSetL(QString RegToken,
 	smfcredmgrclientutil::RArrayToSmfAuthParams(
 			fetchAuthTokenSetParams->iAuthTokenArray, AuthTokenSet);
 
-	CleanupStack::PopAndDestroy(&dataBuf);
-	CleanupStack::PopAndDestroy(retBuf);
-	CleanupStack::PopAndDestroy(&stream);
-	CleanupStack::PopAndDestroy(buf);
-	CleanupStack::PopAndDestroy(fetchAuthTokenSetParams);
 
+	CleanupStack::PopAndDestroy(fetchAuthTokenSetParams);
+	RDebug::Printf("-In AuthDataSetL()");
 	return ETrue;
 	}
 
@@ -133,7 +138,7 @@ QString CSmfCredMgrClientSymbian::storeAuthDataL(SmfAuthParams Set,
 		QDateTime Validity, QList<QUrl> URLList, QStringList PluginList,
 		QString AuthAppAID, bool Flag)
 	{
-
+	RDebug::Printf("+In storeAuthDataL()");
 	CSmfStoreAuthParams* authenticationProcessData =
 			new (ELeave) CSmfStoreAuthParams;
 	CleanupStack::PushL(authenticationProcessData);
@@ -142,8 +147,6 @@ QString CSmfCredMgrClientSymbian::storeAuthDataL(SmfAuthParams Set,
 	authenticationProcessData->iRegistrationToken = HBufC::NewL(
 			KMaxRegistrationTokenLength);
 
-	TPtr8 regTokenPtr(
-			authenticationProcessData->iRegistrationToken->Des().Collapse());
 
 	//fill the input params
 	smfcredmgrclientutil::SmfAuthParamstoRArray(Set,
@@ -175,14 +178,32 @@ QString CSmfCredMgrClientSymbian::storeAuthDataL(SmfAuthParams Set,
 
 	TIpcArgs args;
 	args.Set(0, &bufPtr);
-	args.Set(1, &regTokenPtr);
+
+	
+	// to get the data from server, we create a space.
+	HBufC8* retBuf = HBufC8::NewL(KMaxBufSize);
+	CleanupStack::PushL(retBuf);
+
+	TPtr8 outputptr = retBuf->Des();
+	args.Set(1, &outputptr);
+
 	iSession.RequestService(EStoreAuthData, args);
 
-	TPtr wideRegToken = regTokenPtr.Expand();
+	//create buffer to read data received
+	RBuf8 dataBuf;
+	CleanupClosePushL(dataBuf);
+	dataBuf.Create(outputptr);
+
+	authenticationProcessData->InternalizeL(dataBuf);
+
+	TPtr regTokenPtr(
+			authenticationProcessData->iRegistrationToken->Des());
 
 	//convert and return
-	QString regString = qt_TDes2QString(wideRegToken);
+	QString regString = qt_TDes2QString( regTokenPtr );
 
+	CleanupStack::PopAndDestroy(&dataBuf);
+	CleanupStack::PopAndDestroy(retBuf);
 	CleanupStack::PopAndDestroy(&stream);
 	CleanupStack::PopAndDestroy(buf);
 	CleanupStack::Pop();
@@ -504,6 +525,8 @@ QString CSmfCredMgrClientSymbian::storeRSAKeysL(const QString KeyLabel,
 	CleanupStack::PopAndDestroy(buf);
 	CleanupStack::PopAndDestroy(storeRSAKeysparams);
 
+	RDebug::Printf("-In storeAuthDataL()");
+	
 	return (RetString);
 
 	}

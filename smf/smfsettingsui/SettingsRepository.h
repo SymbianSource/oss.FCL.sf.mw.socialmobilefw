@@ -17,7 +17,7 @@
 
 #include "SettingsConstants.h"
 
-#ifdef __FOR_SYMBIAN__
+#ifdef __FOR_SYMBIAN_CR_USAGE__
 
 #ifndef SETTINGSREPOSITORY_H_
 #define SETTINGSREPOSITORY_H_

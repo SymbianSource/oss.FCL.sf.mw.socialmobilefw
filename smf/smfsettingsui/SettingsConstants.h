@@ -8,9 +8,9 @@
 #ifndef SETTINGSCONSTANTS_H_
 #define SETTINGSCONSTANTS_H_
 
-//#define __FOR_SYMBIAN__
+//#define __FOR_SYMBIAN_CR_USAGE__
 
-#ifdef __FOR_SYMBIAN__
+#ifdef __FOR_SYMBIAN_CR_USAGE__
 	#include <e32base.h>
 	//UID of the Setting Application
 	static const TUid KCRUidSettings = { 0xE6313AF5 };

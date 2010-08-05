@@ -10,30 +10,28 @@
  * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
  *
  * Contributors:
- * Manasij Roy, Nalina Hariharan*
+ * Manasij Roy, Nalina Hariharan
+ * 
  * Description:
  * SMF Server private implementation for Symbian
  *
- **/
+ */
 
 #ifndef SMFSERVERSYMBIAN_H
 #define SMFSERVERSYMBIAN_H
+
 #include <QObject>
 #include <e32hashtab.h>
 #include <e32base.h>
 #include <QByteArray>
 #include <QString>
-//testing -start
-#include "smfprovider.h"
-//end
-//SMF wide global const and macros, to be shared among SMF components as well as SMF aware apps
-//#include <smf/smfGlobal.h>
 
-//#include "clientGlobal.h"
+#include "smfserver.h"
 
-#include "SmfServer.h"
 //Forward declarations
 class SmfServerSymbianSession;
+class SmfProvider;
+
 
 /**
  * Stores session and request information.
@@ -44,7 +42,6 @@ struct CSessionStruct
 	SmfServerSymbianSession* iSession;
 	RMessage2 iMsg;
 	};
-
 
 
 //Policy table---start
@@ -107,23 +104,18 @@ const CPolicyServer::TPolicy myPolicy =
         myElements,
         };
 //Policy table---end
+
+
 /**
-* Our server class - an active object - and therefore derived ultimately from CActive.
-* It accepts requests from client threads and forwards
-* them to the client session to be dealt with. It also handles the creation
-* of the server-side client session.
-**/
+ * Our server class - an active object - and therefore derived ultimately from CActive.
+ * It accepts requests from client threads and forwards
+ * them to the client session to be dealt with. It also handles the creation
+ * of the server-side client session.
+ */
 class SmfServerSymbian : public CPolicyServer
-{
-  
+	{
 public:
-	/**
-	 * Creates a new session with the server; the function
-	 * implements the pure virtutal function
-	 * defined in class CServer2
-	 */
-	SmfServerSymbian(CActive::TPriority aActiveObjectPriority,SmfServer* aWrapper);
-    static SmfServerSymbian * NewL(CActive::TPriority aActiveObjectPriority,SmfServer* aWrapper);
+	static SmfServerSymbian * NewL(CActive::TPriority aActiveObjectPriority,SmfServer* aWrapper);
     ~SmfServerSymbian();
     CSession2 * NewSessionL(const TVersion& aVersion, const RMessage2& aMessage) const;
   
@@ -131,6 +123,7 @@ public:
      * Returns SmfServer
      */
     SmfServer* wrapper();
+    
     /**
      * Adds session info to the currently active session map iMap. This map is used to
      * retreive the corresponding session to be serviced. The keys for this map is sent
@@ -139,17 +132,20 @@ public:
      * @param aMsg Currently redundant
      */
     TInt addToSessionMap(SmfServerSymbianSession* aSession,const RMessage2& aMsg);
+    
     /**
      * Removes the session from the active list of session map
      * @param aSession Session to be removed.
      * @param aMsg Currently redundant
      */
     TInt removeFromSessionMap(SmfServerSymbianSession* aSession,RMessage2& aMsg);
+    
     /**
      * Returns a symbian session for the given key from the iMap.
      * @param id Session ID in the SmfServer Session map
      */
     SmfServerSymbianSession* findSession(TInt id);
+    
     /**
      * Finds the given session and services it with the data.
      * @param requestID Session ID
@@ -157,12 +153,20 @@ public:
      * @param error Error code
      */
     TInt findAndServiceclient(TInt requestID,QByteArray* parsedData,SmfError error);
+
+private:
 	/**
-	 * Debugging
+	 * Creates a new session with the server. The function
+	 * implements the pure virtual function
+	 * defined in class CServer2
 	 */
-	//void writeLog(QString log)const;
-//private:
+	SmfServerSymbian(CActive::TPriority aActiveObjectPriority,SmfServer* aWrapper);
+	
     void ConstructL();
+    
+private:
+    friend class SmfServerSymbianSession;
+    
     SmfServer* iWrapper;
     
 	/**
@@ -170,21 +174,16 @@ public:
 	 */
     RHashMap<TInt,CSessionStruct> iMap;
     
-    /**
-     * The key in the iMap.
-     * Its sent to the wrapper
-     */
-    TInt iRequestID;
-    
     TInt iSessionCount;
-};
+	};
+
 
 /**
 This class represents a session with the  Smf server.
 Functions are provided to respond appropriately to client messages.
 */
 class SmfServerSymbianSession : public CSession2
-{
+	{
 public:
 	/**
 	 * Creates a session.
@@ -192,24 +191,30 @@ public:
 	 */
 	SmfServerSymbianSession(SmfServerSymbian* aServer);
     ~SmfServerSymbianSession();
+    
     /**
      * From CSession2
      */
     void ServiceL(const RMessage2 & aMessage);
+    
     /**
      * Called by the SmfServerSymbian when results are available
      * @param parsedData Parsed serialized data
      * @param error Smf Error code
      */
 	void resultsAvailable(QByteArray* parsedData,SmfError error);
+	
 	/**
 	 * Called by the SmfServer when client authorization finishes.
 	 * @param success success of the authorization
 	 */
-	void clientathorizationFinished(bool success);
+	void clientAuthorizationFinished(bool success);
+	
 protected:
     //TMessageParams ReadMessageAndRetrieveParams (const RMessage2 & aMessage);
+	
     void PanicClient(const RMessage2 & aMessage, TInt aPanic) const;
+    
     /**
      * Called by ServiceL()
      * It tests the function code and then delegates to
@@ -217,11 +222,17 @@ protected:
      */
     void HandleClientMessageL(const RMessage2 & aMessage);
     
+private:
     //Following are for handling specific client requests
     /**
      * ESmfGetService
      */
-    void HandleGetService(const RMessage2 & aMessage);
+    void HandleGetService(const RMessage2 & aMessage, const SmfInterfaceID& aInterfaceID);
+    
+    /**
+     * Handles all synchronous services
+     */
+    void HandleSyncServiceL(const RMessage2 & aMessage);
     
     /**
      * Handles all the opcodes except ESmfGetService
@@ -234,27 +245,27 @@ protected:
     void HandleDSMServiceL(const RMessage2 & aMessage);
     
     
-//private:
+private:
     SmfServerSymbian* iServer;
     RMessage2 iMessage;
     TBuf<100> iErrBuf;
 	//this interface id will be provided by Smf client, will map Smf Client 
 	// interface hierarchy
 	SmfInterfaceID iInterfaceID;
-	TPtr8 iIntfNmaeSymbian;
-	TPtr iIntfNameSymbian16;
+	TPtr iIntfNameSymbian;
+	TPtr8 iIntfNameSymbian8;
+	
 	TBuf8<125> iInterfaceNametbuf;
-	TPtr8 iProviderSymbian;
-	TPtr8 iXtraDataPtr;
-	HBufC8* iDataForDSM;
-	TPtr8 iPtrDataForDSM;
-	HBufC8* iDataFromDSM;
-	TPtr8 iPtrDataFromDSM;
+	TPtr8 iProviderSymbian8;
+	TPtr8 iXtraDataPtr8;
+	HBufC8* iData8ForDSM;
+	TPtr8 iPtr8DataForDSM;
+	HBufC8* iData8FromDSM;
+	TPtr8 iPtr8DataFromDSM;
 	TBuf<100> iDSMErr;
-	TBuf<100> iMaxSize;
-	HBufC8* iProviderBuf;
-	HBufC8* iXtraDataBuf;
-	HBufC8* iIntfNameBuf;
+	HBufC8* iProviderBuf8;
+	HBufC8* iXtraDataBuf8;
+	HBufC8* iIntfNameBuf8;
 	QMap<SmfPluginID,SmfProvider> iPluginIDMap;
 	QList<SmfPluginID> iPluginIDList;
 	QList<SmfPluginID> iAuthList;
@@ -268,15 +279,11 @@ protected:
 	 * Last request opcode
 	 */
 	TInt iLastRequest;
-	//testing
-	TBuf<525> dataToPass;
-	HBufC8* iBuf;
-	HBufC* iBuf16;
 	TPtr8 iPtrToBuf;
 	TPtr8 iPtrToDataForClient;
 	HBufC8* iDataForClient;
-	QByteArray byteArrayToClnt;
-	SmfProvider* providerToClnt;
-	TInt iError;
-};
+	QByteArray resultData;
+	QByteArray xtraData;
+	};
+
 #endif // SMFSERVERSYMBIAN_H

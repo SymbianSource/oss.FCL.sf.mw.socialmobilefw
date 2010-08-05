@@ -21,12 +21,14 @@
 #include <QObject>
 #include <QStringList>
 #include <QMap>
-#ifdef Q_OS_SYMBIAN
+#ifdef __FOR_SYMBIAN_CR_USAGE__
 class CSettingsRepository;
 #else
-//TODO:- Implement
-class SettingsRepositoryQt;
+class SmfSettingsRepositoryQt;
 #endif
+
+
+
 class SmfSettingsHandler : public QObject
 	{
 	Q_OBJECT
@@ -82,10 +84,10 @@ public slots:
 	 */
 	QString GetUploadFileType() const;
 private:
-	#ifdef Q_OS_SYMBIAN
+#ifdef __FOR_SYMBIAN_CR_USAGE__
 	CSettingsRepository* m_repository;
-	#else
-	SettingsRepositoryQt* m_repository;
-	#endif
+#else
+	SmfSettingsRepositoryQt* m_repository;
+#endif
 	};
 #endif

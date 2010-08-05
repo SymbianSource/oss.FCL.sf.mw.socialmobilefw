@@ -1,13 +1,31 @@
 /**
- * SmfCredMgrDb.cpp
+ * Copyright (c) 2010 Sasken Communication Technologies Ltd.
+ * All rights reserved.
+ * This component and the accompanying materials are made available
+ * under the terms of the "Eclipse Public License v1.0"
+ * which accompanies  this distribution, and is available
+ * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  *
- *  Created on: Apr 27, 2010
- *      Author: pritam
+ * Initial Contributors:
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ * 
+ * Contributors:
+ * Pritam Roy Biswas, Nalina Hariharan, Sasken Communication Technologies Ltd
+ *
+ * Description:
+ * This header defines the database-table and the creation of database that will be 
+ * used by the Credential Manager Server to store all the credentials related 
+ * to an Authentication Application
  */
 
-#include "smfcredmgrdb.h"
 #include <BAUTILS.H>
 
+#include "smfcredmgrdb.h"
+
+/**
+ * NewL Method
+ * @return The constructed CSmfCredMgrDb instance
+ */
 CSmfCredMgrDb* CSmfCredMgrDb::NewL()
 	{
 	CSmfCredMgrDb* self = CSmfCredMgrDb::NewLC();
@@ -15,6 +33,10 @@ CSmfCredMgrDb* CSmfCredMgrDb::NewL()
 	return (self);
 	}
 
+/**
+ * NewLC Method
+ * @return The constructed CSmfCredMgrDb instance
+ */
 CSmfCredMgrDb* CSmfCredMgrDb::NewLC()
 	{
 	CSmfCredMgrDb* self = new (ELeave) CSmfCredMgrDb();
@@ -23,6 +45,9 @@ CSmfCredMgrDb* CSmfCredMgrDb::NewLC()
 	return (self);
 	}
 
+/**
+ * Constructor
+ */
 CSmfCredMgrDb::CSmfCredMgrDb()
 	{
 	RDebug::Printf("in constructor db");
@@ -51,27 +76,25 @@ void CSmfCredMgrDb::ConstructL()
 		
 		//Reset if necessary
 		}
-
 	}
 
+/**
+ * Destructor
+ */
 CSmfCredMgrDb::~CSmfCredMgrDb()
 	{
 	//delete db file
-
 	iDataBase.Close();
 	iFileSession.Close();
 	RDebug::Printf("in destructor db");
 	}
 
-void CSmfCredMgrDb::CompleteDBCreationL(const TFileName &aFileName)
-	{
-	User::LeaveIfError(CreateDbFile(aFileName));
-	User::LeaveIfError(PluginIDTableCreate());
-	User::LeaveIfError(URLTableCreate());
-	User::LeaveIfError(RegTokenValidityTableCreate());
-	User::LeaveIfError(AuthParamsTableCreate());
-	}
-
+/**
+ * Method to create the Db file
+ * @param aFileName The file name
+ * @return Returns KErrNone if success. Refer ESqlDbError and system-wide 
+ * error codes for detailed error description.
+ */
 TInt CSmfCredMgrDb::CreateDbFile(const TFileName &aFileName)
 	{
 	TInt err(KErrNone);
@@ -82,9 +105,26 @@ TInt CSmfCredMgrDb::CreateDbFile(const TFileName &aFileName)
 		DeleteDbFile(aFileName);
 		}
 	return err;
-
 	}
 
+/**
+ * Method to create the Db tables
+ * @param aFileName The Db file name
+ */
+void CSmfCredMgrDb::CompleteDBCreationL(const TFileName &aFileName)
+	{
+	User::LeaveIfError(CreateDbFile(aFileName));
+	User::LeaveIfError(PluginIDTableCreate());
+	User::LeaveIfError(URLTableCreate());
+	User::LeaveIfError(RegTokenValidityTableCreate());
+	User::LeaveIfError(AuthParamsTableCreate());
+	}
+
+/**
+ * Creates the Plugin Id table
+ * @return Returns KErrNone if success. Refer ESqlDbError and system-wide 
+ * error codes for detailed error description. 
+ */
 TInt CSmfCredMgrDb::PluginIDTableCreate()
 	{
 	TInt err(KErrNone);
@@ -98,6 +138,11 @@ TInt CSmfCredMgrDb::PluginIDTableCreate()
 	return err;
 	}
 
+/**
+ * Creates the URL table
+ * @return Returns KErrNone if success. Refer ESqlDbError and system-wide 
+ * error codes for detailed error description.
+ */
 TInt CSmfCredMgrDb::URLTableCreate()
 	{
 	TInt err(KErrNone);
@@ -111,6 +156,11 @@ TInt CSmfCredMgrDb::URLTableCreate()
 	return err;
 	}
 
+/**
+ * Creates the RegistrationToken-Validity Table
+ * @return Returns KErrNone if success. Refer ESqlDbError and system-wide 
+ * error codes for detailed error description.
+ */
 TInt CSmfCredMgrDb::RegTokenValidityTableCreate()
 	{
 	TInt err(KErrNone);
@@ -124,6 +174,11 @@ TInt CSmfCredMgrDb::RegTokenValidityTableCreate()
 	return err;
 	}
 
+/**
+ * Creates the Authentication Parameters Table
+ * @return Returns KErrNone if success. Refer ESqlDbError and system-wide 
+ * error codes for detailed error description.
+ */
 TInt CSmfCredMgrDb::AuthParamsTableCreate()
 	{
 	TInt err(KErrNone);
@@ -137,6 +192,12 @@ TInt CSmfCredMgrDb::AuthParamsTableCreate()
 	return err;
 	}
 
+/**
+ * Deletes the Db 
+ * @param aFileName The Db file name
+ * @return Returns KErrNone if success. Refer ESqlDbError and system-wide 
+ * error codes for detailed error description.
+ */
 TInt CSmfCredMgrDb::DeleteDbFile(const TFileName &aFileName)
 	{
 	//close the sql handle before deleting

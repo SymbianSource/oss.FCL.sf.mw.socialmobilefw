@@ -15,9 +15,11 @@
  * Settings Repository class of SMF
  */
 
+#ifdef __FOR_SYMBIAN_CR_USAGE__
+
 #include <e32base.h>
 #include "smfsettingshandler_symbian.h"
-#include <SettingsConstants.h>
+#include "SettingsConstants.h"
 
 // Standard construction sequence
 CSettingsRepository* CSettingsRepository::NewL()
@@ -216,4 +218,4 @@ void CSettingsRepository::GetUploadFileTypeInternal(TDes& aFtype) const
 		User::LeaveIfError(iRepository->Get(KSettingsUIUploadFileTypeKey,aFtype));
 	}
 
-
+#endif

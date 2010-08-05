@@ -10,15 +10,20 @@
  * Pritam Roy Biswas, Sasken Communication Technologies Ltd - Initial contribution
  *
  * Description:
- *	This source file gives different data classes to be used
- * by Credential Manager Client and Server for data transfer.	
+ * This source file gives different data classes to be used by Smf 
+ * Credential Manager Client and Server for data transfer.	
  *
  */
 
-#include "smfcredmgrclientdatastruct.h"
-#include "smfutils.h"
 #include <f32file.h>
 
+#include "smfcredmgrclientdatastruct.h"
+#include "smfutils.h"
+
+/**
+ * Method to externalize the member variables
+ * @param aStream The Write Stream to be filled.
+ */
 void TSmfAuthToken::ExternalizeL(RWriteStream& aStream)
 	{
 
@@ -29,9 +34,12 @@ void TSmfAuthToken::ExternalizeL(RWriteStream& aStream)
 	SmfUtils::ExternalizeDesL(secondArgPtr, aStream);
 	}
 
+/**
+ * Method to internalize the member variables
+ * @param aStream The source stream to read from
+ */
 void TSmfAuthToken::InternalizeL(RReadStream& aStream)
 	{
-
 	// Delete the current values
 	delete iKey;
 	iKey = SmfUtils::InternalizeDesL(aStream);
@@ -40,6 +48,10 @@ void TSmfAuthToken::InternalizeL(RReadStream& aStream)
 	iSecret = SmfUtils::InternalizeDesL(aStream);
 	}
 
+/**
+ * Method to externalize the member variables
+ * @param aStream The Write Stream to be filled.
+ */
 void CSmfFetchAuthTokenSet::ExternalizeL(RWriteStream& aStream)
 	{
 	aStream.WriteUint32L(iValidity);
@@ -54,9 +66,12 @@ void CSmfFetchAuthTokenSet::ExternalizeL(RWriteStream& aStream)
 		{
 		iAuthTokenArray[i].ExternalizeL(aStream);
 		}
-
 	}
 
+/**
+ * Method to internalize the member variables
+ * @param aSource The Source Stream to read from
+ */
 void CSmfFetchAuthTokenSet::InternalizeL(const RBuf8& aSource)
 	{
 	// Create stream to read from the given buffer
@@ -80,6 +95,10 @@ void CSmfFetchAuthTokenSet::InternalizeL(const RBuf8& aSource)
 	CleanupStack::PopAndDestroy(&stream);
 	}
 
+/**
+ * Method to externalize the member variables
+ * @param aStream The Write Stream to be filled.
+ */
 void CSmfURLListParams::ExternalizeL(RWriteStream& aStream)
 	{
 	TInt32 countPlugin = iURLList.Count();
@@ -94,6 +113,10 @@ void CSmfURLListParams::ExternalizeL(RWriteStream& aStream)
 	SmfUtils::ExternalizeDesL(tokenPtr, aStream);
 	}
 
+/**
+ * Method to internalize the member variables
+ * @param aSource The source stream to read from
+ */
 void CSmfURLListParams::InternalizeL(const TDesC8& aSource)
 	{
 	// Create stream to read from the given buffer
@@ -113,6 +136,10 @@ void CSmfURLListParams::InternalizeL(const TDesC8& aSource)
 	CleanupStack::PopAndDestroy(&stream);
 	}
 
+/**
+ * Method to externalize the member variables
+ * @param aStream The Write Stream to be filled.
+ */
 void CSmfPluginIDListParams::ExternalizeL(RWriteStream& aStream)
 	{
 	TPtr tokenPtr(iRegistrationToken->Des());
@@ -127,6 +154,10 @@ void CSmfPluginIDListParams::ExternalizeL(RWriteStream& aStream)
 		}
 	}
 
+/**
+ * Method to internalize the member variables
+ * @param aSource The source stream to read from
+ */
 void CSmfPluginIDListParams::InternalizeL(const RBuf8& aSource)
 	{
 	// Create stream to use given buffer.
@@ -148,6 +179,10 @@ void CSmfPluginIDListParams::InternalizeL(const RBuf8& aSource)
 	CleanupStack::PopAndDestroy(&stream);
 	}
 
+/**
+ * Method to externalize the member variables
+ * @param aStream The Write Stream to be filled.
+ */
 void CSmfStoreAuthParams::ExternalizeL(RWriteStream& aStream)
 	{
 	aStream.WriteInt32L(pluginIDEnabled);
@@ -169,12 +204,10 @@ void CSmfStoreAuthParams::ExternalizeL(RWriteStream& aStream)
 		}
 
 	TInt32 countPlugin = iPluginIDList.Count();
-
 	aStream.WriteInt32L(countPlugin);
 
 	for (int i = 0; i < countPlugin; i++)
 		{
-
 		TPtr pluginBufPtr(iPluginIDList[i]->Des());
 		SmfUtils::ExternalizeDesL(pluginBufPtr, aStream);
 		}
@@ -189,6 +222,10 @@ void CSmfStoreAuthParams::ExternalizeL(RWriteStream& aStream)
 		}
 	}
 
+/**
+ * Method to internalize the member variables
+ * @param aSource The source stream to read from
+ */
 void CSmfStoreAuthParams::InternalizeL(const RBuf8& aSource)
 	{
 	// Create stream to read from the given buffer
@@ -235,6 +272,10 @@ void CSmfStoreAuthParams::InternalizeL(const RBuf8& aSource)
 	CleanupStack::PopAndDestroy(&stream);
 	}
 
+/**
+ * Method to externalize the member variables
+ * @param aStream The Write Stream to be filled.
+ */
 void CSmfPluginIDUpdate::ExternalizeL(RWriteStream& aStream)
 	{
 	aStream.WriteInt32L(pluginIDEnabled);
@@ -246,6 +287,10 @@ void CSmfPluginIDUpdate::ExternalizeL(RWriteStream& aStream)
 	SmfUtils::ExternalizeDesL(oldPtr, aStream);
 	}
 
+/**
+ * Method to internalize the member variables
+ * @param aSource The source stream to read from
+ */
 void CSmfPluginIDUpdate::InternalizeL(const RBuf8& aSource)
 	{
 	// Create stream to read from the given buffer
@@ -264,6 +309,13 @@ void CSmfPluginIDUpdate::InternalizeL(const RBuf8& aSource)
 	CleanupStack::PopAndDestroy(&stream);
 	}
 
+
+/**
+ * NewL method
+ * @param aMessage The message to be signed
+ * @param aKey The key
+ * @return The constructed CSmfSignParameters instance
+ */
 CSmfSignParameters* CSmfSignParameters::NewL(
 	const TDesC8& aMessage, const TDesC8& aKey ) 
 	{
@@ -274,6 +326,11 @@ CSmfSignParameters* CSmfSignParameters::NewL(
 	return self;
 	}
 
+/**
+ * Overloaded NewL method
+ * @param aMessage The message to be signed
+ * @return The constructed CSmfSignParameters instance
+ */
 CSmfSignParameters* CSmfSignParameters::NewL( const TDesC8& aData ) 
 	{
 	CSmfSignParameters* self = new( ELeave ) CSmfSignParameters();
@@ -283,38 +340,65 @@ CSmfSignParameters* CSmfSignParameters::NewL( const TDesC8& aData )
 	return self;
 	}
 
+/**
+ * Destructor 
+ */
 CSmfSignParameters::~CSmfSignParameters() 
 	{
 	iMessage.Close();
 	iKey.Close();
 	}
 
+/**
+ * Method to externalize the member variables
+ * @param aStream The Write Stream to be filled.
+ */
 void CSmfSignParameters::ExternalizeL( RWriteStream& aStream ) const
 	{
 	SmfUtils::ExternalizeDesL( iMessage, aStream );
 	SmfUtils::ExternalizeDesL( iKey, aStream );
 	}
 
+/**
+ * Method to get the Key for the signature
+ * @return The Key for the signature
+ */
 const TDesC8& CSmfSignParameters::Key() const 
 	{
 	return iKey;
 	}
 
+/**
+ * Method to get the message
+ * @return The message 
+ */
 const TDesC8& CSmfSignParameters::Message() const 
 	{
 	return iMessage;
 	}
 
+/**
+ * Constructor 
+ */
 CSmfSignParameters::CSmfSignParameters() 
 	{
 	}
 
+/**
+ * Two Phase constructor
+ * @param aKey The Key for the signature
+ * @return The constructed CSmfSignParameters instance
+ */
 void CSmfSignParameters::ConstructL( const TDesC8& aMessage, const TDesC8& aKey )
 	{
 	iMessage.CreateL( aMessage );
 	iKey.CreateL( aKey );
 	}
 
+/**
+ * Two Phase constructor
+ * @return The constructed CSmfSignParameters instance
+ */
 void CSmfSignParameters::ConstructL( const TDesC8& aData ) 
 	{
 	RDesReadStream stream( aData );
@@ -324,9 +408,20 @@ void CSmfSignParameters::ConstructL( const TDesC8& aData )
 	CleanupStack::PopAndDestroy( &stream );
 	}
 
+
+/**
+ * NewL method
+ * @param aKeyName
+ * @param startDate
+ * @param endDate
+ * @param aKeydata
+ * @return The constructed CSmfRsaKeyParameters instance
+ */
 CSmfRsaKeyParameters* CSmfRsaKeyParameters::NewL(
-		const TDesC& aKeyName, const TTime& startDate,
-		const TTime& endDate, const TDesC8& aKeyData )
+		const TDesC& aKeyName, 
+		const TTime& startDate,
+		const TTime& endDate, 
+		const TDesC8& aKeyData )
 	{
 	CSmfRsaKeyParameters* self = new( ELeave ) CSmfRsaKeyParameters;
 	CleanupStack::PushL( self );
@@ -335,6 +430,11 @@ CSmfRsaKeyParameters* CSmfRsaKeyParameters::NewL(
 	return self;
 	}
 
+/**
+ * Overloaded NewL method
+ * @param aData
+ * @return The constructed CSmfRsaKeyParameters instance
+ */
 CSmfRsaKeyParameters* CSmfRsaKeyParameters::NewL( const TDesC8& aData )
 	{
 	CSmfRsaKeyParameters* self = new( ELeave ) CSmfRsaKeyParameters;
@@ -344,12 +444,19 @@ CSmfRsaKeyParameters* CSmfRsaKeyParameters::NewL( const TDesC8& aData )
 	return self;
 	}
 
+/**
+ * Destructor 
+ */
 CSmfRsaKeyParameters::~CSmfRsaKeyParameters() 
 	{
 	iKeyName.Close();
 	iKeyData.Close();
 	}
 
+/**
+ * Method to externalize the member variables
+ * @param aStream The Write Stream to be filled.
+ */
 void CSmfRsaKeyParameters::ExternalizeL( RWriteStream& aStream ) const
 	{
 	SmfUtils::ExternalizeDesL( iKeyName, aStream );
@@ -358,29 +465,53 @@ void CSmfRsaKeyParameters::ExternalizeL( RWriteStream& aStream ) const
 	SmfUtils::ExternalizeInt64L( iEndDate.Int64(), aStream );		
 	}
 
+/**
+ * Method to get the key name
+ * @return The key name 
+ */
 const TDesC& CSmfRsaKeyParameters::KeyName() const
 	{
 	return iKeyName;
 	}
 
+/**
+ * Method to get the key data
+ * @return The key data
+ */
 const TDesC8& CSmfRsaKeyParameters::KeyData() const
 	{
 	return iKeyData;
 	}
 
+/**
+ * Method to get the start date
+ * @return The start date
+ */
 const TTime& CSmfRsaKeyParameters::StartDate() const
 	{
 	return iStartDate;
 	}
 
+/**
+ * Method to get the end date
+ * @return The end date
+ */
 const TTime& CSmfRsaKeyParameters::EndDate() const
 	{
 	return iEndDate;
 	}
 
-void CSmfRsaKeyParameters::ConstructL( 
-		const TDesC& aKeyName, const TTime& startDate,
-		const TTime& endDate, const TDesC8& aKeyData )
+/**
+ * Two phase constructor
+ * @param aKeyName
+ * @param startDate
+ * @param endDate
+ * @param aKeydata
+ */
+void CSmfRsaKeyParameters::ConstructL( const TDesC& aKeyName, 
+		const TTime& startDate,
+		const TTime& endDate, 
+		const TDesC8& aKeyData )
 	{
 	iKeyName.CreateL( aKeyName );
 	iKeyData.CreateL( aKeyData );
@@ -388,16 +519,22 @@ void CSmfRsaKeyParameters::ConstructL(
 	iEndDate = endDate;
 	}
 
+/**
+ * Two phase constructor
+ * @param aData
+ */
 void CSmfRsaKeyParameters::ConstructL( const TDesC8& aData )
 	{
 	RDesReadStream stream( aData );
 	CleanupClosePushL( stream );
 	SmfUtils::InternalizeDesL( iKeyName, stream );
 	SmfUtils::InternalizeDesL( iKeyData, stream );
+	
 	TInt64 startDate;
 	TInt64 endDate;
 	SmfUtils::InternalizeInt64L( startDate, stream );
 	SmfUtils::InternalizeInt64L( endDate, stream );
+	
 	iStartDate = TTime( startDate );
 	iEndDate = TTime( endDate );
 	CleanupStack::PopAndDestroy( &stream );	

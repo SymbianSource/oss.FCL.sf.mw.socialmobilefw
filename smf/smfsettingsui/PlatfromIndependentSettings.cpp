@@ -17,7 +17,7 @@
 
 #include "PlatfromIndependentSettings.h"
 
-#ifndef __FOR_SYMBIAN__
+#ifndef __FOR_SYMBIAN_CR_USAGE__
 
 #include "SettingsConstants.h"
 

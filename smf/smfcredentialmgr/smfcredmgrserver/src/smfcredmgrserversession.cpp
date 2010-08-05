@@ -7,7 +7,10 @@
  * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  *
  * Initial Contributors:
- * Pritam Roy Biswas, Sasken Communication Technologies Ltd - Initial contribution
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ * 
+ * Contributors:
+ * Pritam Roy Biswas, Sasken Communication Technologies Ltd
  *
  * Description:
  * Header file for Credential Manager Server Session.
@@ -22,21 +25,15 @@
 #include <smfcredmgrclientdatastruct.h>
 #include <smfutils.h>
 
-
 #include "smfcredmgrserversession.h"
 #include "smfcredmgrserver.h"
 #include "smfcredmgrdbuser.h"
 
-CSmfCredMgrServerSession* CSmfCredMgrServerSession::NewLC(
-		CSmfCredMgrServer& aServer)
-	{
-	CSmfCredMgrServerSession* self = new (ELeave) CSmfCredMgrServerSession(
-			aServer);
-	CleanupStack::PushL(self);
-	self->ConstructL();
-	return self;
-	}
-
+/**
+ * NewL Method
+ * @param aServer the server object
+ * @return The constructed CSmfCredMgrServerSession instance
+ */
 CSmfCredMgrServerSession* CSmfCredMgrServerSession::NewL(
 		CSmfCredMgrServer& aServer)
 	{
@@ -45,18 +42,42 @@ CSmfCredMgrServerSession* CSmfCredMgrServerSession::NewL(
 	return self;
 	}
 
+/**
+ * NewLC Method
+ * @param aServer the server object
+ * @return The constructed CSmfCredMgrServerSession instance
+ */
+CSmfCredMgrServerSession* CSmfCredMgrServerSession::NewLC(
+		CSmfCredMgrServer& aServer)
+	{
+	CSmfCredMgrServerSession* self = new (ELeave) CSmfCredMgrServerSession(aServer);
+	CleanupStack::PushL(self);
+	self->ConstructL();
+	return self;
+	}
+
+/**
+ * Constructor
+ * @param aServer The server object
+ */
 CSmfCredMgrServerSession::CSmfCredMgrServerSession(CSmfCredMgrServer& aServer) :
 	iServer(aServer)
 	{
 	RDebug::Printf("in constructor CSmfCredMgrServerSession");
 	}
 
+/**
+ * Two-Phase constructor
+ */
 void CSmfCredMgrServerSession::ConstructL()
 	{
 	iDbUser = CSmfCredMgrDbUser::NewL(this);
 	iKeyStore = CSmfKeyStoreManager::NewL();
 	}
 
+/**
+ * Destructor
+ */
 CSmfCredMgrServerSession::~CSmfCredMgrServerSession()
 	{
 	RDebug::Printf("in destructor CSmfCredMgrServerSession");
@@ -64,12 +85,16 @@ CSmfCredMgrServerSession::~CSmfCredMgrServerSession()
 	delete iKeyStore;
 	}
 
+/**
+ * Handles the servicing of a client request that has been 
+ * passed to the server
+ * @param aMessage The message containing the details of the client request
+ */
 void CSmfCredMgrServerSession::ServiceL(const RMessage2& aMessage)
 	{
 	TInt err = KErrNone;
 	switch (aMessage.Function())
 		{
-
 		case ESendAuthDataSet:
 			{
 			//create buffer to read the received data
@@ -84,7 +109,7 @@ void CSmfCredMgrServerSession::ServiceL(const RMessage2& aMessage)
 
 			fetchAuthTokenSetParams->InternalizeL(dataBuf);
 
-			getTokenArray(fetchAuthTokenSetParams);
+			getTokenArrayL(fetchAuthTokenSetParams);
 
 			//create buffer to serialize the data to be sent
 			CBufFlat* buf = CBufFlat::NewL(512);
@@ -146,7 +171,7 @@ void CSmfCredMgrServerSession::ServiceL(const RMessage2& aMessage)
 
 			fetchURLListParams->InternalizeL(dataBuf);
 
-			fetchURLs(fetchURLListParams);
+			fetchUrlL(fetchURLListParams);
 
 			//to serialize data we need a buffer
 			CBufFlat* buf = CBufFlat::NewL(512);
@@ -183,7 +208,7 @@ void CSmfCredMgrServerSession::ServiceL(const RMessage2& aMessage)
 			CleanupStack::PushL(fetchPluginListParams);
 			fetchPluginListParams->InternalizeL(dataBuf);
 
-			fetchPluginIDs(fetchPluginListParams);
+			fetchPluginIDsL(fetchPluginListParams);
 
 			//to serialize data we need a buffer
 			CBufFlat* buf = CBufFlat::NewL(512);
@@ -260,23 +285,43 @@ void CSmfCredMgrServerSession::ServiceL(const RMessage2& aMessage)
 
 			authenticationProcessData->InternalizeL(dataBuf);
 
+			//generate cryptographically secure random number.
+     	    TRandom generator;
+			TBuf8<KMaxRegistrationTokenLength> randNum;
+			randNum.SetLength(randNum.MaxLength());
+			generator.RandomL(randNum);
+			
+			//assign it to iRegistrationToken
+			authenticationProcessData->iRegistrationToken = HBufC::NewL(/*regToken.Length()*/KMaxRegistrationTokenLength);;
+	
+			TPtr regTokenPtr(authenticationProcessData->iRegistrationToken->Des());
+			regTokenPtr.Copy(randNum);
 
-			TBuf8<56> regToken;
-			regToken.SetLength(regToken.MaxLength());
-			TRandom::RandomL(regToken);
-			authenticationProcessData->iRegistrationToken = HBufC::NewL(KMaxRegistrationTokenLength);
-			TPtr tokenPtr(authenticationProcessData->iRegistrationToken->Des());
-			tokenPtr.Copy(regToken);
 			storeInDb(authenticationProcessData);
 
-			aMessage.WriteL(1, regToken);
+			//to serialize data we need a buffer
+			CBufFlat* buf = CBufFlat::NewL(KMaxBufSize);
+			CleanupStack::PushL(buf);
+			RBufWriteStream stream(*buf);
+			CleanupClosePushL(stream);
+
+			authenticationProcessData->ExternalizeL(stream);
+
+			stream.CommitL();
+
+			TPtr8 bufPtr = buf->Ptr(0);
+
+			TInt err = aMessage.Write(1, bufPtr);
+
+			CleanupStack::PopAndDestroy(&stream);
+			CleanupStack::PopAndDestroy(buf);
 			
-			CleanupStack::PopAndDestroy(authenticationProcessData->iRegistrationToken);
 			CleanupStack::PopAndDestroy(authenticationProcessData);
 			CleanupStack::PopAndDestroy(&dataBuf);
 			aMessage.Complete(err);
 			}
 			break;
+			
 		case ESmfHMACSHA1SignMessage:
 		case ESmfRSASignMessage:
 		case ESmfStoreRSAKey:
@@ -291,14 +336,18 @@ void CSmfCredMgrServerSession::ServiceL(const RMessage2& aMessage)
 		}
 	}
 
+/**
+ * Stores data to Db during Authentication process
+ * @param aParams class containg the data to be stored at Db
+ */
 void CSmfCredMgrServerSession::storeInDb(
 		CSmfStoreAuthParams* aAuthenticationProcessData)
 	{
 	TBuf<KMaxBufSize> authAppIDbuf(
 			aAuthenticationProcessData->iAuthAppID->Des());
-
+	TBuf<KMaxBufSize> regTokenBuf(aAuthenticationProcessData->iRegistrationToken->Des());
 	iDbUser->RegTokenValidityTableInsert(
-			aAuthenticationProcessData->iRegistrationToken->Des(),
+			regTokenBuf,
 			authAppIDbuf, aAuthenticationProcessData->iValidity);
 
 	for (int i = 0; i < aAuthenticationProcessData->iAuthTokenArray.Count(); i++)
@@ -325,25 +374,35 @@ void CSmfCredMgrServerSession::storeInDb(
 		}
 	}
 
-void CSmfCredMgrServerSession::fetchPluginIDs(CSmfPluginIDListParams* aParams)
+/**
+ * Retrieves the plugin ids from Db
+ * @param aParams class object to be updated
+ */
+void CSmfCredMgrServerSession::fetchPluginIDsL(CSmfPluginIDListParams* aParams)
 	{
 	TBuf<KMaxBufSize> tokenBuf(aParams->iRegistrationToken->Des());
-	iDbUser->fetchPluginList(tokenBuf, aParams->iPluginList);
+	iDbUser->fetchPluginListL(tokenBuf, aParams->iPluginList);
 	}
 
-void CSmfCredMgrServerSession::fetchURLs(CSmfURLListParams* aArg)
+/**
+ * Retrieves the URLs from Db
+ * @param aArg class object to be updated
+ */
+void CSmfCredMgrServerSession::fetchUrlL(CSmfURLListParams* aArg)
 	{
 	TBuf<KMaxBufSize> authAppIDBuf;
 	iDbUser->readAuthAppIdInPluginIdTable(aArg->iPluginID->Des(), authAppIDBuf);
-	iDbUser->readURL(authAppIDBuf, aArg->iURLList);
+	iDbUser->readUrlL(authAppIDBuf, aArg->iURLList);
 	}
 
-
-void CSmfCredMgrServerSession::getTokenArray(CSmfFetchAuthTokenSet* aParams)
+/**
+ * Retrieves each token set from Db and updates the array of CSmfFetchAuthTokenSet
+ * @param aParams class containg the array to be filled
+ */
+void CSmfCredMgrServerSession::getTokenArrayL(CSmfFetchAuthTokenSet* aParams)
 	{
 	TBuf<KMaxBufSize> authAppIDBuf;
 	iDbUser->readAuthAppIdInRegTokenTable(aParams->iRegistrationToken->Des(),
 			authAppIDBuf);
-	iDbUser->readAuthTokens(authAppIDBuf, aParams->iAuthTokenArray);
+	iDbUser->readAuthTokensL(authAppIDBuf, aParams->iAuthTokenArray);
 	}
-

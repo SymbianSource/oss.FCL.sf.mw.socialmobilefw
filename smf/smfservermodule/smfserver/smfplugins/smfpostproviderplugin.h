@@ -26,23 +26,6 @@
 #include <smfpost.h>
 #include <smflocation.h>
 
-//TODO:- Moved to SmfPost as it should b common betn client n plugin
-///**
-// * SmfPresenceInfo.
-// * Indicates the presence information of user like Online, Offline, Busy, 
-// * Do no disturb, Appear Offline etc.
-// */
-//enum SmfPresenceInfo
-//	{
-//	  ENotSupported,
-//	  EOnline,
-//	  EOffline,
-//	  EBusy,
-//	  EDoNotDisturb,
-//	  EAppearOffline,
-//	  EOther
-//	};
-
 /**
  * @ingroup smf_plugin_group
  * Interface to get/update the posts to a service provider. This class
@@ -78,7 +61,7 @@ public:
 	virtual qint32 maxItems( ) const = 0;
 
 	/**
-	 * <Method that returns all the formatting of posts that this 
+	 * Method that returns all the formatting of posts that this 
 	 * service provider supports. May return 0 items to mean 
 	 * only QString is supported.
 	 * @return Supported formats of posts
@@ -164,7 +147,7 @@ public:
 			const QString &aStatus ) = 0;
 	
 	/**
-	 * Share /a contact's post to user's friends and followers
+	 * Share a contact's post to user's friends and followers
 	 * (e.g. retweet in twitter, share on facebook)
 	 * @param aRequest [out] The request data to be sent to network
 	 * @param aPostData data to be posted

@@ -18,6 +18,7 @@
  *
  */
 
+
 // Include files
 #define EMULATORTESTING
 
@@ -69,30 +70,27 @@ SmfTransportManagerUtil::SmfTransportManagerUtil ( )
 		m_settings->setValue("Received Data", 0);
 	
 #ifdef EMULATORTESTING
-	qDebug()<<"Using PROXY SETTINGS!!!, change for device settings";
+	qDebug()<<"Using PROXY SETTINGS!!!, change for device testing";
 	
 	// Reading the keys, CSM Stubbed - START
-	QFile file("c:\\data\\DoNotShare.txt");
-	if (!file.open(QIODevice::ReadOnly))
+	QFile winFile("c:\\data\\DoNotShare.txt");
+	if (!winFile.open(QIODevice::ReadOnly))
 		{
 		qDebug()<<"File to read the windows username and password could not be opened, returning!!!";
 		return;
 		}
 	
-	QByteArray arr = file.readAll();
-	QList<QByteArray> list = arr.split(' ');
-	file.close();
+	QByteArray winArr = winFile.readAll();
+	QList<QByteArray> winList = winArr.split(' ');
+	winFile.close();
 	
-	QString username(list[0]);
-	QString password(list[1]);
+	QString httpUser(winList[0]);
+	QString httpPass(winList[1]);
 
     // For proxy settings on emulator only - REMOVE for device
-    QString httpProxy = "10.1.0.224";
-    QString httpPort = "3148";
+    QString httpProxy = "10.1.0.214";
+    QString httpPort = "3128";
     
-	QString httpUser(username);
-	QString httpPass(password);
-
     //==Classes used from Network Module==
     QNetworkProxy proxy;
 

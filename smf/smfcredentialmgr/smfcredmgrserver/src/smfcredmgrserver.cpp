@@ -7,10 +7,13 @@
  * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  *
  * Initial Contributors:
- * Pritam Roy Biswas, Sasken Communication Technologies Ltd - Initial contribution
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ * 
+ * Contributors:
+ * Pritam Roy Biswas, Sasken Communication Technologies Ltd
  *
  * Description:
- * Routines for Credential Manager Server.
+ * Routines for Credential Manager Server
  */
 
 //  Include Files  
@@ -52,7 +55,6 @@ static void RunServerL()
 // Server process entry-point
 TInt E32Main()
 	{
-
 	__UHEAP_MARK;
 
 	CTrapCleanup* cleanup = CTrapCleanup::New();
@@ -67,15 +69,10 @@ TInt E32Main()
 	return r;
 	}
 
-CSmfCredMgrServer::CSmfCredMgrServer() :
-	CPolicyServer(CActive::EPriorityStandard, policy, EUnsharableSessions)
-	{
-
-	}
-
 /**
  * CSmfCredMgrServer::NewL()
  * Two-phased constructor.
+ * @return The constructed CSmfCredMgrServer instance
  */
 CSmfCredMgrServer* CSmfCredMgrServer::NewL()
 	{
@@ -87,6 +84,7 @@ CSmfCredMgrServer* CSmfCredMgrServer::NewL()
 /**
  * CSmfCredMgrServer::NewLC()
  * Two-phased constructor.
+ * @return The constructed CSmfCredMgrServer instance
  */
 CSmfCredMgrServer* CSmfCredMgrServer::NewLC()
 	{
@@ -97,12 +95,20 @@ CSmfCredMgrServer* CSmfCredMgrServer::NewLC()
 	}
 
 /**
+ * Constructor
+ */
+CSmfCredMgrServer::CSmfCredMgrServer() :
+	CPolicyServer(CActive::EPriorityStandard, policy, EUnsharableSessions)
+	{
+
+	}
+
+/**
  * CSmfCredMgrServer::ConstructL()
  * Symbian 2nd phase constructor can leave.
  */
 void CSmfCredMgrServer::ConstructL()
 	{
-
 	iDbCreator = CSmfCredMgrDb::NewL();
 	StartL(KCredMgrServerName);
 	RDebug::Printf("in constructor CSmfCredMgrServer");

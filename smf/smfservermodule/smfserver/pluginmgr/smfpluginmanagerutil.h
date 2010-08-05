@@ -63,18 +63,22 @@ private:
 	 * @param aInstance Instance of the loaded plugin that perform this operation
 	 * @param aOperation The type of operation to be performed
 	 * @param aInputData The data required to create the web query
-	 * @param aReqData [out] The request data created by the plugin
+	 * @param aReqData [out] The request data created by the 
+	 * plugin (don't consider for synchronous requests)
 	 * @param aResult [out] SmfError, The result of the operation
 	 * It can be :-
 	 * SmfPluginNoError (if plugin has created the request successfully)
 	 * SmfPluginUnknownPluginService (if plugin service is not known or unsupported)
 	 * SmfPluginRequestCreationFailed (if request creation has failed)
+	 * @param aOutputData [out] The output data to be filled by the 
+	 * plugins (for synchronous request only), don't consider for asynchronous requests
 	 */
 	void createRequest ( QObject* aInstance, 
 			const SmfRequestTypeID &aOperation, 
 			QByteArray &aInputData,
 			SmfPluginRequestData &aReqData,
-			SmfError &aResult );
+			SmfError &aResult,
+			QByteArray &aOutputData );
 	
 	/**
 	 * Method to create a web query to fetch activities
@@ -206,6 +210,20 @@ private:
 			const SmfRequestTypeID &aOperation, 
 			QByteArray &aInputData,
 			SmfPluginRequestData &aReqData );
+	
+	/**
+	 * Method called to create a synchronous plugin request.
+	 * @param aPlugin The instance of the loaded plugin that performs the 
+	 * contact fetch operation.
+	 * @param aOperation The type of operation to be performed
+	 * @param aInputData The data required to create the web query
+	 * @param aOutputData [out] The output data to be filled by the plugins
+	 * @return SmfPluginError
+	 */
+	SmfPluginError createSyncRequest ( QObject *aPlugin, 
+			const SmfRequestTypeID &aOperation, 
+			QByteArray &aInputData,
+			QByteArray &aOutputData );
 	
 	/**
 	 * Method called by Plugin Manager when network response is available

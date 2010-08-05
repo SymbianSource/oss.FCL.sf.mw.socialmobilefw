@@ -14,7 +14,7 @@
  *  in Credential Manager.
  */
 
-
+#include <QDebug>
 #include "smfcredmgrclientutil.h"
 
 namespace smfcredmgrclientutil
@@ -113,6 +113,8 @@ namespace smfcredmgrclientutil
 			
 			QString KeyString(itr.key());
 			QString ValueString(itr.value());
+			qDebug()<<"Key name = "<<KeyString;
+			qDebug()<<"Key value = "<<ValueString;
 			
 			set.iKey = qt_QString2HBufC(KeyString);
 			set.iSecret = qt_QString2HBufC(ValueString);

@@ -73,7 +73,6 @@ void debugOutput(QtMsgType type, const char *msg)
 int main(int argc, char *argv[])
 {
 	qInstallMsgHandler(debugOutput);
-	
     QCoreApplication a(argc, argv);
 #ifndef SETTINGS_TEST
 	SmfServer* server = new SmfServer();

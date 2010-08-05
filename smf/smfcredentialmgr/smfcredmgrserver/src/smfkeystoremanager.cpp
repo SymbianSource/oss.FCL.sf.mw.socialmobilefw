@@ -22,14 +22,23 @@
 #include <smfcredmgrclientdatastruct.h>
 #include <smfcredmgrcommon.h>
 #include <hash.h>
+
 #include "smfkeystoremanager.h"
 
+/**
+ * NewL Method
+ * @return The constructed CSmfKeyStoreManager instance
+ */
 CSmfKeyStoreManager* CSmfKeyStoreManager::NewL() {
 	CSmfKeyStoreManager* self = CSmfKeyStoreManager::NewLC();
 	CleanupStack::Pop( self );
 	return self;
 }
 
+/**
+ * NewLC Method
+ * @return The constructed CSmfKeyStoreManager instance
+ */
 CSmfKeyStoreManager* CSmfKeyStoreManager::NewLC() {
 	CSmfKeyStoreManager* self = new( ELeave )CSmfKeyStoreManager();
 	CleanupStack::PushL( self );
@@ -37,6 +46,9 @@ CSmfKeyStoreManager* CSmfKeyStoreManager::NewLC() {
 	return self;
 }
 
+/**
+ * Destructor
+ */
 CSmfKeyStoreManager::~CSmfKeyStoreManager() {
 	iFs.Close();
 	
@@ -48,6 +60,10 @@ CSmfKeyStoreManager::~CSmfKeyStoreManager() {
 	
 }
 
+/**
+ * HandleMessageL
+ * @param aMessage
+ */
 void CSmfKeyStoreManager::HandleMessageL( const RMessage2& aMessage ) 
 	{
 	RDebug::Printf("SMF: CSmfKeyStoreManager::HandleMessageL");
@@ -58,6 +74,9 @@ void CSmfKeyStoreManager::HandleMessageL( const RMessage2& aMessage )
 		}
 	}
 
+/**
+ * RunL
+ */
 void CSmfKeyStoreManager::RunL() 
 	{
 	RDebug::Printf("SMF: CSmfKeyStoreManager::RunL, iStatus=%d", iStatus.Int() );
@@ -141,7 +160,7 @@ void CSmfKeyStoreManager::RunL()
 			}
 		case EDeletingKey:
 			{
-			DeleteKeys();
+			DeleteKeysL();
 			break;
 			}
 #endif
@@ -157,9 +176,17 @@ void CSmfKeyStoreManager::RunL()
 		}	
 	}
 
+/**
+ * DoCancel
+ */
 void CSmfKeyStoreManager::DoCancel() {	
 }
 
+/**
+ * RunError
+ * @param aError
+ * @return
+ */
 TInt CSmfKeyStoreManager::RunError( TInt aError ) {
 	RDebug::Printf("SMF: CSmfKeyStoreManager::RunError error=%d", aError);
 	
@@ -172,11 +199,17 @@ TInt CSmfKeyStoreManager::RunError( TInt aError ) {
 	return KErrNone;
 }
 
+/**
+ * Constructor
+ */
 CSmfKeyStoreManager::CSmfKeyStoreManager() 
 	:CActive(EPriorityStandard), iState(EInitializingKeystore) 
 	{
 	}
 
+/**
+ * Two-phase constructor
+ */
 void CSmfKeyStoreManager::ConstructL() {
 	RDebug::Printf("SMF: CSmfKeyStoreManager::ConstructL");
 	CActiveScheduler::Add( this );
@@ -190,6 +223,9 @@ void CSmfKeyStoreManager::ConstructL() {
 #endif
 }
 
+/**
+ * ContinueMessageHandlingL
+ */
 void CSmfKeyStoreManager::ContinueMessageHandlingL() 
 	{
 	RDebug::Printf("SMF: CSmfKeyStoreManager::ContinueMessageHandling");
@@ -221,12 +257,15 @@ void CSmfKeyStoreManager::ContinueMessageHandlingL()
 			}
 		case ESmfDeleteKeys:
 			{
-			DeleteKeys();
+			DeleteKeysL();
 			break;
 			}
 		}
 	}
 
+/**
+ * StoreRSAKeyL
+ */
 void CSmfKeyStoreManager::StoreRSAKeyL() 
 	{
 #ifdef SYMBIAN_V3
@@ -245,6 +284,9 @@ void CSmfKeyStoreManager::StoreRSAKeyL()
 #endif
 	}
 
+/**
+ * RSA_SHA1_SignMessageL
+ */
 void CSmfKeyStoreManager::RSA_SHA1_SignMessageL() 
 	{
 	
@@ -275,6 +317,7 @@ void CSmfKeyStoreManager::RSA_SHA1_SignMessageL()
 				if ( iKeys[i]->ID() == iSignParameters->Key() ) 
 					{
 					RDebug::Printf("SMF: Correct key found");
+					//might panic in CodeScanner, this open returns void
 					iKeyStore->Open( *iKeys[i], iRSASigner, iStatus );
 					iState = EGettingRSASigner;
 					keyFound = ETrue;
@@ -305,6 +348,9 @@ void CSmfKeyStoreManager::RSA_SHA1_SignMessageL()
 #endif
 	}
 
+/**
+ * HMAC_SHA1_SignMessageL
+ */
 void CSmfKeyStoreManager::HMAC_SHA1_SignMessageL()
 	{	
 	ReadSignParametersL();
@@ -331,7 +377,10 @@ void CSmfKeyStoreManager::HMAC_SHA1_SignMessageL()
 	iSignParameters = NULL;	
 	}
 
-void CSmfKeyStoreManager::DeleteKeys() 
+/**
+ * DeleteKeysL
+ */
+void CSmfKeyStoreManager::DeleteKeysL() 
 	{
 	RDebug::Printf("SMF: CSmfKeyStoreManager::DeleteKeys");
 #ifdef SYMBIAN_V3
@@ -381,6 +430,9 @@ void CSmfKeyStoreManager::DeleteKeys()
 #endif
 	}
 
+/**
+ * SetPassphraseTimeout
+ */
 void CSmfKeyStoreManager::SetPassphraseTimeout() 
 	{
 #ifdef SYMBIAN_V3
@@ -390,6 +442,9 @@ void CSmfKeyStoreManager::SetPassphraseTimeout()
 #endif
 	}
 
+/**
+ * ReadSignParametersL
+ */
 void CSmfKeyStoreManager::ReadSignParametersL()
 	{
 	RMessage2* message = iMessages[0];
@@ -406,6 +461,9 @@ void CSmfKeyStoreManager::ReadSignParametersL()
 	CleanupStack::PopAndDestroy( &dataBuf );
 	}
 
+/**
+ * ReadRsaKeyParametersL
+ */
 void CSmfKeyStoreManager::ReadRsaKeyParametersL()
 	{
 	RMessage2* message = iMessages[0];
@@ -422,6 +480,3 @@ void CSmfKeyStoreManager::ReadRsaKeyParametersL()
 	
 	CleanupStack::PopAndDestroy( &dataBuf );
 	}
-
-
-

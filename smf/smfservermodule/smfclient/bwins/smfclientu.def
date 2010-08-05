@@ -1,680 +1,245 @@
 EXPORTS
-	??0SmfMusicRating@@QAE@ABV0@@Z @ 1 NONAME ; SmfMusicRating::SmfMusicRating(class SmfMusicRating const &)
-	?setId@SmfLocation@@QAEXABVQString@@@Z @ 2 NONAME ; void SmfLocation::setId(class QString const &)
-	?id@SmfPost@@QBE?AVQString@@XZ @ 3 NONAME ; class QString SmfPost::id(void) const
-	?convert@SmfContact@@QBEXAAVQContact@QtMobility@@@Z @ 4 NONAME ; void SmfContact::convert(class QtMobility::QContact &) const
-	??5@YAAAVQDataStream@@AAV0@AAVSmfArtists@@@Z @ 5 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfArtists &)
-	?setTitle@SmfActivityEntry@@QAE_NABVSmfPost@@@Z @ 6 NONAME ; bool SmfActivityEntry::setTitle(class SmfPost const &)
-	?genre@SmfTrackInfo@@QBE?AVQString@@XZ @ 7 NONAME ; class QString SmfTrackInfo::genre(void) const
-	?artists@SmfTrackInfo@@QBE?AVSmfArtists@@XZ @ 8 NONAME ; class SmfArtists SmfTrackInfo::artists(void) const
-	??_ESmfPictureAlbum@@QAE@I@Z @ 9 NONAME ; SmfPictureAlbum::~SmfPictureAlbum(unsigned int)
-	?playlistUpdated@SmfPlaylistService@@IAEXW4SmfError@@@Z @ 10 NONAME ; void SmfPlaylistService::playlistUpdated(enum SmfError)
-	?tags@SmfPicture@@QBE?AVQStringList@@XZ @ 11 NONAME ; class QStringList SmfPicture::tags(void) const
-	??0SmfEvent@@QAE@XZ @ 12 NONAME ; SmfEvent::SmfEvent(void)
-	?keywords@SmfPictureAlbum@@QBE?AVQStringList@@XZ @ 13 NONAME ; class QStringList SmfPictureAlbum::keywords(void) const
-	??_ESmfMusicEvents@@UAE@I@Z @ 14 NONAME ; SmfMusicEvents::~SmfMusicEvents(unsigned int)
-	?country@SmfLocation@@QBE?AVQString@@XZ @ 15 NONAME ; class QString SmfLocation::country(void) const
-	?getStaticMetaObject@SmfActivityFetcher@@SAABUQMetaObject@@XZ @ 16 NONAME ; struct QMetaObject const & SmfActivityFetcher::getStaticMetaObject(void)
-	?setCaption@SmfActivityObject@@QAEXABVQString@@@Z @ 17 NONAME ; void SmfActivityObject::setCaption(class QString const &)
-	?id@SmfPicture@@QBE?AVQString@@XZ @ 18 NONAME ; class QString SmfPicture::id(void) const
-	?postRating@SmfMusicSearch@@QAEXVSmfTrackInfo@@VSmfMusicRating@@@Z @ 19 NONAME ; void SmfMusicSearch::postRating(class SmfTrackInfo, class SmfMusicRating)
-	??0SmfPlaylist@@QAE@XZ @ 20 NONAME ; SmfPlaylist::SmfPlaylist(void)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactGuid@QtMobility@@@Z @ 21 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactGuid &)
-	?setNames@SmfArtists@@QAEXABVQStringList@@@Z @ 22 NONAME ; void SmfArtists::setNames(class QStringList const &)
-	?id@SmfActivityObject@@QBE?AVQString@@XZ @ 23 NONAME ; class QString SmfActivityObject::id(void) const
-	??4SmfMusicFingerPrint@@QAEAAV0@ABV0@@Z @ 24 NONAME ; class SmfMusicFingerPrint & SmfMusicFingerPrint::operator=(class SmfMusicFingerPrint const &)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactName@QtMobility@@@Z @ 25 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactName const &)
-	?setLocation@SmfPlaylist@@QAEXABVQUrl@@@Z @ 26 NONAME ; void SmfPlaylist::setLocation(class QUrl const &)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactThumbnail@QtMobility@@@Z @ 27 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactThumbnail const &)
-	?tr@SmfPostProvider@@SA?AVQString@@PBD0H@Z @ 28 NONAME ; class QString SmfPostProvider::tr(char const *, char const *, int)
-	?trUtf8@SmfActivityFetcher@@SA?AVQString@@PBD0H@Z @ 29 NONAME ; class QString SmfActivityFetcher::trUtf8(char const *, char const *, int)
-	?get@SmfRelationMgr@@QAE?AVSmfRelationItem@@AAVQString@@I@Z @ 30 NONAME ; class SmfRelationItem SmfRelationMgr::get(class QString &, unsigned int)
-	??0SmfGroup@@QAE@PAV?$QList@VSmfContact@@@@@Z @ 31 NONAME ; SmfGroup::SmfGroup(class QList<class SmfContact> *)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactUrl@QtMobility@@@Z @ 32 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactUrl const &)
-	?trUtf8@SmfPlaylistService@@SA?AVQString@@PBD0H@Z @ 33 NONAME ; class QString SmfPlaylistService::trUtf8(char const *, char const *, int)
-	?lyricsAvailable@SmfLyricsService@@IAEXPAV?$QList@VSmfLyrics@@@@W4SmfError@@USmfResultPage@@@Z @ 34 NONAME ; void SmfLyricsService::lyricsAvailable(class QList<class SmfLyrics> *, enum SmfError, struct SmfResultPage)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfPicture@@@Z @ 35 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfPicture const &)
-	?staticMetaObject@SmfMusicService@@2UQMetaObject@@B @ 36 NONAME ; struct QMetaObject const SmfMusicService::staticMetaObject
-	?setLength@SmfUrl@@QAEXABVQString@@@Z @ 37 NONAME ; void SmfUrl::setLength(class QString const &)
-	?postEvents@SmfMusicEvents@@QAEXV?$QList@VSmfEvent@@@@@Z @ 38 NONAME ; void SmfMusicEvents::postEvents(class QList<class SmfEvent>)
-	?serviceUrl@SmfProvider@@QBE?AVQUrl@@XZ @ 39 NONAME ; class QUrl SmfProvider::serviceUrl(void) const
-	?setTags@SmfTrackInfo@@QAEXABVQStringList@@@Z @ 40 NONAME ; void SmfTrackInfo::setTags(class QStringList const &)
-	?addComment@SmfPicture@@QAEXABVSmfComment@@@Z @ 41 NONAME ; void SmfPicture::addComment(class SmfComment const &)
-	?metaObject@SmfActivityFetcher@@UBEPBUQMetaObject@@XZ @ 42 NONAME ; struct QMetaObject const * SmfActivityFetcher::metaObject(void) const
-	??4SmfMusicRating@@QAEAAV0@ABV0@@Z @ 43 NONAME ; class SmfMusicRating & SmfMusicRating::operator=(class SmfMusicRating const &)
-	?playlists@SmfPlaylistService@@QAEXHH@Z @ 44 NONAME ; void SmfPlaylistService::playlists(int, int)
-	?venuesAvailable@SmfMusicEvents@@IAEXPAV?$QList@VSmfLocation@@@@W4SmfError@@USmfResultPage@@@Z @ 45 NONAME ; void SmfMusicEvents::venuesAvailable(class QList<class SmfLocation> *, enum SmfError, struct SmfResultPage)
-	?name@SmfAlbum@@QBE?AVQString@@XZ @ 46 NONAME ; class QString SmfAlbum::name(void) const
-	??6@YAAAVQDataStream@@AAV0@ABVSmfComment@@@Z @ 47 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfComment const &)
-	?frameRate@SmfSubtitle@@QBENXZ @ 48 NONAME ; double SmfSubtitle::frameRate(void) const
-	?setId@SmfMusicProfile@@QAEXABVQString@@@Z @ 49 NONAME ; void SmfMusicProfile::setId(class QString const &)
-	?setId@SmfAlbum@@QAEXABVQString@@@Z @ 50 NONAME ; void SmfAlbum::setId(class QString const &)
-	?description@SmfPost@@QBE?AVQString@@XZ @ 51 NONAME ; class QString SmfPost::description(void) const
-	??_ESmfSubtitle@@QAE@I@Z @ 52 NONAME ; SmfSubtitle::~SmfSubtitle(unsigned int)
-	?trUtf8@SmfPostProvider@@SA?AVQString@@PBD0@Z @ 53 NONAME ; class QString SmfPostProvider::trUtf8(char const *, char const *)
-	??_ESmfLocation@@QAE@I@Z @ 54 NONAME ; SmfLocation::~SmfLocation(unsigned int)
-	?setCountry@SmfLocation@@QAEXABVQString@@@Z @ 55 NONAME ; void SmfLocation::setCountry(class QString const &)
-	?zipCode@SmfLocation@@QBE?AVQString@@XZ @ 56 NONAME ; class QString SmfLocation::zipCode(void) const
-	??4SmfTrackInfo@@QAEAAV0@ABV0@@Z @ 57 NONAME ; class SmfTrackInfo & SmfTrackInfo::operator=(class SmfTrackInfo const &)
-	??0SmfActivityFetcher@@QAE@PAVSmfProvider@@@Z @ 58 NONAME ; SmfActivityFetcher::SmfActivityFetcher(class SmfProvider *)
-	?url@SmfPictureAlbum@@QBE?AVQUrl@@XZ @ 59 NONAME ; class QUrl SmfPictureAlbum::url(void) const
-	?qt_metacall@SmfContactFetcher@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 60 NONAME ; int SmfContactFetcher::qt_metacall(enum QMetaObject::Call, int, void * *)
-	??_ESmfPost@@QAE@I@Z @ 61 NONAME ; SmfPost::~SmfPost(unsigned int)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfSubtitle@@@Z @ 62 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfSubtitle &)
-	?setId@SmfActivityObject@@QAEXABVQString@@@Z @ 63 NONAME ; void SmfActivityObject::setId(class QString const &)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactNote@QtMobility@@@Z @ 64 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactNote &)
-	?duration@SmfTrackInfo@@QBE?AVQTime@@XZ @ 65 NONAME ; class QTime SmfTrackInfo::duration(void) const
-	?author@SmfActivityEntry@@QBE?AVSmfContact@@XZ @ 66 NONAME ; class SmfContact SmfActivityEntry::author(void) const
-	?setId@SmfEvent@@QAEXABVQString@@@Z @ 67 NONAME ; void SmfEvent::setId(class QString const &)
-	?geoPositionInfo@SmfLocation@@QBE?AVQGeoPositionInfo@QtMobility@@XZ @ 68 NONAME ; class QtMobility::QGeoPositionInfo SmfLocation::geoPositionInfo(void) const
-	?duration@SmfEvent@@QBE?AVQTime@@XZ @ 69 NONAME ; class QTime SmfEvent::duration(void) const
-	??_ESmfComment@@QAE@I@Z @ 70 NONAME ; SmfComment::~SmfComment(unsigned int)
-	?location@SmfPlaylist@@QBE?AVQUrl@@XZ @ 71 NONAME ; class QUrl SmfPlaylist::location(void) const
-	??6@YAAAVQDataStream@@AAV0@ABVSmfPost@@@Z @ 72 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfPost const &)
-	??4SmfPicture@@QAEAAV0@ABV0@@Z @ 73 NONAME ; class SmfPicture & SmfPicture::operator=(class SmfPicture const &)
-	?setId@SmfActivityEntry@@QAE_NABVQString@@@Z @ 74 NONAME ; bool SmfActivityEntry::setId(class QString const &)
-	?postfinished@SmfMusicSearch@@IAEXW4SmfError@@@Z @ 75 NONAME ; void SmfMusicSearch::postfinished(enum SmfError)
-	?image@SmfArtists@@QBE?AVQImage@@XZ @ 76 NONAME ; class QImage SmfArtists::image(void) const
-	?trackSearchAvailable@SmfMusicSearch@@IAEXPAV?$QList@VSmfTrackInfo@@@@W4SmfError@@USmfResultPage@@@Z @ 77 NONAME ; void SmfMusicSearch::trackSearchAvailable(class QList<class SmfTrackInfo> *, enum SmfError, struct SmfResultPage)
-	?getStaticMetaObject@SmfMusicSearch@@SAABUQMetaObject@@XZ @ 78 NONAME ; struct QMetaObject const & SmfMusicSearch::getStaticMetaObject(void)
-	?qt_metacall@SmfMusicSearch@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 79 NONAME ; int SmfMusicSearch::qt_metacall(enum QMetaObject::Call, int, void * *)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactAnniversary@QtMobility@@@Z @ 80 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactAnniversary &)
-	?image@SmfPlaylist@@QBE?AVQUrl@@XZ @ 81 NONAME ; class QUrl SmfPlaylist::image(void) const
-	?setGeoPositionInfo@SmfLocation@@QAEXABVQGeoPositionInfo@QtMobility@@@Z @ 82 NONAME ; void SmfLocation::setGeoPositionInfo(class QtMobility::QGeoPositionInfo const &)
-	?staticMetaObject@SmfActivityFetcher@@2UQMetaObject@@B @ 83 NONAME ; struct QMetaObject const SmfActivityFetcher::staticMetaObject
-	??0SmfMusicRating@@QAE@PAVSmfTrackInfo@@@Z @ 84 NONAME ; SmfMusicRating::SmfMusicRating(class SmfTrackInfo *)
-	?qt_metacast@SmfActivityFetcher@@UAEPAXPBD@Z @ 85 NONAME ; void * SmfActivityFetcher::qt_metacast(char const *)
-	?getContact@SmfRelationItem@@QBE?AVSmfContact@@XZ @ 86 NONAME ; class SmfContact SmfRelationItem::getContact(void) const
-	?tr@SmfRelationMgr@@SA?AVQString@@PBD0@Z @ 87 NONAME ; class QString SmfRelationMgr::tr(char const *, char const *)
-	?maxCharsInPost@SmfPostProvider@@QBEHXZ @ 88 NONAME ; int SmfPostProvider::maxCharsInPost(void) const
-	?setVisibility@SmfPicture@@QAEXABW4SmfPictureVisibility@@@Z @ 89 NONAME ; void SmfPicture::setVisibility(enum SmfPictureVisibility const &)
-	?resultsAvailable@SmfActivityFetcher@@IAEXPAV?$QList@VSmfActivityEntry@@@@W4SmfError@@USmfResultPage@@@Z @ 90 NONAME ; void SmfActivityFetcher::resultsAvailable(class QList<class SmfActivityEntry> *, enum SmfError, struct SmfResultPage)
-	?trUtf8@SmfActivityFetcher@@SA?AVQString@@PBD0@Z @ 91 NONAME ; class QString SmfActivityFetcher::trUtf8(char const *, char const *)
-	?setVersion@SmfPlaylist@@QAEXABVQString@@@Z @ 92 NONAME ; void SmfPlaylist::setVersion(class QString const &)
-	?errorLine@SmfPluginUtil@@QBEHXZ @ 93 NONAME ; int SmfPluginUtil::errorLine(void) const
-	?setImage@SmfAlbum@@QAEXABVQImage@@@Z @ 94 NONAME ; void SmfAlbum::setImage(class QImage const &)
-	?description@SmfPictureAlbum@@QBE?AVQString@@XZ @ 95 NONAME ; class QString SmfPictureAlbum::description(void) const
-	??6@YAAAVQDataStream@@AAV0@ABVSmfMusicRating@@@Z @ 96 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfMusicRating const &)
-	?setDescription@SmfPictureAlbum@@QAEXABVQString@@@Z @ 97 NONAME ; void SmfPictureAlbum::setDescription(class QString const &)
-	?trUtf8@SmfMusicService@@SA?AVQString@@PBD0@Z @ 98 NONAME ; class QString SmfMusicService::trUtf8(char const *, char const *)
-	?qt_metacall@SmfLyricsService@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 99 NONAME ; int SmfLyricsService::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?venues@SmfMusicEvents@@QAEXVQContactGeoLocation@QtMobility@@HH@Z @ 100 NONAME ; void SmfMusicEvents::venues(class QtMobility::QContactGeoLocation, int, int)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfActivityEntry@@@Z @ 101 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfActivityEntry const &)
-	??1SmfMusicService@@UAE@XZ @ 102 NONAME ; SmfMusicService::~SmfMusicService(void)
-	?trUtf8@SmfContactFetcher@@SA?AVQString@@PBD0@Z @ 103 NONAME ; class QString SmfContactFetcher::trUtf8(char const *, char const *)
-	?tr@SmfGallery@@SA?AVQString@@PBD0H@Z @ 104 NONAME ; class QString SmfGallery::tr(char const *, char const *, int)
-	?musicUsageInfo@SmfMusicProfile@@QBE?AV?$QList@VSmfTrackInfo@@@@XZ @ 105 NONAME ; class QList<class SmfTrackInfo> SmfMusicProfile::musicUsageInfo(void) const
-	??1SmfComment@@QAE@XZ @ 106 NONAME ; SmfComment::~SmfComment(void)
-	?setFrameRate@SmfSubtitle@@QAEXABN@Z @ 107 NONAME ; void SmfSubtitle::setFrameRate(double const &)
-	?maxItems@SmfPostProvider@@QBEHXZ @ 108 NONAME ; int SmfPostProvider::maxItems(void) const
-	?customRequest@SmfPostProvider@@QAEXABHPAVQByteArray@@@Z @ 109 NONAME ; void SmfPostProvider::customRequest(int const &, class QByteArray *)
-	??0SmfContact@@QAE@ABV0@@Z @ 110 NONAME ; SmfContact::SmfContact(class SmfContact const &)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactName@QtMobility@@@Z @ 111 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactName &)
-	?metadata@SmfPlaylist@@QBE?AV?$QMap@VQString@@VQVariant@@@@XZ @ 112 NONAME ; class QMap<class QString, class QVariant> SmfPlaylist::metadata(void) const
-	?url@SmfLocation@@QBE?AVQUrl@@XZ @ 113 NONAME ; class QUrl SmfLocation::url(void) const
-	??6@YAAAVQDataStream@@AAV0@ABVQContactAddress@QtMobility@@@Z @ 114 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactAddress const &)
-	?getStaticMetaObject@SmfMusicEvents@@SAABUQMetaObject@@XZ @ 115 NONAME ; struct QMetaObject const & SmfMusicEvents::getStaticMetaObject(void)
-	?setName@SmfGroup@@QAEXAAVQString@@@Z @ 116 NONAME ; void SmfGroup::setName(class QString &)
+	?eventsUpdated@SmfMusicEvents@@IAEXW4SmfError@@@Z @ 1 NONAME ; void SmfMusicEvents::eventsUpdated(enum SmfError)
+	??6@YAAAVQDataStream@@AAV0@ABVSmfRelationItem@@@Z @ 2 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfRelationItem const &)
+	?count@SmfRelationMgr@@QAEIVQString@@@Z @ 3 NONAME ; unsigned int SmfRelationMgr::count(class QString)
+	?staticMetaObject@SmfRelationMgr@@2UQMetaObject@@B @ 4 NONAME ; struct QMetaObject const SmfRelationMgr::staticMetaObject
+	?trUtf8@SmfPlaylistService@@SA?AVQString@@PBD0@Z @ 5 NONAME ; class QString SmfPlaylistService::trUtf8(char const *, char const *)
+	?customDataAvailable@SmfMusicEvents@@IAEXABHPAVQByteArray@@@Z @ 6 NONAME ; void SmfMusicEvents::customDataAvailable(int const &, class QByteArray *)
+	??0SmfGallery@@QAE@PAVSmfProvider@@@Z @ 7 NONAME ; SmfGallery::SmfGallery(class SmfProvider *)
+	?maxCharsInPost@SmfPostProvider@@QBEHXZ @ 8 NONAME ; int SmfPostProvider::maxCharsInPost(void) const
+	?qt_metacall@SmfMusicSearch@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 9 NONAME ; int SmfMusicSearch::qt_metacall(enum QMetaObject::Call, int, void * *)
+	??0SmfClient@@QAE@XZ @ 10 NONAME ; SmfClient::SmfClient(void)
+	?tr@SmfContactFetcher@@SA?AVQString@@PBD0@Z @ 11 NONAME ; class QString SmfContactFetcher::tr(char const *, char const *)
+	?lyrics@SmfLyricsService@@QAEXVSmfTrackInfo@@HH@Z @ 12 NONAME ; void SmfLyricsService::lyrics(class SmfTrackInfo, int, int)
+	?getIndex@SmfRelationItem@@QBEIXZ @ 13 NONAME ; unsigned int SmfRelationItem::getIndex(void) const
+	?trUtf8@SmfMusicSearch@@SA?AVQString@@PBD0@Z @ 14 NONAME ; class QString SmfMusicSearch::trUtf8(char const *, char const *)
+	?getProvider@SmfMusicSearch@@ABEPAVSmfProvider@@XZ @ 15 NONAME ; class SmfProvider * SmfMusicSearch::getProvider(void) const
+	?getProvider@SmfActivityFetcher@@ABEPAVSmfProvider@@XZ @ 16 NONAME ; class SmfProvider * SmfActivityFetcher::getProvider(void) const
+	?getStaticMetaObject@SmfPostProvider@@SAABUQMetaObject@@XZ @ 17 NONAME ; struct QMetaObject const & SmfPostProvider::getStaticMetaObject(void)
+	?tr@SmfRelationMgr@@SA?AVQString@@PBD0@Z @ 18 NONAME ; class QString SmfRelationMgr::tr(char const *, char const *)
+	?filtered@SmfActivityFetcher@@QAEXV?$QList@W4SmfActivityObjectType@@@@HH@Z @ 19 NONAME ; void SmfActivityFetcher::filtered(class QList<enum SmfActivityObjectType>, int, int)
+	?customDataAvailable@SmfMusicService@@IAEXABHPAVQByteArray@@@Z @ 20 NONAME ; void SmfMusicService::customDataAvailable(int const &, class QByteArray *)
+	??1SmfMusicService@@UAE@XZ @ 21 NONAME ; SmfMusicService::~SmfMusicService(void)
+	??1SmfRelationItem@@QAE@XZ @ 22 NONAME ; SmfRelationItem::~SmfRelationItem(void)
+	?descriptionAvailable@SmfGallery@@IAEXVQString@@W4SmfError@@@Z @ 23 NONAME ; void SmfGallery::descriptionAvailable(class QString, enum SmfError)
+	??1SmfPlaylistService@@UAE@XZ @ 24 NONAME ; SmfPlaylistService::~SmfPlaylistService(void)
+	?supportedFormats@SmfPostProvider@@QBE?AV?$QVector@VQTextFormat@@@@XZ @ 25 NONAME ; class QVector<class QTextFormat> SmfPostProvider::supportedFormats(void) const
+	?getStaticMetaObject@SmfMusicSearch@@SAABUQMetaObject@@XZ @ 26 NONAME ; struct QMetaObject const & SmfMusicSearch::getStaticMetaObject(void)
+	??1SmfContactFetcher@@UAE@XZ @ 27 NONAME ; SmfContactFetcher::~SmfContactFetcher(void)
+	?getStaticMetaObject@SmfGallery@@SAABUQMetaObject@@XZ @ 28 NONAME ; struct QMetaObject const & SmfGallery::getStaticMetaObject(void)
+	?venues@SmfMusicEvents@@QAEXVSmfLocation@@HH@Z @ 29 NONAME ; void SmfMusicEvents::venues(class SmfLocation, int, int)
+	?staticMetaObject@SmfGallery@@2UQMetaObject@@B @ 30 NONAME ; struct QMetaObject const SmfGallery::staticMetaObject
+	?customDataAvailable@SmfActivityFetcher@@IAEXABHPAVQByteArray@@@Z @ 31 NONAME ; void SmfActivityFetcher::customDataAvailable(int const &, class QByteArray *)
+	?staticMetaObject@SmfMusicEvents@@2UQMetaObject@@B @ 32 NONAME ; struct QMetaObject const SmfMusicEvents::staticMetaObject
+	??0SmfActivityFetcher@@QAE@PAVSmfProvider@@@Z @ 33 NONAME ; SmfActivityFetcher::SmfActivityFetcher(class SmfProvider *)
+	?maxItems@SmfPostProvider@@QBEHXZ @ 34 NONAME ; int SmfPostProvider::maxItems(void) const
+	?trUtf8@SmfPostProvider@@SA?AVQString@@PBD0H@Z @ 35 NONAME ; class QString SmfPostProvider::trUtf8(char const *, char const *, int)
+	?qt_metacall@SmfRelationMgr@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 36 NONAME ; int SmfRelationMgr::qt_metacall(enum QMetaObject::Call, int, void * *)
+	??0SmfLyricsService@@QAE@PAVSmfProvider@@@Z @ 37 NONAME ; SmfLyricsService::SmfLyricsService(class SmfProvider *)
+	?metaObject@SmfGallery@@UBEPBUQMetaObject@@XZ @ 38 NONAME ; struct QMetaObject const * SmfGallery::metaObject(void) const
+	?qt_metacast@SmfActivityFetcher@@UAEPAXPBD@Z @ 39 NONAME ; void * SmfActivityFetcher::qt_metacast(char const *)
+	?qt_metacall@SmfLyricsService@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 40 NONAME ; int SmfLyricsService::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?qt_metacast@SmfMusicEvents@@UAEPAXPBD@Z @ 41 NONAME ; void * SmfMusicEvents::qt_metacast(char const *)
+	?metaObject@SmfMusicEvents@@UBEPBUQMetaObject@@XZ @ 42 NONAME ; struct QMetaObject const * SmfMusicEvents::metaObject(void) const
+	?trUtf8@SmfContactFetcher@@SA?AVQString@@PBD0H@Z @ 43 NONAME ; class QString SmfContactFetcher::trUtf8(char const *, char const *, int)
+	??_ESmfPlaylistService@@UAE@I@Z @ 44 NONAME ; SmfPlaylistService::~SmfPlaylistService(unsigned int)
+	?trUtf8@SmfMusicEvents@@SA?AVQString@@PBD0@Z @ 45 NONAME ; class QString SmfMusicEvents::trUtf8(char const *, char const *)
+	?qt_metacall@SmfContactFetcher@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 46 NONAME ; int SmfContactFetcher::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?customDataAvailable@SmfMusicSearch@@IAEXABHPAVQByteArray@@@Z @ 47 NONAME ; void SmfMusicSearch::customDataAvailable(int const &, class QByteArray *)
+	?supportsAppearence@SmfPostProvider@@QBE_NXZ @ 48 NONAME ; bool SmfPostProvider::supportsAppearence(void) const
+	?commentOnAPost@SmfPostProvider@@QAEXAAVSmfPost@@0PAVSmfLocation@@@Z @ 49 NONAME ; void SmfPostProvider::commentOnAPost(class SmfPost &, class SmfPost &, class SmfLocation *)
+	?trUtf8@SmfGallery@@SA?AVQString@@PBD0@Z @ 50 NONAME ; class QString SmfGallery::trUtf8(char const *, char const *)
+	?trUtf8@SmfLyricsService@@SA?AVQString@@PBD0@Z @ 51 NONAME ; class QString SmfLyricsService::trUtf8(char const *, char const *)
+	?getStaticMetaObject@SmfPlaylistService@@SAABUQMetaObject@@XZ @ 52 NONAME ; struct QMetaObject const & SmfPlaylistService::getStaticMetaObject(void)
+	?GetServices@SmfClient@@QAEPAV?$QList@VSmfProvider@@@@ABVQString@@@Z @ 53 NONAME ; class QList<class SmfProvider> * SmfClient::GetServices(class QString const &)
+	?qt_metacall@SmfGallery@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 54 NONAME ; int SmfGallery::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?staticMetaObject@SmfLyricsService@@2UQMetaObject@@B @ 55 NONAME ; struct QMetaObject const SmfLyricsService::staticMetaObject
+	?getStaticMetaObject@SmfMusicEvents@@SAABUQMetaObject@@XZ @ 56 NONAME ; struct QMetaObject const & SmfMusicEvents::getStaticMetaObject(void)
+	?customRequest@SmfActivityFetcher@@QAEXABHPAVQByteArray@@@Z @ 57 NONAME ; void SmfActivityFetcher::customRequest(int const &, class QByteArray *)
+	?userInfoAvailable@SmfMusicService@@IAEXPAVSmfMusicProfile@@W4SmfError@@@Z @ 58 NONAME ; void SmfMusicService::userInfoAvailable(class SmfMusicProfile *, enum SmfError)
+	?staticMetaObject@SmfActivityFetcher@@2UQMetaObject@@B @ 59 NONAME ; struct QMetaObject const SmfActivityFetcher::staticMetaObject
+	?trUtf8@SmfContactFetcher@@SA?AVQString@@PBD0@Z @ 60 NONAME ; class QString SmfContactFetcher::trUtf8(char const *, char const *)
+	?customRequest@SmfGallery@@QAEXABHPAVQByteArray@@@Z @ 61 NONAME ; void SmfGallery::customRequest(int const &, class QByteArray *)
+	??1SmfMusicSearch@@UAE@XZ @ 62 NONAME ; SmfMusicSearch::~SmfMusicSearch(void)
+	?albumsAvailable@SmfGallery@@IAEXPAV?$QList@VSmfPictureAlbum@@@@W4SmfError@@USmfResultPage@@@Z @ 63 NONAME ; void SmfGallery::albumsAvailable(class QList<class SmfPictureAlbum> *, enum SmfError, struct SmfResultPage)
+	?tracks@SmfMusicSearch@@QAEXVSmfTrackInfo@@HH@Z @ 64 NONAME ; void SmfMusicSearch::tracks(class SmfTrackInfo, int, int)
+	?friendsListAvailable@SmfContactFetcher@@IAEXPAV?$QList@VSmfContact@@@@W4SmfError@@USmfResultPage@@@Z @ 65 NONAME ; void SmfContactFetcher::friendsListAvailable(class QList<class SmfContact> *, enum SmfError, struct SmfResultPage)
+	??1SmfClient@@QAE@XZ @ 66 NONAME ; SmfClient::~SmfClient(void)
+	?post@SmfPostProvider@@QAEXAAVSmfPost@@AAVSmfLocation@@@Z @ 67 NONAME ; void SmfPostProvider::post(class SmfPost &, class SmfLocation &)
+	?qt_metacast@SmfMusicSearch@@UAEPAXPBD@Z @ 68 NONAME ; void * SmfMusicSearch::qt_metacast(char const *)
+	?followers@SmfContactFetcher@@QAE_NHH@Z @ 69 NONAME ; bool SmfContactFetcher::followers(int, int)
+	??0SmfMusicService@@QAE@PAVSmfProvider@@@Z @ 70 NONAME ; SmfMusicService::SmfMusicService(class SmfProvider *)
+	?customDataAvailable@SmfLyricsService@@IAEXABHPAVQByteArray@@@Z @ 71 NONAME ; void SmfLyricsService::customDataAvailable(int const &, class QByteArray *)
+	?remove@SmfRelationMgr@@QAE?AW4SmfError@@AAVQString@@PBVSmfContact@@@Z @ 72 NONAME ; enum SmfError SmfRelationMgr::remove(class QString &, class SmfContact const *)
+	?trUtf8@SmfRelationMgr@@SA?AVQString@@PBD0@Z @ 73 NONAME ; class QString SmfRelationMgr::trUtf8(char const *, char const *)
+	?venuesAvailable@SmfMusicEvents@@IAEXPAV?$QList@VSmfLocation@@@@W4SmfError@@USmfResultPage@@@Z @ 74 NONAME ; void SmfMusicEvents::venuesAvailable(class QList<class SmfLocation> *, enum SmfError, struct SmfResultPage)
+	?setContact@SmfRelationItem@@QAEXAAVSmfContact@@@Z @ 75 NONAME ; void SmfRelationItem::setContact(class SmfContact &)
+	?groupListAvailable@SmfContactFetcher@@IAEXPAV?$QList@VSmfGroup@@@@W4SmfError@@USmfResultPage@@@Z @ 76 NONAME ; void SmfContactFetcher::groupListAvailable(class QList<class SmfGroup> *, enum SmfError, struct SmfResultPage)
+	?searchByContact@SmfRelationMgr@@QAE?AVQString@@VSmfContact@@@Z @ 77 NONAME ; class QString SmfRelationMgr::searchByContact(class SmfContact)
+	?addToPlaylist@SmfPlaylistService@@QAEHVSmfPlaylist@@PAV?$QList@VSmfTrackInfo@@@@@Z @ 78 NONAME ; int SmfPlaylistService::addToPlaylist(class SmfPlaylist, class QList<class SmfTrackInfo> *)
+	?qt_metacast@SmfPlaylistService@@UAEPAXPBD@Z @ 79 NONAME ; void * SmfPlaylistService::qt_metacast(char const *)
+	?postCurrentPlaying@SmfMusicService@@QAEXVSmfTrackInfo@@@Z @ 80 NONAME ; void SmfMusicService::postCurrentPlaying(class SmfTrackInfo)
+	?trUtf8@SmfRelationMgr@@SA?AVQString@@PBD0H@Z @ 81 NONAME ; class QString SmfRelationMgr::trUtf8(char const *, char const *, int)
+	?trUtf8@SmfActivityFetcher@@SA?AVQString@@PBD0H@Z @ 82 NONAME ; class QString SmfActivityFetcher::trUtf8(char const *, char const *, int)
+	?metaObject@SmfPlaylistService@@UBEPBUQMetaObject@@XZ @ 83 NONAME ; struct QMetaObject const * SmfPlaylistService::metaObject(void) const
+	?getStaticMetaObject@SmfRelationMgr@@SAABUQMetaObject@@XZ @ 84 NONAME ; struct QMetaObject const & SmfRelationMgr::getStaticMetaObject(void)
+	?tr@SmfRelationMgr@@SA?AVQString@@PBD0H@Z @ 85 NONAME ; class QString SmfRelationMgr::tr(char const *, char const *, int)
+	?metaObject@SmfPostProvider@@UBEPBUQMetaObject@@XZ @ 86 NONAME ; struct QMetaObject const * SmfPostProvider::metaObject(void) const
+	?getProvider@SmfGallery@@ABEPAVSmfProvider@@XZ @ 87 NONAME ; class SmfProvider * SmfGallery::getProvider(void) const
+	??_ESmfMusicSearch@@UAE@I@Z @ 88 NONAME ; SmfMusicSearch::~SmfMusicSearch(unsigned int)
+	?tr@SmfGallery@@SA?AVQString@@PBD0@Z @ 89 NONAME ; class QString SmfGallery::tr(char const *, char const *)
+	?stores@SmfMusicSearch@@QAEXVSmfTrackInfo@@HH@Z @ 90 NONAME ; void SmfMusicSearch::stores(class SmfTrackInfo, int, int)
+	?create@SmfRelationMgr@@QAE?AVQString@@PAVSmfProvider@@PAVSmfContact@@@Z @ 91 NONAME ; class QString SmfRelationMgr::create(class SmfProvider *, class SmfContact *)
+	?qt_metacall@SmfMusicEvents@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 92 NONAME ; int SmfMusicEvents::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?qt_metacall@SmfPostProvider@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 93 NONAME ; int SmfPostProvider::qt_metacall(enum QMetaObject::Call, int, void * *)
+	??5@YAAAVQDataStream@@AAV0@AAVSmfRelationItem@@@Z @ 94 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfRelationItem &)
+	?storeSearchAvailable@SmfMusicSearch@@IAEXPAV?$QList@VSmfProvider@@@@W4SmfError@@USmfResultPage@@@Z @ 95 NONAME ; void SmfMusicSearch::storeSearchAvailable(class QList<class SmfProvider> *, enum SmfError, struct SmfResultPage)
+	?subtitles@SmfLyricsService@@QAEXVSmfTrackInfo@@W4SmfSubtitleSearchFilter@@HH@Z @ 96 NONAME ; void SmfLyricsService::subtitles(class SmfTrackInfo, enum SmfSubtitleSearchFilter, int, int)
+	?uploadFinished@SmfGallery@@IAEXV?$QList@W4SmfError@@@@@Z @ 97 NONAME ; void SmfGallery::uploadFinished(class QList<enum SmfError>)
+	?searchInGroup@SmfContactFetcher@@QAE_NVSmfGroup@@HH@Z @ 98 NONAME ; bool SmfContactFetcher::searchInGroup(class SmfGroup, int, int)
+	?getStaticMetaObject@SmfMusicService@@SAABUQMetaObject@@XZ @ 99 NONAME ; struct QMetaObject const & SmfMusicService::getStaticMetaObject(void)
+	??_ESmfContactFetcher@@UAE@I@Z @ 100 NONAME ; SmfContactFetcher::~SmfContactFetcher(unsigned int)
+	?tr@SmfGallery@@SA?AVQString@@PBD0H@Z @ 101 NONAME ; class QString SmfGallery::tr(char const *, char const *, int)
+	?getProvider@SmfRelationItem@@QBE?AVSmfProvider@@XZ @ 102 NONAME ; class SmfProvider SmfRelationItem::getProvider(void) const
+	?customRequest@SmfMusicEvents@@QAEXABHPAVQByteArray@@@Z @ 103 NONAME ; void SmfMusicEvents::customRequest(int const &, class QByteArray *)
+	?getProvider@SmfPostProvider@@ABEPAVSmfProvider@@XZ @ 104 NONAME ; class SmfProvider * SmfPostProvider::getProvider(void) const
+	?metaObject@SmfMusicSearch@@UBEPBUQMetaObject@@XZ @ 105 NONAME ; struct QMetaObject const * SmfMusicSearch::metaObject(void) const
+	?getProvider@SmfPlaylistService@@ABEPAVSmfProvider@@XZ @ 106 NONAME ; class SmfProvider * SmfPlaylistService::getProvider(void) const
+	?customDataAvailable@SmfContactFetcher@@IAEXHPAVQByteArray@@@Z @ 107 NONAME ; void SmfContactFetcher::customDataAvailable(int, class QByteArray *)
+	?trUtf8@SmfPostProvider@@SA?AVQString@@PBD0@Z @ 108 NONAME ; class QString SmfPostProvider::trUtf8(char const *, char const *)
+	?getStaticMetaObject@SmfContactFetcher@@SAABUQMetaObject@@XZ @ 109 NONAME ; struct QMetaObject const & SmfContactFetcher::getStaticMetaObject(void)
+	?customDataAvailable@SmfGallery@@IAEXHPAVQByteArray@@@Z @ 110 NONAME ; void SmfGallery::customDataAvailable(int, class QByteArray *)
+	?tr@SmfPostProvider@@SA?AVQString@@PBD0@Z @ 111 NONAME ; class QString SmfPostProvider::tr(char const *, char const *)
+	??1SmfPostProvider@@UAE@XZ @ 112 NONAME ; SmfPostProvider::~SmfPostProvider(void)
+	?trackInfo@SmfMusicSearch@@QAEXVSmfMusicFingerPrint@@HH@Z @ 113 NONAME ; void SmfMusicSearch::trackInfo(class SmfMusicFingerPrint, int, int)
+	?lyricsAvailable@SmfLyricsService@@IAEXPAV?$QList@VSmfLyrics@@@@W4SmfError@@USmfResultPage@@@Z @ 114 NONAME ; void SmfLyricsService::lyricsAvailable(class QList<class SmfLyrics> *, enum SmfError, struct SmfResultPage)
+	?tr@SmfPlaylistService@@SA?AVQString@@PBD0@Z @ 115 NONAME ; class QString SmfPlaylistService::tr(char const *, char const *)
+	?tr@SmfLyricsService@@SA?AVQString@@PBD0H@Z @ 116 NONAME ; class QString SmfLyricsService::tr(char const *, char const *, int)
 	?customRequest@SmfContactFetcher@@QAEXABHPAVQByteArray@@@Z @ 117 NONAME ; void SmfContactFetcher::customRequest(int const &, class QByteArray *)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactNickname@QtMobility@@@Z @ 118 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactNickname &)
-	?setServiceUrl@SmfProvider@@QAEXAAVQUrl@@@Z @ 119 NONAME ; void SmfProvider::setServiceUrl(class QUrl &)
-	?setDescription@SmfPicture@@QAEXABVQString@@@Z @ 120 NONAME ; void SmfPicture::setDescription(class QString const &)
-	??_ESmfContactFetcher@@UAE@I@Z @ 121 NONAME ; SmfContactFetcher::~SmfContactFetcher(unsigned int)
-	?tr@SmfMusicEvents@@SA?AVQString@@PBD0H@Z @ 122 NONAME ; class QString SmfMusicEvents::tr(char const *, char const *, int)
-	?setThumbnail@SmfActivityObject@@QAEXABVQImage@@@Z @ 123 NONAME ; void SmfActivityObject::setThumbnail(class QImage const &)
-	?pictureCount@SmfPictureAlbum@@QBEHXZ @ 124 NONAME ; int SmfPictureAlbum::pictureCount(void) const
-	?post@SmfPostProvider@@QAEXAAVSmfPost@@AAVSmfLocation@@@Z @ 125 NONAME ; void SmfPostProvider::post(class SmfPost &, class SmfLocation &)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfArtists@@@Z @ 126 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfArtists const &)
-	?postComments@SmfMusicSearch@@QAEXVSmfTrackInfo@@VSmfComment@@@Z @ 127 NONAME ; void SmfMusicSearch::postComments(class SmfTrackInfo, class SmfComment)
-	?tr@SmfLyricsService@@SA?AVQString@@PBD0@Z @ 128 NONAME ; class QString SmfLyricsService::tr(char const *, char const *)
-	?id@SmfSubtitle@@QBE?AVQString@@XZ @ 129 NONAME ; class QString SmfSubtitle::id(void) const
-	?setId@SmfGroup@@QAEXAAVQString@@@Z @ 130 NONAME ; void SmfGroup::setId(class QString &)
-	?setThumbnail@SmfPictureAlbum@@QAEXABVQImage@@@Z @ 131 NONAME ; void SmfPictureAlbum::setThumbnail(class QImage const &)
-	?getStaticMetaObject@SmfRelationMgr@@SAABUQMetaObject@@XZ @ 132 NONAME ; struct QMetaObject const & SmfRelationMgr::getStaticMetaObject(void)
-	??4SmfComment@@QAEAAV0@ABV0@@Z @ 133 NONAME ; class SmfComment & SmfComment::operator=(class SmfComment const &)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactAvatar@QtMobility@@@Z @ 134 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactAvatar &)
-	?setAlbum@SmfTrackInfo@@QAEXABVSmfAlbum@@@Z @ 135 NONAME ; void SmfTrackInfo::setAlbum(class SmfAlbum const &)
-	?metaObject@SmfLyricsService@@UBEPBUQMetaObject@@XZ @ 136 NONAME ; struct QMetaObject const * SmfLyricsService::metaObject(void) const
-	?staticMetaObject@SmfRelationMgr@@2UQMetaObject@@B @ 137 NONAME ; struct QMetaObject const SmfRelationMgr::staticMetaObject
-	?setPostedDate@SmfPicture@@QAEXABVQDateTime@@@Z @ 138 NONAME ; void SmfPicture::setPostedDate(class QDateTime const &)
-	?qt_metacast@SmfPostProvider@@UAEPAXPBD@Z @ 139 NONAME ; void * SmfPostProvider::qt_metacast(char const *)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactUrl@QtMobility@@@Z @ 140 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactUrl &)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfPictureAlbum@@@Z @ 141 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfPictureAlbum const &)
-	?postFinished@SmfPostProvider@@IAEXW4SmfError@@@Z @ 142 NONAME ; void SmfPostProvider::postFinished(enum SmfError)
-	?url@SmfPicture@@QBE?AVQUrl@@XZ @ 143 NONAME ; class QUrl SmfPicture::url(void) const
-	?setLanguage@SmfLyrics@@QAEXABVQString@@@Z @ 144 NONAME ; void SmfLyrics::setLanguage(class QString const &)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfEvent@@@Z @ 145 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfEvent &)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfPicture@@@Z @ 146 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfPicture &)
-	?GetServices@SmfClient@@QAEPAV?$QList@VSmfProvider@@@@ABVQString@@@Z @ 147 NONAME ; class QList<class SmfProvider> * SmfClient::GetServices(class QString const &)
-	?eventDateTime@SmfEvent@@QBE?AVQDateTime@@XZ @ 148 NONAME ; class QDateTime SmfEvent::eventDateTime(void) const
-	?albumsAvailable@SmfGallery@@IAEXPAV?$QList@VSmfPictureAlbum@@@@W4SmfError@@USmfResultPage@@@Z @ 149 NONAME ; void SmfGallery::albumsAvailable(class QList<class SmfPictureAlbum> *, enum SmfError, struct SmfResultPage)
-	??1SmfActivityEntry@@QAE@XZ @ 150 NONAME ; SmfActivityEntry::~SmfActivityEntry(void)
-	??4SmfPlaylist@@QAEAAV0@ABV0@@Z @ 151 NONAME ; class SmfPlaylist & SmfPlaylist::operator=(class SmfPlaylist const &)
-	??1SmfPlaylistService@@UAE@XZ @ 152 NONAME ; SmfPlaylistService::~SmfPlaylistService(void)
-	?tr@SmfActivityFetcher@@SA?AVQString@@PBD0H@Z @ 153 NONAME ; class QString SmfActivityFetcher::tr(char const *, char const *, int)
-	?postCurrentPlayingPlaylist@SmfPlaylistService@@QAEHVSmfPlaylist@@@Z @ 154 NONAME ; int SmfPlaylistService::postCurrentPlayingPlaylist(class SmfPlaylist)
-	?tr@SmfPlaylistService@@SA?AVQString@@PBD0@Z @ 155 NONAME ; class QString SmfPlaylistService::tr(char const *, char const *)
-	??_ESmfRelationMgr@@UAE@I@Z @ 156 NONAME ; SmfRelationMgr::~SmfRelationMgr(unsigned int)
-	?url@SmfPost@@QBE?AVQUrl@@XZ @ 157 NONAME ; class QUrl SmfPost::url(void) const
-	?customRequest@SmfGallery@@QAEXABHPAVQByteArray@@@Z @ 158 NONAME ; void SmfGallery::customRequest(int const &, class QByteArray *)
-	?setDescription@SmfPost@@QAEXABVQString@@@Z @ 159 NONAME ; void SmfPost::setDescription(class QString const &)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfPlaylist@@@Z @ 160 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfPlaylist const &)
-	?customDataAvailable@SmfContactFetcher@@IAEXHPAVQByteArray@@@Z @ 161 NONAME ; void SmfContactFetcher::customDataAvailable(int, class QByteArray *)
-	?trUtf8@SmfMusicSearch@@SA?AVQString@@PBD0H@Z @ 162 NONAME ; class QString SmfMusicSearch::trUtf8(char const *, char const *, int)
-	?getIndex@SmfRelationItem@@QBEIXZ @ 163 NONAME ; unsigned int SmfRelationItem::getIndex(void) const
-	?metaObject@SmfMusicSearch@@UBEPBUQMetaObject@@XZ @ 164 NONAME ; struct QMetaObject const * SmfMusicSearch::metaObject(void) const
-	??5@YAAAVQDataStream@@AAV0@AAVSmfPost@@@Z @ 165 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfPost &)
-	??1SmfEvent@@QAE@XZ @ 166 NONAME ; SmfEvent::~SmfEvent(void)
-	?title@SmfPictureAlbum@@QBE?AVQString@@XZ @ 167 NONAME ; class QString SmfPictureAlbum::title(void) const
-	??5@YAAAVQDataStream@@AAV0@AAVQContactPresence@QtMobility@@@Z @ 168 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactPresence &)
-	?qt_metacast@SmfMusicService@@UAEPAXPBD@Z @ 169 NONAME ; void * SmfMusicService::qt_metacast(char const *)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfContact@@@Z @ 170 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfContact const &)
-	?href@SmfUrl@@QBE?AVQUrl@@XZ @ 171 NONAME ; class QUrl SmfUrl::href(void) const
-	??0SmfLocation@@QAE@ABV0@@Z @ 172 NONAME ; SmfLocation::SmfLocation(class SmfLocation const &)
-	??0SmfProvider@@QAE@XZ @ 173 NONAME ; SmfProvider::SmfProvider(void)
-	?eventsAvailable@SmfMusicEvents@@IAEXPAV?$QList@VSmfEvent@@@@W4SmfError@@USmfResultPage@@@Z @ 174 NONAME ; void SmfMusicEvents::eventsAvailable(class QList<class SmfEvent> *, enum SmfError, struct SmfResultPage)
-	?image@SmfAlbum@@QBE?AVQImage@@XZ @ 175 NONAME ; class QImage SmfAlbum::image(void) const
-	?artists@SmfAlbum@@QBE?AVSmfArtists@@XZ @ 176 NONAME ; class SmfArtists SmfAlbum::artists(void) const
-	?releaseYear@SmfSubtitle@@QBE?AVQDateTime@@XZ @ 177 NONAME ; class QDateTime SmfSubtitle::releaseYear(void) const
-	?tr@SmfRelationMgr@@SA?AVQString@@PBD0H@Z @ 178 NONAME ; class QString SmfRelationMgr::tr(char const *, char const *, int)
-	?staticMetaObject@SmfPostProvider@@2UQMetaObject@@B @ 179 NONAME ; struct QMetaObject const SmfPostProvider::staticMetaObject
-	?setId@SmfPictureAlbum@@QAEXABVQString@@@Z @ 180 NONAME ; void SmfPictureAlbum::setId(class QString const &)
-	?lyrics@SmfLyricsService@@QAEXVSmfTrackInfo@@HH@Z @ 181 NONAME ; void SmfLyricsService::lyrics(class SmfTrackInfo, int, int)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfComment@@@Z @ 182 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfComment &)
-	?getAuthKeys@SmfPluginUtil@@QAEXAAV?$QMap@VQString@@V1@@@VQString@@1@Z @ 183 NONAME ; void SmfPluginUtil::getAuthKeys(class QMap<class QString, class QString> &, class QString, class QString)
-	?setReleaseYear@SmfLyrics@@QAEXABVQDateTime@@@Z @ 184 NONAME ; void SmfLyrics::setReleaseYear(class QDateTime const &)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactEmailAddress@QtMobility@@@Z @ 185 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactEmailAddress &)
-	?setMusicUsageInfo@SmfMusicProfile@@QAEXABV?$QList@VSmfTrackInfo@@@@@Z @ 186 NONAME ; void SmfMusicProfile::setMusicUsageInfo(class QList<class SmfTrackInfo> const &)
-	?id@SmfEvent@@QBE?AVQString@@XZ @ 187 NONAME ; class QString SmfEvent::id(void) const
-	?addTags@SmfPicture@@QAEXABVQStringList@@@Z @ 188 NONAME ; void SmfPicture::addTags(class QStringList const &)
-	?setUrl@SmfLocation@@QAEXABVQUrl@@@Z @ 189 NONAME ; void SmfLocation::setUrl(class QUrl const &)
-	?actionName@SmfActivityEntry@@QBE?AW4SmfActivityVerb@@XZ @ 190 NONAME ; enum SmfActivityVerb SmfActivityEntry::actionName(void) const
-	?searchInGroupFinished@SmfContactFetcher@@IAEXPAV?$QList@VSmfContact@@@@W4SmfError@@USmfResultPage@@@Z @ 191 NONAME ; void SmfContactFetcher::searchInGroupFinished(class QList<class SmfContact> *, enum SmfError, struct SmfResultPage)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactId@QtMobility@@@Z @ 192 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactId &)
-	?id@SmfComment@@QBE?AVQString@@XZ @ 193 NONAME ; class QString SmfComment::id(void) const
-	??6@YAAAVQDataStream@@AAV0@ABVSmfMusicProfile@@@Z @ 194 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfMusicProfile const &)
-	??_ESmfPluginUtil@@QAE@I@Z @ 195 NONAME ; SmfPluginUtil::~SmfPluginUtil(unsigned int)
-	??_ESmfTrackInfo@@QAE@I@Z @ 196 NONAME ; SmfTrackInfo::~SmfTrackInfo(unsigned int)
-	?searchNearFinished@SmfContactFetcher@@IAEXPAV?$QList@VSmfContact@@@@W4SmfError@@USmfResultPage@@@Z @ 197 NONAME ; void SmfContactFetcher::searchNearFinished(class QList<class SmfContact> *, enum SmfError, struct SmfResultPage)
-	?setName@SmfAlbum@@QAEXABVQString@@@Z @ 198 NONAME ; void SmfAlbum::setName(class QString const &)
-	?owner@SmfPicture@@QBE?AVQString@@XZ @ 199 NONAME ; class QString SmfPicture::owner(void) const
-	?getStaticMetaObject@SmfContactFetcher@@SAABUQMetaObject@@XZ @ 200 NONAME ; struct QMetaObject const & SmfContactFetcher::getStaticMetaObject(void)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfTrackInfo@@@Z @ 201 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfTrackInfo &)
-	?trUtf8@SmfContactFetcher@@SA?AVQString@@PBD0H@Z @ 202 NONAME ; class QString SmfContactFetcher::trUtf8(char const *, char const *, int)
-	??_ESmfPicture@@QAE@I@Z @ 203 NONAME ; SmfPicture::~SmfPicture(unsigned int)
-	?applicationUrl@SmfProvider@@QBE?AVQUrl@@XZ @ 204 NONAME ; class QUrl SmfProvider::applicationUrl(void) const
-	?setDetails@SmfActivityEntry@@QAE_NABVSmfPost@@@Z @ 205 NONAME ; bool SmfActivityEntry::setDetails(class SmfPost const &)
-	?searchInfoAvailable@SmfMusicService@@IAEXAAV?$QList@VSmfMusicProfile@@@@W4SmfError@@USmfResultPage@@@Z @ 206 NONAME ; void SmfMusicService::searchInfoAvailable(class QList<class SmfMusicProfile> &, enum SmfError, struct SmfResultPage)
-	?metaObject@SmfMusicEvents@@UBEPBUQMetaObject@@XZ @ 207 NONAME ; struct QMetaObject const * SmfMusicEvents::metaObject(void) const
-	?postAppearence@SmfPostProvider@@QAE_NW4SmfAppearenceInfo@@@Z @ 208 NONAME ; bool SmfPostProvider::postAppearence(enum SmfAppearenceInfo)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactNote@QtMobility@@@Z @ 209 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactNote const &)
-	??0SmfPictureAlbum@@QAE@ABV0@@Z @ 210 NONAME ; SmfPictureAlbum::SmfPictureAlbum(class SmfPictureAlbum const &)
-	?album@SmfTrackInfo@@QBE?AVSmfAlbum@@XZ @ 211 NONAME ; class SmfAlbum SmfTrackInfo::album(void) const
-	?eventsUpdated@SmfMusicEvents@@IAEXW4SmfError@@@Z @ 212 NONAME ; void SmfMusicEvents::eventsUpdated(enum SmfError)
-	??_ESmfEvent@@QAE@I@Z @ 213 NONAME ; SmfEvent::~SmfEvent(unsigned int)
-	?type@SmfActivityObject@@QBE?AW4SmfActivityObjectType@@XZ @ 214 NONAME ; enum SmfActivityObjectType SmfActivityObject::type(void) const
-	??6@YAAAVQDataStream@@AAV0@ABVQContactOnlineAccount@QtMobility@@@Z @ 215 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactOnlineAccount const &)
-	??0SmfPostProvider@@QAE@PAVSmfProvider@@@Z @ 216 NONAME ; SmfPostProvider::SmfPostProvider(class SmfProvider *)
-	?tr@SmfMusicService@@SA?AVQString@@PBD0@Z @ 217 NONAME ; class QString SmfMusicService::tr(char const *, char const *)
-	?m_myInstance@SmfPluginUtil@@0PAV1@A @ 218 NONAME ; class SmfPluginUtil * SmfPluginUtil::m_myInstance
-	??0SmfLocation@@QAE@XZ @ 219 NONAME ; SmfLocation::SmfLocation(void)
-	?ticketUrl@SmfEvent@@QBE?AVQUrl@@XZ @ 220 NONAME ; class QUrl SmfEvent::ticketUrl(void) const
-	??0SmfContactFetcher@@QAE@PAVSmfProvider@@PAVSmfContact@@@Z @ 221 NONAME ; SmfContactFetcher::SmfContactFetcher(class SmfProvider *, class SmfContact *)
-	?minRating@SmfMusicRating@@QBEHXZ @ 222 NONAME ; int SmfMusicRating::minRating(void) const
-	?tr@SmfPlaylistService@@SA?AVQString@@PBD0H@Z @ 223 NONAME ; class QString SmfPlaylistService::tr(char const *, char const *, int)
-	?tr@SmfMusicSearch@@SA?AVQString@@PBD0@Z @ 224 NONAME ; class QString SmfMusicSearch::tr(char const *, char const *)
-	?setValue@SmfContact@@QAEXABVQString@@AAVQVariant@@@Z @ 225 NONAME ; void SmfContact::setValue(class QString const &, class QVariant &)
-	??0SmfActivityEntry@@QAE@ABV0@@Z @ 226 NONAME ; SmfActivityEntry::SmfActivityEntry(class SmfActivityEntry const &)
-	?pictures@SmfGallery@@QAEXAAV?$QList@VSmfPictureAlbum@@@@HH@Z @ 227 NONAME ; void SmfGallery::pictures(class QList<class SmfPictureAlbum> &, int, int)
-	??0SmfUrl@@QAE@XZ @ 228 NONAME ; SmfUrl::SmfUrl(void)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactGender@QtMobility@@@Z @ 229 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactGender &)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfPlaylist@@@Z @ 230 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfPlaylist &)
-	?subtitle@SmfSubtitle@@QBE?AVQByteArray@@XZ @ 231 NONAME ; class QByteArray SmfSubtitle::subtitle(void) const
-	?setUrl@SmfArtists@@QAEXABVQUrl@@@Z @ 232 NONAME ; void SmfArtists::setUrl(class QUrl const &)
-	??0SmfPicture@@QAE@ABVQImage@@@Z @ 233 NONAME ; SmfPicture::SmfPicture(class QImage const &)
-	??_ESmfGroup@@QAE@I@Z @ 234 NONAME ; SmfGroup::~SmfGroup(unsigned int)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfUrl@@@Z @ 235 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfUrl &)
-	?qt_metacall@SmfMusicService@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 236 NONAME ; int SmfMusicService::qt_metacall(enum QMetaObject::Call, int, void * *)
-	??0SmfPost@@QAE@XZ @ 237 NONAME ; SmfPost::SmfPost(void)
-	?year@SmfTrackInfo@@QBE?AVQDateTime@@XZ @ 238 NONAME ; class QDateTime SmfTrackInfo::year(void) const
-	?staticMetaObject@SmfLyricsService@@2UQMetaObject@@B @ 239 NONAME ; struct QMetaObject const SmfLyricsService::staticMetaObject
-	??4SmfUrl@@QAEAAV0@ABV0@@Z @ 240 NONAME ; class SmfUrl & SmfUrl::operator=(class SmfUrl const &)
-	?tr@SmfMusicSearch@@SA?AVQString@@PBD0H@Z @ 241 NONAME ; class QString SmfMusicSearch::tr(char const *, char const *, int)
-	?description@SmfProvider@@QBE?AVQString@@XZ @ 242 NONAME ; class QString SmfProvider::description(void) const
-	??1SmfActivityFetcher@@UAE@XZ @ 243 NONAME ; SmfActivityFetcher::~SmfActivityFetcher(void)
-	??0SmfClient@@QAE@XZ @ 244 NONAME ; SmfClient::SmfClient(void)
-	?subtitles@SmfLyricsService@@QAEXVSmfTrackInfo@@W4SmfSubtitleSearchFilter@@HH@Z @ 245 NONAME ; void SmfLyricsService::subtitles(class SmfTrackInfo, enum SmfSubtitleSearchFilter, int, int)
-	?stores@SmfMusicSearch@@QAEXVSmfTrackInfo@@HH@Z @ 246 NONAME ; void SmfMusicSearch::stores(class SmfTrackInfo, int, int)
-	?releaseYear@SmfLyrics@@QBE?AVQDateTime@@XZ @ 247 NONAME ; class QDateTime SmfLyrics::releaseYear(void) const
-	??6@YAAAVQDataStream@@AAV0@ABVSmfGroup@@@Z @ 248 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfGroup const &)
-	?postedDate@SmfPicture@@QBE?AVQDateTime@@XZ @ 249 NONAME ; class QDateTime SmfPicture::postedDate(void) const
-	??6@YAAAVQDataStream@@AAV0@ABVQContactAvatar@QtMobility@@@Z @ 250 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactAvatar const &)
-	?staticMetaObject@SmfPlaylistService@@2UQMetaObject@@B @ 251 NONAME ; struct QMetaObject const SmfPlaylistService::staticMetaObject
-	??5@YAAAVQDataStream@@AAV0@AAVSmfContact@@@Z @ 252 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfContact &)
-	?trUtf8@SmfLyricsService@@SA?AVQString@@PBD0@Z @ 253 NONAME ; class QString SmfLyricsService::trUtf8(char const *, char const *)
-	??1SmfMusicEvents@@UAE@XZ @ 254 NONAME ; SmfMusicEvents::~SmfMusicEvents(void)
-	??4SmfProvider@@QAEAAV0@ABV0@@Z @ 255 NONAME ; class SmfProvider & SmfProvider::operator=(class SmfProvider const &)
-	?duration@SmfSubtitle@@QBENXZ @ 256 NONAME ; double SmfSubtitle::duration(void) const
-	??5@YAAAVQDataStream@@AAV0@AAVSmfLocation@@@Z @ 257 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfLocation &)
-	?setPicture@SmfPicture@@QAEXABVQImage@@@Z @ 258 NONAME ; void SmfPicture::setPicture(class QImage const &)
-	?title@SmfPicture@@QBE?AVQString@@XZ @ 259 NONAME ; class QString SmfPicture::title(void) const
-	?rating@SmfMusicRating@@QBEHXZ @ 260 NONAME ; int SmfMusicRating::rating(void) const
-	?sharePost@SmfPostProvider@@QAEXAAVSmfPost@@AAVSmfContact@@_N@Z @ 261 NONAME ; void SmfPostProvider::sharePost(class SmfPost &, class SmfContact &, bool)
-	?timeStamp@SmfComment@@QBE?AVQDateTime@@XZ @ 262 NONAME ; class QDateTime SmfComment::timeStamp(void) const
-	?setId@SmfPicture@@QAEXABVQString@@@Z @ 263 NONAME ; void SmfPicture::setId(class QString const &)
-	??4SmfRelationItem@@QAEAAV0@ABV0@@Z @ 264 NONAME ; class SmfRelationItem & SmfRelationItem::operator=(class SmfRelationItem const &)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfLocation@@@Z @ 265 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfLocation const &)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactPresence@QtMobility@@@Z @ 266 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactPresence const &)
-	?tags@SmfTrackInfo@@QBE?AVQStringList@@XZ @ 267 NONAME ; class QStringList SmfTrackInfo::tags(void) const
-	?title@SmfTrackInfo@@QBE?AVQString@@XZ @ 268 NONAME ; class QString SmfTrackInfo::title(void) const
-	?qt_metacast@SmfMusicEvents@@UAEPAXPBD@Z @ 269 NONAME ; void * SmfMusicEvents::qt_metacast(char const *)
-	?supportsAppearence@SmfPostProvider@@QBE_NXZ @ 270 NONAME ; bool SmfPostProvider::supportsAppearence(void) const
-	?customDataAvailable@SmfGallery@@IAEXHPAVQByteArray@@@Z @ 271 NONAME ; void SmfGallery::customDataAvailable(int, class QByteArray *)
-	?url@SmfArtists@@QBE?AVQUrl@@XZ @ 272 NONAME ; class QUrl SmfArtists::url(void) const
-	?serviceName@SmfProvider@@QBE?AVQString@@XZ @ 273 NONAME ; class QString SmfProvider::serviceName(void) const
-	?getProvider@SmfLyricsService@@QAEPAVSmfProvider@@XZ @ 274 NONAME ; class SmfProvider * SmfLyricsService::getProvider(void)
-	?qt_metacast@SmfPlaylistService@@UAEPAXPBD@Z @ 275 NONAME ; void * SmfPlaylistService::qt_metacast(char const *)
-	?creationDate@SmfPlaylist@@QBE?AVQDateTime@@XZ @ 276 NONAME ; class QDateTime SmfPlaylist::creationDate(void) const
-	?friends@SmfContactFetcher@@QAE_NHH@Z @ 277 NONAME ; bool SmfContactFetcher::friends(int, int)
-	?title@SmfUrl@@QBE?AVQString@@XZ @ 278 NONAME ; class QString SmfUrl::title(void) const
-	?owner@SmfPost@@QBE?AVSmfContact@@XZ @ 279 NONAME ; class SmfContact SmfPost::owner(void) const
-	??_ESmfContact@@QAE@I@Z @ 280 NONAME ; SmfContact::~SmfContact(unsigned int)
-	??1SmfSubtitle@@QAE@XZ @ 281 NONAME ; SmfSubtitle::~SmfSubtitle(void)
-	?trUtf8@SmfLyricsService@@SA?AVQString@@PBD0H@Z @ 282 NONAME ; class QString SmfLyricsService::trUtf8(char const *, char const *, int)
-	??1SmfRelationMgr@@UAE@XZ @ 283 NONAME ; SmfRelationMgr::~SmfRelationMgr(void)
-	?attribution@SmfPlaylist@@QBE?AV?$QList@VQUrl@@@@XZ @ 284 NONAME ; class QList<class QUrl> SmfPlaylist::attribution(void) const
-	?setInterestInfo@SmfMusicProfile@@QAEXABV?$QList@VSmfTrackInfo@@@@@Z @ 285 NONAME ; void SmfMusicProfile::setInterestInfo(class QList<class SmfTrackInfo> const &)
-	??0SmfGallery@@QAE@PAVSmfProvider@@@Z @ 286 NONAME ; SmfGallery::SmfGallery(class SmfProvider *)
-	?content@SmfActivityObject@@QBE?AVQString@@XZ @ 287 NONAME ; class QString SmfActivityObject::content(void) const
-	??_ESmfGallery@@UAE@I@Z @ 288 NONAME ; SmfGallery::~SmfGallery(unsigned int)
-	??0SmfRelationMgr@@QAE@PAVQObject@@@Z @ 289 NONAME ; SmfRelationMgr::SmfRelationMgr(class QObject *)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfProvider@@@Z @ 290 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfProvider &)
-	?setImage@SmfPlaylist@@QAEXABVQUrl@@@Z @ 291 NONAME ; void SmfPlaylist::setImage(class QUrl const &)
-	??4SmfPost@@QAEAAV0@ABV0@@Z @ 292 NONAME ; class SmfPost & SmfPost::operator=(class SmfPost const &)
-	?rating@SmfTrackInfo@@QBE?AVSmfMusicRating@@XZ @ 293 NONAME ; class SmfMusicRating SmfTrackInfo::rating(void) const
-	?playListTitle@SmfPlaylist@@QBE?AVQString@@XZ @ 294 NONAME ; class QString SmfPlaylist::playListTitle(void) const
-	?id@SmfUrl@@QBE?AVQString@@XZ @ 295 NONAME ; class QString SmfUrl::id(void) const
-	??0SmfMusicService@@QAE@PAVSmfProvider@@@Z @ 296 NONAME ; SmfMusicService::SmfMusicService(class SmfProvider *)
-	??0SmfEvent@@QAE@ABV0@@Z @ 297 NONAME ; SmfEvent::SmfEvent(class SmfEvent const &)
-	?name@SmfGroup@@QBE?AVQString@@XZ @ 298 NONAME ; class QString SmfGroup::name(void) const
-	?uploadFinished@SmfGallery@@IAEXV?$QList@W4SmfError@@@@@Z @ 299 NONAME ; void SmfGallery::uploadFinished(class QList<enum SmfError>)
-	?trUtf8@SmfMusicEvents@@SA?AVQString@@PBD0@Z @ 300 NONAME ; class QString SmfMusicEvents::trUtf8(char const *, char const *)
-	??0SmfComment@@QAE@XZ @ 301 NONAME ; SmfComment::SmfComment(void)
-	??1SmfGallery@@UAE@XZ @ 302 NONAME ; SmfGallery::~SmfGallery(void)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactOrganization@QtMobility@@@Z @ 303 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactOrganization const &)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfRelationItem@@@Z @ 304 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfRelationItem &)
-	??4SmfAlbum@@QAEAAV0@ABV0@@Z @ 305 NONAME ; class SmfAlbum & SmfAlbum::operator=(class SmfAlbum const &)
-	??1SmfRelationItem@@QAE@XZ @ 306 NONAME ; SmfRelationItem::~SmfRelationItem(void)
-	?artists@SmfEvent@@QBE?AVSmfArtists@@XZ @ 307 NONAME ; class SmfArtists SmfEvent::artists(void) const
-	?setTimeStamp@SmfComment@@QAEXABVQDateTime@@@Z @ 308 NONAME ; void SmfComment::setTimeStamp(class QDateTime const &)
-	?setMaxRating@SmfMusicRating@@QAEXABH@Z @ 309 NONAME ; void SmfMusicRating::setMaxRating(int const &)
-	?trackList@SmfPlaylist@@QBE?AV?$QList@VSmfTrackInfo@@@@XZ @ 310 NONAME ; class QList<class SmfTrackInfo> SmfPlaylist::trackList(void) const
-	?description@SmfPicture@@QBE?AVQString@@XZ @ 311 NONAME ; class QString SmfPicture::description(void) const
-	?setUrl@SmfPicture@@QAEXABVQUrl@@@Z @ 312 NONAME ; void SmfPicture::setUrl(class QUrl const &)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfEvent@@@Z @ 313 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfEvent const &)
-	?count@SmfRelationMgr@@QAEIVQString@@@Z @ 314 NONAME ; unsigned int SmfRelationMgr::count(class QString)
-	?setAuthor@SmfActivityEntry@@QAE_NABVSmfContact@@@Z @ 315 NONAME ; bool SmfActivityEntry::setAuthor(class SmfContact const &)
-	?searchUser@SmfMusicService@@QAEXVSmfLocation@@HH@Z @ 316 NONAME ; void SmfMusicService::searchUser(class SmfLocation, int, int)
-	?qt_metacast@SmfLyricsService@@UAEPAXPBD@Z @ 317 NONAME ; void * SmfLyricsService::qt_metacast(char const *)
-	?language@SmfSubtitle@@QBE?AVQString@@XZ @ 318 NONAME ; class QString SmfSubtitle::language(void) const
-	?link@SmfActivityObject@@QBE?AVQString@@XZ @ 319 NONAME ; class QString SmfActivityObject::link(void) const
-	??5@YAAAVQDataStream@@AAV0@AAVQContactType@QtMobility@@@Z @ 320 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactType &)
-	?storeSearchAvailable@SmfMusicSearch@@IAEXPAV?$QList@VSmfProvider@@@@W4SmfError@@USmfResultPage@@@Z @ 321 NONAME ; void SmfMusicSearch::storeSearchAvailable(class QList<class SmfProvider> *, enum SmfError, struct SmfResultPage)
-	??0SmfActivityObject@@QAE@XZ @ 322 NONAME ; SmfActivityObject::SmfActivityObject(void)
-	?selfActivities@SmfActivityFetcher@@QAEXHH@Z @ 323 NONAME ; void SmfActivityFetcher::selfActivities(int, int)
-	??0SmfContactFetcher@@QAE@PAVSmfProvider@@@Z @ 324 NONAME ; SmfContactFetcher::SmfContactFetcher(class SmfProvider *)
-	?metaObject@SmfContactFetcher@@UBEPBUQMetaObject@@XZ @ 325 NONAME ; struct QMetaObject const * SmfContactFetcher::metaObject(void) const
-	?setArtists@SmfEvent@@QAEXABVSmfArtists@@@Z @ 326 NONAME ; void SmfEvent::setArtists(class SmfArtists const &)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactNickname@QtMobility@@@Z @ 327 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactNickname const &)
-	??4SmfContact@@QAEAAV0@ABV0@@Z @ 328 NONAME ; class SmfContact & SmfContact::operator=(class SmfContact const &)
-	??0SmfPicture@@QAE@XZ @ 329 NONAME ; SmfPicture::SmfPicture(void)
-	?setId@SmfPost@@QAEXVQString@@@Z @ 330 NONAME ; void SmfPost::setId(class QString)
-	?getProvider@SmfMusicEvents@@QAEPAVSmfProvider@@XZ @ 331 NONAME ; class SmfProvider * SmfMusicEvents::getProvider(void)
-	?albums@SmfGallery@@QAEXVQStringList@@PAVSmfContact@@HH@Z @ 332 NONAME ; void SmfGallery::albums(class QStringList, class SmfContact *, int, int)
-	?upload@SmfGallery@@QAEXPAV?$QList@VSmfPicture@@@@PAVSmfPictureAlbum@@@Z @ 333 NONAME ; void SmfGallery::upload(class QList<class SmfPicture> *, class SmfPictureAlbum *)
-	?setTargetObj@SmfActivityEntry@@QAE_NABVSmfActivityObject@@@Z @ 334 NONAME ; bool SmfActivityEntry::setTargetObj(class SmfActivityObject const &)
-	?customDataAvailable@SmfPostProvider@@IAEXHPAVQByteArray@@@Z @ 335 NONAME ; void SmfPostProvider::customDataAvailable(int, class QByteArray *)
-	?comments@SmfPicture@@QBE?AV?$QList@VSmfComment@@@@XZ @ 336 NONAME ; class QList<class SmfComment> SmfPicture::comments(void) const
-	?title@SmfEvent@@QBE?AVQString@@XZ @ 337 NONAME ; class QString SmfEvent::title(void) const
-	?setYear@SmfTrackInfo@@QAEXABVQDateTime@@@Z @ 338 NONAME ; void SmfTrackInfo::setYear(class QDateTime const &)
-	?setUrl@SmfPictureAlbum@@QAEXABVQUrl@@@Z @ 339 NONAME ; void SmfPictureAlbum::setUrl(class QUrl const &)
-	?trUtf8@SmfPostProvider@@SA?AVQString@@PBD0H@Z @ 340 NONAME ; class QString SmfPostProvider::trUtf8(char const *, char const *, int)
-	??1SmfMusicProfile@@QAE@XZ @ 341 NONAME ; SmfMusicProfile::~SmfMusicProfile(void)
-	?setEventDateTime@SmfEvent@@QAEXABVQDateTime@@@Z @ 342 NONAME ; void SmfEvent::setEventDateTime(class QDateTime const &)
-	??_ESmfRelationItem@@QAE@I@Z @ 343 NONAME ; SmfRelationItem::~SmfRelationItem(unsigned int)
-	??0SmfRelationItem@@QAE@ABV0@@Z @ 344 NONAME ; SmfRelationItem::SmfRelationItem(class SmfRelationItem const &)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactPhoneNumber@QtMobility@@@Z @ 345 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactPhoneNumber const &)
-	?setAuthor@SmfPlaylist@@QAEXABVQString@@@Z @ 346 NONAME ; void SmfPlaylist::setAuthor(class QString const &)
-	?image@SmfPost@@QBE?AVQImage@@XZ @ 347 NONAME ; class QImage SmfPost::image(void) const
-	?setCity@SmfLocation@@QAEXABVQString@@@Z @ 348 NONAME ; void SmfLocation::setCity(class QString const &)
-	?setGenre@SmfTrackInfo@@QAEXABVQString@@@Z @ 349 NONAME ; void SmfTrackInfo::setGenre(class QString const &)
-	?updatePost@SmfPostProvider@@QAEXAAVSmfPost@@@Z @ 350 NONAME ; void SmfPostProvider::updatePost(class SmfPost &)
-	?setTrackList@SmfPlaylist@@QAEXABV?$QList@VSmfTrackInfo@@@@@Z @ 351 NONAME ; void SmfPlaylist::setTrackList(class QList<class SmfTrackInfo> const &)
-	?setComment@SmfTrackInfo@@QAEXABV?$QList@VSmfComment@@@@@Z @ 352 NONAME ; void SmfTrackInfo::setComment(class QList<class SmfComment> const &)
-	?setTitle@SmfEvent@@QAEXABVQString@@@Z @ 353 NONAME ; void SmfEvent::setTitle(class QString const &)
-	?setImage@SmfArtists@@QAEXABVQImage@@@Z @ 354 NONAME ; void SmfArtists::setImage(class QImage const &)
-	?trUtf8@SmfGallery@@SA?AVQString@@PBD0H@Z @ 355 NONAME ; class QString SmfGallery::trUtf8(char const *, char const *, int)
-	?setActivities@SmfActivityEntry@@QAE_NAAV?$QList@VSmfActivityObject@@@@@Z @ 356 NONAME ; bool SmfActivityEntry::setActivities(class QList<class SmfActivityObject> &)
-	?setZipCode@SmfLocation@@QAEXABVQString@@@Z @ 357 NONAME ; void SmfLocation::setZipCode(class QString const &)
-	?setProvider@SmfRelationItem@@QAEXAAVSmfProvider@@@Z @ 358 NONAME ; void SmfRelationItem::setProvider(class SmfProvider &)
-	??1SmfPluginUtil@@QAE@XZ @ 359 NONAME ; SmfPluginUtil::~SmfPluginUtil(void)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfActivityObject@@@Z @ 360 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfActivityObject const &)
-	??1SmfPlaylist@@QAE@XZ @ 361 NONAME ; SmfPlaylist::~SmfPlaylist(void)
-	?tr@SmfMusicEvents@@SA?AVQString@@PBD0@Z @ 362 NONAME ; class QString SmfMusicEvents::tr(char const *, char const *)
-	??0SmfMusicEvents@@QAE@PAVSmfProvider@@@Z @ 363 NONAME ; SmfMusicEvents::SmfMusicEvents(class SmfProvider *)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactGeoLocation@QtMobility@@@Z @ 364 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactGeoLocation const &)
-	??1SmfAlbum@@QAE@XZ @ 365 NONAME ; SmfAlbum::~SmfAlbum(void)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactType@QtMobility@@@Z @ 366 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactType const &)
-	??_ESmfMusicProfile@@QAE@I@Z @ 367 NONAME ; SmfMusicProfile::~SmfMusicProfile(unsigned int)
-	?id@SmfLyrics@@QBE?AVQString@@XZ @ 368 NONAME ; class QString SmfLyrics::id(void) const
-	?setText@SmfComment@@QAEXABVQString@@@Z @ 369 NONAME ; void SmfComment::setText(class QString const &)
-	?parse@SmfPluginUtil@@QAE?AVQVariant@@ABVQByteArray@@PA_N@Z @ 370 NONAME ; class QVariant SmfPluginUtil::parse(class QByteArray const &, bool *)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfGroup@@@Z @ 371 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfGroup &)
-	?qt_metacast@SmfMusicSearch@@UAEPAXPBD@Z @ 372 NONAME ; void * SmfMusicSearch::qt_metacast(char const *)
-	?setDuration@SmfEvent@@QAEXABVQTime@@@Z @ 373 NONAME ; void SmfEvent::setDuration(class QTime const &)
-	?setId@SmfComment@@QAEXABVQString@@@Z @ 374 NONAME ; void SmfComment::setId(class QString const &)
-	??1SmfActivityObject@@QAE@XZ @ 375 NONAME ; SmfActivityObject::~SmfActivityObject(void)
-	??1SmfPictureAlbum@@QAE@XZ @ 376 NONAME ; SmfPictureAlbum::~SmfPictureAlbum(void)
-	?trUtf8@SmfRelationMgr@@SA?AVQString@@PBD0H@Z @ 377 NONAME ; class QString SmfRelationMgr::trUtf8(char const *, char const *, int)
-	?postDirected@SmfPostProvider@@QAEXAAVSmfPost@@AAVSmfContact@@PAVSmfLocation@@@Z @ 378 NONAME ; void SmfPostProvider::postDirected(class SmfPost &, class SmfContact &, class SmfLocation *)
-	?followers@SmfContactFetcher@@QAE_NHH@Z @ 379 NONAME ; bool SmfContactFetcher::followers(int, int)
-	?setRel@SmfUrl@@QAEXABVQString@@@Z @ 380 NONAME ; void SmfUrl::setRel(class QString const &)
-	?qt_metacall@SmfGallery@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 381 NONAME ; int SmfGallery::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?friendsListAvailable@SmfContactFetcher@@IAEXPAV?$QList@VSmfContact@@@@W4SmfError@@USmfResultPage@@@Z @ 382 NONAME ; void SmfContactFetcher::friendsListAvailable(class QList<class SmfContact> *, enum SmfError, struct SmfResultPage)
-	?trUtf8@SmfRelationMgr@@SA?AVQString@@PBD0@Z @ 383 NONAME ; class QString SmfRelationMgr::trUtf8(char const *, char const *)
-	??1SmfPostProvider@@UAE@XZ @ 384 NONAME ; SmfPostProvider::~SmfPostProvider(void)
-	?writeLog@SmfClient@@QBEXVQString@@@Z @ 385 NONAME ; void SmfClient::writeLog(class QString) const
-	??0SmfSubtitle@@QAE@XZ @ 386 NONAME ; SmfSubtitle::SmfSubtitle(void)
-	?upload@SmfGallery@@QAEXPAVSmfPicture@@PAVSmfPictureAlbum@@@Z @ 387 NONAME ; void SmfGallery::upload(class SmfPicture *, class SmfPictureAlbum *)
-	?setContact@SmfRelationItem@@QAEXAAVSmfContact@@@Z @ 388 NONAME ; void SmfRelationItem::setContact(class SmfContact &)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactOrganization@QtMobility@@@Z @ 389 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactOrganization &)
-	?getNonce@SmfPluginUtil@@QAEXAAVQString@@@Z @ 390 NONAME ; void SmfPluginUtil::getNonce(class QString &)
-	?getProvider@SmfContactFetcher@@QAEPAVSmfProvider@@XZ @ 391 NONAME ; class SmfProvider * SmfContactFetcher::getProvider(void)
-	?tr@SmfMusicService@@SA?AVQString@@PBD0H@Z @ 392 NONAME ; class QString SmfMusicService::tr(char const *, char const *, int)
-	?setServiceName@SmfProvider@@QAEXAAVQString@@@Z @ 393 NONAME ; void SmfProvider::setServiceName(class QString &)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfMusicFingerPrint@@@Z @ 394 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfMusicFingerPrint &)
-	??0SmfMusicProfile@@QAE@XZ @ 395 NONAME ; SmfMusicProfile::SmfMusicProfile(void)
-	?id@SmfPlaylist@@QBE?AVQString@@XZ @ 396 NONAME ; class QString SmfPlaylist::id(void) const
-	?setMembers@SmfGroup@@QAEXPAV?$QList@VSmfContact@@@@@Z @ 397 NONAME ; void SmfGroup::setMembers(class QList<class SmfContact> *)
-	?getAll@SmfRelationMgr@@QAE?AV?$QList@VSmfRelationItem@@@@AAVQString@@@Z @ 398 NONAME ; class QList<class SmfRelationItem> SmfRelationMgr::getAll(class QString &)
-	?setLanguage@SmfSubtitle@@QAEXABVQString@@@Z @ 399 NONAME ; void SmfSubtitle::setLanguage(class QString const &)
-	??0SmfPlaylist@@QAE@ABV0@@Z @ 400 NONAME ; SmfPlaylist::SmfPlaylist(class SmfPlaylist const &)
-	??_ESmfMusicSearch@@UAE@I@Z @ 401 NONAME ; SmfMusicSearch::~SmfMusicSearch(unsigned int)
-	?trUtf8@SmfGallery@@SA?AVQString@@PBD0@Z @ 402 NONAME ; class QString SmfGallery::trUtf8(char const *, char const *)
-	??1SmfClient@@QAE@XZ @ 403 NONAME ; SmfClient::~SmfClient(void)
-	?setStreet@SmfLocation@@QAEXABVQString@@@Z @ 404 NONAME ; void SmfLocation::setStreet(class QString const &)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactBirthday@QtMobility@@@Z @ 405 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactBirthday &)
-	??0SmfPlaylistService@@QAE@PAVSmfProvider@@@Z @ 406 NONAME ; SmfPlaylistService::SmfPlaylistService(class SmfProvider *)
-	?groups@SmfContactFetcher@@QAE_NHH@Z @ 407 NONAME ; bool SmfContactFetcher::groups(int, int)
-	?setMusicFingerPrint@SmfMusicFingerPrint@@QAEXABVQByteArray@@@Z @ 408 NONAME ; void SmfMusicFingerPrint::setMusicFingerPrint(class QByteArray const &)
-	??0SmfArtists@@QAE@ABV0@@Z @ 409 NONAME ; SmfArtists::SmfArtists(class SmfArtists const &)
-	?getStaticMetaObject@SmfPostProvider@@SAABUQMetaObject@@XZ @ 410 NONAME ; struct QMetaObject const & SmfPostProvider::getStaticMetaObject(void)
-	?author@SmfPlaylist@@QBE?AVQString@@XZ @ 411 NONAME ; class QString SmfPlaylist::author(void) const
-	?metaObject@SmfMusicService@@UBEPBUQMetaObject@@XZ @ 412 NONAME ; struct QMetaObject const * SmfMusicService::metaObject(void) const
-	?language@SmfLyrics@@QBE?AVQString@@XZ @ 413 NONAME ; class QString SmfLyrics::language(void) const
-	?setSubtitle@SmfSubtitle@@QAEXABVQByteArray@@@Z @ 414 NONAME ; void SmfSubtitle::setSubtitle(class QByteArray const &)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactBirthday@QtMobility@@@Z @ 415 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactBirthday const &)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfTrackInfo@@@Z @ 416 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfTrackInfo const &)
-	?postsAvailable@SmfPostProvider@@IAEXPAV?$QList@VSmfPost@@@@W4SmfError@@USmfResultPage@@@Z @ 417 NONAME ; void SmfPostProvider::postsAvailable(class QList<class SmfPost> *, enum SmfError, struct SmfResultPage)
-	??0SmfArtists@@QAE@XZ @ 418 NONAME ; SmfArtists::SmfArtists(void)
-	??1SmfTrackInfo@@QAE@XZ @ 419 NONAME ; SmfTrackInfo::~SmfTrackInfo(void)
-	?setMinRating@SmfMusicRating@@QAEXABH@Z @ 420 NONAME ; void SmfMusicRating::setMinRating(int const &)
-	?setCreationDate@SmfPlaylist@@QAEXABVQDateTime@@@Z @ 421 NONAME ; void SmfPlaylist::setCreationDate(class QDateTime const &)
-	??0SmfPluginUtil@@AAE@XZ @ 422 NONAME ; SmfPluginUtil::SmfPluginUtil(void)
-	?userEvents@SmfMusicProfile@@QBE?AV?$QList@VSmfEvent@@@@XZ @ 423 NONAME ; class QList<class SmfEvent> SmfMusicProfile::userEvents(void) const
-	?setName@SmfLocation@@QAEXABVQString@@@Z @ 424 NONAME ; void SmfLocation::setName(class QString const &)
-	?create@SmfRelationMgr@@QAE?AVQString@@PAVSmfProvider@@PAVSmfContact@@@Z @ 425 NONAME ; class QString SmfRelationMgr::create(class SmfProvider *, class SmfContact *)
-	?setTitle@SmfTrackInfo@@QAEXABVQString@@@Z @ 426 NONAME ; void SmfTrackInfo::setTitle(class QString const &)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactAddress@QtMobility@@@Z @ 427 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactAddress &)
-	??0SmfGroup@@QAE@ABV0@@Z @ 428 NONAME ; SmfGroup::SmfGroup(class SmfGroup const &)
-	?id@SmfGroup@@QBE?AVQString@@XZ @ 429 NONAME ; class QString SmfGroup::id(void) const
-	?setOwner@SmfPicture@@QAEXABVQString@@@Z @ 430 NONAME ; void SmfPicture::setOwner(class QString const &)
-	?setImage@SmfPost@@QAEXABVQImage@@@Z @ 431 NONAME ; void SmfPost::setImage(class QImage const &)
-	?parse@SmfPluginUtil@@QAE?AVQVariant@@PAVQIODevice@@PA_N@Z @ 432 NONAME ; class QVariant SmfPluginUtil::parse(class QIODevice *, bool *)
-	?setType@SmfActivityObject@@QAEXABW4SmfActivityObjectType@@@Z @ 433 NONAME ; void SmfActivityObject::setType(enum SmfActivityObjectType const &)
-	??0SmfUrl@@QAE@ABV0@@Z @ 434 NONAME ; SmfUrl::SmfUrl(class SmfUrl const &)
-	?getStaticMetaObject@SmfLyricsService@@SAABUQMetaObject@@XZ @ 435 NONAME ; struct QMetaObject const & SmfLyricsService::getStaticMetaObject(void)
-	?playlistsOf@SmfPlaylistService@@QAEXPAVSmfMusicProfile@@HH@Z @ 436 NONAME ; void SmfPlaylistService::playlistsOf(class SmfMusicProfile *, int, int)
-	?associate@SmfRelationMgr@@QAE?AW4SmfError@@ABVQString@@PBVSmfContact@@PAVSmfProvider@@@Z @ 437 NONAME ; enum SmfError SmfRelationMgr::associate(class QString const &, class SmfContact const *, class SmfProvider *)
-	?serviceIcon@SmfProvider@@QBE?AVQImage@@XZ @ 438 NONAME ; class QImage SmfProvider::serviceIcon(void) const
-	??_ESmfActivityFetcher@@UAE@I@Z @ 439 NONAME ; SmfActivityFetcher::~SmfActivityFetcher(unsigned int)
-	?events@SmfMusicEvents@@QAEXVQContactGeoLocation@QtMobility@@HH@Z @ 440 NONAME ; void SmfMusicEvents::events(class QtMobility::QContactGeoLocation, int, int)
-	?searchInGroup@SmfContactFetcher@@QAE_NVSmfGroup@@HH@Z @ 441 NONAME ; bool SmfContactFetcher::searchInGroup(class SmfGroup, int, int)
-	?postCurrentPlaying@SmfMusicSearch@@QAEXVSmfTrackInfo@@@Z @ 442 NONAME ; void SmfMusicSearch::postCurrentPlaying(class SmfTrackInfo)
-	?recommendations@SmfMusicSearch@@QAEXVSmfTrackInfo@@HH@Z @ 443 NONAME ; void SmfMusicSearch::recommendations(class SmfTrackInfo, int, int)
-	?staticMetaObject@SmfGallery@@2UQMetaObject@@B @ 444 NONAME ; struct QMetaObject const SmfGallery::staticMetaObject
-	??_ESmfLyricsService@@UAE@I@Z @ 445 NONAME ; SmfLyricsService::~SmfLyricsService(unsigned int)
-	?metaObject@SmfRelationMgr@@UBEPBUQMetaObject@@XZ @ 446 NONAME ; struct QMetaObject const * SmfRelationMgr::metaObject(void) const
-	??0SmfPictureAlbum@@QAE@XZ @ 447 NONAME ; SmfPictureAlbum::SmfPictureAlbum(void)
-	?extension@SmfPlaylist@@QBE?AV?$QMap@VQString@@VQVariant@@@@XZ @ 448 NONAME ; class QMap<class QString, class QVariant> SmfPlaylist::extension(void) const
-	?qt_metacast@SmfContactFetcher@@UAEPAXPBD@Z @ 449 NONAME ; void * SmfContactFetcher::qt_metacast(char const *)
-	?trackInfo@SmfMusicSearch@@QAEXVSmfMusicFingerPrint@@HH@Z @ 450 NONAME ; void SmfMusicSearch::trackInfo(class SmfMusicFingerPrint, int, int)
-	?interestInfo@SmfMusicProfile@@QBE?AV?$QList@VSmfTrackInfo@@@@XZ @ 451 NONAME ; class QList<class SmfTrackInfo> SmfMusicProfile::interestInfo(void) const
-	?tr@SmfLyricsService@@SA?AVQString@@PBD0H@Z @ 452 NONAME ; class QString SmfLyricsService::tr(char const *, char const *, int)
-	?staticMetaObject@SmfMusicSearch@@2UQMetaObject@@B @ 453 NONAME ; struct QMetaObject const SmfMusicSearch::staticMetaObject
-	?setSupportedInterfaces@SmfProvider@@QAEXAAVQStringList@@@Z @ 454 NONAME ; void SmfProvider::setSupportedInterfaces(class QStringList &)
-	?id@SmfMusicProfile@@QBE?AVQString@@XZ @ 455 NONAME ; class QString SmfMusicProfile::id(void) const
-	??1SmfMusicRating@@QAE@XZ @ 456 NONAME ; SmfMusicRating::~SmfMusicRating(void)
-	?setPlayListTitle@SmfPlaylist@@QAEXABVQString@@@Z @ 457 NONAME ; void SmfPlaylist::setPlayListTitle(class QString const &)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactTimestamp@QtMobility@@@Z @ 458 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactTimestamp &)
-	?setDuration@SmfTrackInfo@@QAEXABVQTime@@@Z @ 459 NONAME ; void SmfTrackInfo::setDuration(class QTime const &)
-	?getInstance@SmfPluginUtil@@SAPAV1@XZ @ 460 NONAME ; class SmfPluginUtil * SmfPluginUtil::getInstance(void)
-	?subtitleAvailable@SmfLyricsService@@IAEXPAV?$QList@VSmfSubtitle@@@@W4SmfError@@USmfResultPage@@@Z @ 461 NONAME ; void SmfLyricsService::subtitleAvailable(class QList<class SmfSubtitle> *, enum SmfError, struct SmfResultPage)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfActivityObject@@@Z @ 462 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfActivityObject &)
-	?getProvider@SmfRelationItem@@QBE?AVSmfProvider@@XZ @ 463 NONAME ; class SmfProvider SmfRelationItem::getProvider(void) const
-	?setId@SmfSubtitle@@QAEXABVQString@@@Z @ 464 NONAME ; void SmfSubtitle::setId(class QString const &)
-	??1SmfMusicSearch@@UAE@XZ @ 465 NONAME ; SmfMusicSearch::~SmfMusicSearch(void)
-	?qt_metacast@SmfGallery@@UAEPAXPBD@Z @ 466 NONAME ; void * SmfGallery::qt_metacast(char const *)
-	?supportedInterfaces@SmfProvider@@QBE?AV?$QList@VQString@@@@XZ @ 467 NONAME ; class QList<class QString> SmfProvider::supportedInterfaces(void) const
-	??5@YAAAVQDataStream@@AAV0@AAVQContactOnlineAccount@QtMobility@@@Z @ 468 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactOnlineAccount &)
-	?tr@SmfActivityFetcher@@SA?AVQString@@PBD0@Z @ 469 NONAME ; class QString SmfActivityFetcher::tr(char const *, char const *)
-	?setRating@SmfMusicRating@@QAEXABH@Z @ 470 NONAME ; void SmfMusicRating::setRating(int const &)
-	?subTypes@SmfContact@@QBE?AVQStringList@@XZ @ 471 NONAME ; class QStringList SmfContact::subTypes(void) const
-	?supportedFormats@SmfPostProvider@@QBE?AV?$QVector@VQTextFormat@@@@XZ @ 472 NONAME ; class QVector<class QTextFormat> SmfPostProvider::supportedFormats(void) const
-	??6@YAAAVQDataStream@@AAV0@ABVQContactAnniversary@QtMobility@@@Z @ 473 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactAnniversary const &)
-	?id@SmfTrackInfo@@QBE?AVQString@@XZ @ 474 NONAME ; class QString SmfTrackInfo::id(void) const
-	?setObjData@SmfActivityObject@@QAEXABVQVariant@@@Z @ 475 NONAME ; void SmfActivityObject::setObjData(class QVariant const &)
-	?qt_metacall@SmfActivityFetcher@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 476 NONAME ; int SmfActivityFetcher::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?searchNear@SmfContactFetcher@@QAE_NPAVSmfLocation@@W4SmfLocationSearchBoundary@@HH@Z @ 477 NONAME ; bool SmfContactFetcher::searchNear(class SmfLocation *, enum SmfLocationSearchBoundary, int, int)
-	?addToPlaylist@SmfPlaylistService@@QAEHVSmfPlaylist@@PAV?$QList@VSmfTrackInfo@@@@@Z @ 478 NONAME ; int SmfPlaylistService::addToPlaylist(class SmfPlaylist, class QList<class SmfTrackInfo> *)
-	?objData@SmfActivityObject@@QBE?AVQVariant@@XZ @ 479 NONAME ; class QVariant SmfActivityObject::objData(void) const
-	?trUtf8@SmfPlaylistService@@SA?AVQString@@PBD0@Z @ 480 NONAME ; class QString SmfPlaylistService::trUtf8(char const *, char const *)
-	?setTitle@SmfPictureAlbum@@QAEXABVQString@@@Z @ 481 NONAME ; void SmfPictureAlbum::setTitle(class QString const &)
-	?postComment@SmfGallery@@QAEXVSmfPicture@@VSmfComment@@@Z @ 482 NONAME ; void SmfGallery::postComment(class SmfPicture, class SmfComment)
-	?supportedLanguages@SmfProvider@@QBE?AVQStringList@@XZ @ 483 NONAME ; class QStringList SmfProvider::supportedLanguages(void) const
-	??0SmfPost@@QAE@ABV0@@Z @ 484 NONAME ; SmfPost::SmfPost(class SmfPost const &)
-	?getProvider@SmfGallery@@QAEPAVSmfProvider@@XZ @ 485 NONAME ; class SmfProvider * SmfGallery::getProvider(void)
-	?names@SmfArtists@@QBE?AVQStringList@@XZ @ 486 NONAME ; class QStringList SmfArtists::names(void) const
-	??1SmfContact@@QAE@XZ @ 487 NONAME ; SmfContact::~SmfContact(void)
-	?id@SmfLocation@@QBE?AVQString@@XZ @ 488 NONAME ; class QString SmfLocation::id(void) const
-	??_ESmfLyrics@@QAE@I@Z @ 489 NONAME ; SmfLyrics::~SmfLyrics(unsigned int)
-	?setVisibility@SmfPictureAlbum@@QAEXABW4SmfPictureVisibility@@@Z @ 490 NONAME ; void SmfPictureAlbum::setVisibility(enum SmfPictureVisibility const &)
-	?getProvider@SmfMusicSearch@@QAEPAVSmfProvider@@XZ @ 491 NONAME ; class SmfProvider * SmfMusicSearch::getProvider(void)
-	?errorString@SmfPluginUtil@@QBE?AVQString@@XZ @ 492 NONAME ; class QString SmfPluginUtil::errorString(void) const
-	?tr@SmfGallery@@SA?AVQString@@PBD0@Z @ 493 NONAME ; class QString SmfGallery::tr(char const *, char const *)
-	?staticMetaObject@SmfMusicEvents@@2UQMetaObject@@B @ 494 NONAME ; struct QMetaObject const SmfMusicEvents::staticMetaObject
-	?setLicense@SmfPlaylist@@QAEXABVQUrl@@@Z @ 495 NONAME ; void SmfPlaylist::setLicense(class QUrl const &)
-	?setTime@SmfActivityObject@@QAEXABVQDateTime@@@Z @ 496 NONAME ; void SmfActivityObject::setTime(class QDateTime const &)
-	??4SmfLyrics@@QAEAAV0@ABV0@@Z @ 497 NONAME ; class SmfLyrics & SmfLyrics::operator=(class SmfLyrics const &)
-	??4SmfActivityObject@@QAEAAV0@ABV0@@Z @ 498 NONAME ; class SmfActivityObject & SmfActivityObject::operator=(class SmfActivityObject const &)
-	??4SmfMusicProfile@@QAEAAV0@ABV0@@Z @ 499 NONAME ; class SmfMusicProfile & SmfMusicProfile::operator=(class SmfMusicProfile const &)
-	??4SmfGroup@@QAEAAV0@ABV0@@Z @ 500 NONAME ; class SmfGroup & SmfGroup::operator=(class SmfGroup const &)
-	?getProvider@SmfMusicService@@QAEPAVSmfProvider@@XZ @ 501 NONAME ; class SmfProvider * SmfMusicService::getProvider(void)
-	??0SmfLyricsService@@QAE@PAVSmfProvider@@@Z @ 502 NONAME ; SmfLyricsService::SmfLyricsService(class SmfProvider *)
-	?searchByContact@SmfRelationMgr@@QAE?AVQString@@VSmfContact@@@Z @ 503 NONAME ; class QString SmfRelationMgr::searchByContact(class SmfContact)
-	??0SmfContact@@QAE@PAVQObject@@@Z @ 504 NONAME ; SmfContact::SmfContact(class QObject *)
-	?setId@SmfUrl@@QAEXABVQString@@@Z @ 505 NONAME ; void SmfUrl::setId(class QString const &)
-	?qt_metacall@SmfRelationMgr@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 506 NONAME ; int SmfRelationMgr::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?setSupportedLanguages@SmfProvider@@QAEXAAVQStringList@@@Z @ 507 NONAME ; void SmfProvider::setSupportedLanguages(class QStringList &)
-	?setTitle@SmfPost@@QAEXABVQString@@@Z @ 508 NONAME ; void SmfPost::setTitle(class QString const &)
-	??0SmfTrackInfo@@QAE@XZ @ 509 NONAME ; SmfTrackInfo::SmfTrackInfo(void)
-	?setType@SmfUrl@@QAEXABVQString@@@Z @ 510 NONAME ; void SmfUrl::setType(class QString const &)
-	??0SmfActivityEntry@@QAE@XZ @ 511 NONAME ; SmfActivityEntry::SmfActivityEntry(void)
-	?createParameterString@SmfPluginUtil@@QAE?AVQByteArray@@ABVQString@@W4Operation@QNetworkAccessManager@@ABV2@2W4SmfSignatureMethod@@ABV?$QMultiMap@VQByteArray@@V1@@@W4SmfParsingMode@@@Z @ 512 NONAME ; class QByteArray SmfPluginUtil::createParameterString(class QString const &, enum QNetworkAccessManager::Operation, class QByteArray const &, class QByteArray const &, enum SmfSignatureMethod, class QMultiMap<class QByteArray, class QByteArray> const &, enum SmfParsingMode)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfAlbum@@@Z @ 513 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfAlbum &)
-	?length@SmfUrl@@QBE?AVQString@@XZ @ 514 NONAME ; class QString SmfUrl::length(void) const
-	?qt_metacall@SmfMusicEvents@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 515 NONAME ; int SmfMusicEvents::qt_metacall(enum QMetaObject::Call, int, void * *)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfMusicFingerPrint@@@Z @ 516 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfMusicFingerPrint const &)
-	?details@SmfActivityEntry@@QBE?AVSmfPost@@XZ @ 517 NONAME ; class SmfPost SmfActivityEntry::details(void) const
-	?lyrics@SmfLyrics@@QBE?AVQByteArray@@XZ @ 518 NONAME ; class QByteArray SmfLyrics::lyrics(void) const
-	?setId@SmfLyrics@@QAEXABVQString@@@Z @ 519 NONAME ; void SmfLyrics::setId(class QString const &)
-	?id@SmfAlbum@@QBE?AVQString@@XZ @ 520 NONAME ; class QString SmfAlbum::id(void) const
-	?thumbnail@SmfActivityObject@@QBE?AVQImage@@XZ @ 521 NONAME ; class QImage SmfActivityObject::thumbnail(void) const
-	??0SmfPost@@QAE@VSmfContact@@VQString@@1VQImage@@VQUrl@@@Z @ 522 NONAME ; SmfPost::SmfPost(class SmfContact, class QString, class QString, class QImage, class QUrl)
-	??1SmfPost@@QAE@XZ @ 523 NONAME ; SmfPost::~SmfPost(void)
-	?members@SmfGroup@@QBE?AV?$QList@VSmfContact@@@@XZ @ 524 NONAME ; class QList<class SmfContact> SmfGroup::members(void) const
-	?followersListAvailable@SmfContactFetcher@@IAEXPAV?$QList@VSmfContact@@@@W4SmfError@@USmfResultPage@@@Z @ 525 NONAME ; void SmfContactFetcher::followersListAvailable(class QList<class SmfContact> *, enum SmfError, struct SmfResultPage)
-	?setIndex@SmfRelationItem@@QAEXI@Z @ 526 NONAME ; void SmfRelationItem::setIndex(unsigned int)
-	?searchContactFinished@SmfContactFetcher@@IAEXPAV?$QList@VSmfContact@@@@W4SmfError@@USmfResultPage@@@Z @ 527 NONAME ; void SmfContactFetcher::searchContactFinished(class QList<class SmfContact> *, enum SmfError, struct SmfResultPage)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfProvider@@@Z @ 528 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfProvider const &)
-	?posts@SmfPostProvider@@QAEXPAVSmfContact@@HH@Z @ 529 NONAME ; void SmfPostProvider::posts(class SmfContact *, int, int)
-	?visibility@SmfPicture@@QBE?AW4SmfPictureVisibility@@XZ @ 530 NONAME ; enum SmfPictureVisibility SmfPicture::visibility(void) const
-	??_ESmfProvider@@QAE@I@Z @ 531 NONAME ; SmfProvider::~SmfProvider(unsigned int)
-	?downloadFlag@SmfPicture@@QAE_NXZ @ 532 NONAME ; bool SmfPicture::downloadFlag(void)
-	?tr@SmfPostProvider@@SA?AVQString@@PBD0@Z @ 533 NONAME ; class QString SmfPostProvider::tr(char const *, char const *)
-	?postedDate@SmfPictureAlbum@@QBE?AVQDateTime@@XZ @ 534 NONAME ; class QDateTime SmfPictureAlbum::postedDate(void) const
-	??0SmfTrackInfo@@QAE@ABV0@@Z @ 535 NONAME ; SmfTrackInfo::SmfTrackInfo(class SmfTrackInfo const &)
-	?getAllRelations@SmfRelationMgr@@QAE?AV?$QList@VQString@@@@XZ @ 536 NONAME ; class QList<class QString> SmfRelationMgr::getAllRelations(void)
-	?metaObject@SmfPlaylistService@@UBEPBUQMetaObject@@XZ @ 537 NONAME ; struct QMetaObject const * SmfPlaylistService::metaObject(void) const
-	?playlistsListAvailable@SmfPlaylistService@@IAEXPAV?$QList@VSmfPlaylist@@@@W4SmfError@@USmfResultPage@@@Z @ 538 NONAME ; void SmfPlaylistService::playlistsListAvailable(class QList<class SmfPlaylist> *, enum SmfError, struct SmfResultPage)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactEmailAddress@QtMobility@@@Z @ 539 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactEmailAddress const &)
-	??0SmfRelationItem@@QAE@PAVSmfProvider@@@Z @ 540 NONAME ; SmfRelationItem::SmfRelationItem(class SmfProvider *)
-	??1SmfGroup@@QAE@XZ @ 541 NONAME ; SmfGroup::~SmfGroup(void)
-	?getStaticMetaObject@SmfPlaylistService@@SAABUQMetaObject@@XZ @ 542 NONAME ; struct QMetaObject const & SmfPlaylistService::getStaticMetaObject(void)
-	?addComment@SmfPictureAlbum@@QAEXABVSmfComment@@@Z @ 543 NONAME ; void SmfPictureAlbum::addComment(class SmfComment const &)
-	?tracks@SmfMusicSearch@@QAEXVSmfTrackInfo@@HH@Z @ 544 NONAME ; void SmfMusicSearch::tracks(class SmfTrackInfo, int, int)
-	?license@SmfPlaylist@@QBE?AVQUrl@@XZ @ 545 NONAME ; class QUrl SmfPlaylist::license(void) const
-	?setUserEvents@SmfMusicProfile@@QAEXABV?$QList@VSmfEvent@@@@@Z @ 546 NONAME ; void SmfMusicProfile::setUserEvents(class QList<class SmfEvent> const &)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactTimestamp@QtMobility@@@Z @ 547 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactTimestamp const &)
-	?comments@SmfTrackInfo@@QBE?AV?$QList@VSmfComment@@@@XZ @ 548 NONAME ; class QList<class SmfComment> SmfTrackInfo::comments(void) const
-	?setArtists@SmfTrackInfo@@QAEXABVSmfArtists@@@Z @ 549 NONAME ; void SmfTrackInfo::setArtists(class SmfArtists const &)
-	?setDescription@SmfProvider@@QAEXAAVQString@@@Z @ 550 NONAME ; void SmfProvider::setDescription(class QString &)
-	?setComments@SmfPlaylist@@QAEXABV?$QList@VSmfComment@@@@@Z @ 551 NONAME ; void SmfPlaylist::setComments(class QList<class SmfComment> const &)
-	?Delete@SmfRelationMgr@@QAE?AW4SmfError@@AAVQString@@@Z @ 552 NONAME ; enum SmfError SmfRelationMgr::Delete(class QString &)
-	?comments@SmfPlaylist@@QBE?AV?$QList@VSmfComment@@@@XZ @ 553 NONAME ; class QList<class SmfComment> SmfPlaylist::comments(void) const
-	??5@YAAAVQDataStream@@AAV0@AAVQContactThumbnail@QtMobility@@@Z @ 554 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactThumbnail &)
-	??1SmfContactFetcher@@UAE@XZ @ 555 NONAME ; SmfContactFetcher::~SmfContactFetcher(void)
-	?activities@SmfActivityEntry@@QBE?AV?$QList@VSmfActivityObject@@@@XZ @ 556 NONAME ; class QList<class SmfActivityObject> SmfActivityEntry::activities(void) const
-	?setInfo@SmfPlaylist@@QAEXABVQUrl@@@Z @ 557 NONAME ; void SmfPlaylist::setInfo(class QUrl const &)
-	??1SmfLyricsService@@UAE@XZ @ 558 NONAME ; SmfLyricsService::~SmfLyricsService(void)
-	?userInfoAvailable@SmfMusicService@@IAEXPAVSmfMusicProfile@@W4SmfError@@@Z @ 559 NONAME ; void SmfMusicService::userInfoAvailable(class SmfMusicProfile *, enum SmfError)
-	??_ESmfActivityEntry@@QAE@I@Z @ 560 NONAME ; SmfActivityEntry::~SmfActivityEntry(unsigned int)
-	??0SmfMusicFingerPrint@@QAE@ABV0@@Z @ 561 NONAME ; SmfMusicFingerPrint::SmfMusicFingerPrint(class SmfMusicFingerPrint const &)
-	?id@SmfPictureAlbum@@QBE?AVQString@@XZ @ 562 NONAME ; class QString SmfPictureAlbum::id(void) const
-	?time@SmfActivityObject@@QBE?AVQDateTime@@XZ @ 563 NONAME ; class QDateTime SmfActivityObject::time(void) const
-	??1SmfArtists@@QAE@XZ @ 564 NONAME ; SmfArtists::~SmfArtists(void)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfUrl@@@Z @ 565 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfUrl const &)
-	??4SmfLocation@@QAEAAV0@ABV0@@Z @ 566 NONAME ; class SmfLocation & SmfLocation::operator=(class SmfLocation const &)
-	?setOwner@SmfPost@@QAEXABVSmfContact@@@Z @ 567 NONAME ; void SmfPost::setOwner(class SmfContact const &)
-	?comments@SmfPictureAlbum@@QBE?AV?$QList@VSmfComment@@@@XZ @ 568 NONAME ; class QList<class SmfComment> SmfPictureAlbum::comments(void) const
-	??6@YAAAVQDataStream@@AAV0@ABVSmfLyrics@@@Z @ 569 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfLyrics const &)
-	?hreflang@SmfUrl@@QBE?AVQString@@XZ @ 570 NONAME ; class QString SmfUrl::hreflang(void) const
-	??5@YAAAVQDataStream@@AAV0@AAVSmfMusicProfile@@@Z @ 571 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfMusicProfile &)
-	??1SmfPicture@@QAE@XZ @ 572 NONAME ; SmfPicture::~SmfPicture(void)
-	?friendsActivities@SmfActivityFetcher@@QAEXABVSmfContact@@HH@Z @ 573 NONAME ; void SmfActivityFetcher::friendsActivities(class SmfContact const &, int, int)
-	??4SmfPictureAlbum@@QAEAAV0@ABV0@@Z @ 574 NONAME ; class SmfPictureAlbum & SmfPictureAlbum::operator=(class SmfPictureAlbum const &)
-	??1SmfUrl@@QAE@XZ @ 575 NONAME ; SmfUrl::~SmfUrl(void)
-	?setId@SmfPlaylist@@QAEXABVQString@@@Z @ 576 NONAME ; void SmfPlaylist::setId(class QString const &)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfPictureAlbum@@@Z @ 577 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfPictureAlbum &)
-	??0SmfAlbum@@QAE@ABV0@@Z @ 578 NONAME ; SmfAlbum::SmfAlbum(class SmfAlbum const &)
-	?setAttribution@SmfPlaylist@@QAEXABV?$QList@VQUrl@@@@@Z @ 579 NONAME ; void SmfPlaylist::setAttribution(class QList<class QUrl> const &)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfSubtitle@@@Z @ 580 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfSubtitle const &)
-	??1SmfProvider@@QAE@XZ @ 581 NONAME ; SmfProvider::~SmfProvider(void)
-	??5@YAAAVQDataStream@@AAV0@AAVQContactPhoneNumber@QtMobility@@@Z @ 582 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactPhoneNumber &)
-	?metaObject@SmfGallery@@UBEPBUQMetaObject@@XZ @ 583 NONAME ; struct QMetaObject const * SmfGallery::metaObject(void) const
-	??_ESmfPostProvider@@UAE@I@Z @ 584 NONAME ; SmfPostProvider::~SmfPostProvider(unsigned int)
-	??_ESmfActivityObject@@QAE@I@Z @ 585 NONAME ; SmfActivityObject::~SmfActivityObject(unsigned int)
-	??_ESmfPlaylist@@QAE@I@Z @ 586 NONAME ; SmfPlaylist::~SmfPlaylist(unsigned int)
-	?getProvider@SmfPostProvider@@QBEPAVSmfProvider@@XZ @ 587 NONAME ; class SmfProvider * SmfPostProvider::getProvider(void) const
-	??5@YAAAVQDataStream@@AAV0@AAVSmfMusicRating@@@Z @ 588 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfMusicRating &)
-	?getProvider@SmfActivityFetcher@@QAEPAVSmfProvider@@XZ @ 589 NONAME ; class SmfProvider * SmfActivityFetcher::getProvider(void)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfRelationItem@@@Z @ 590 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfRelationItem const &)
-	?groupListAvailable@SmfContactFetcher@@IAEXPAV?$QList@VSmfGroup@@@@W4SmfError@@USmfResultPage@@@Z @ 591 NONAME ; void SmfContactFetcher::groupListAvailable(class QList<class SmfGroup> *, enum SmfError, struct SmfResultPage)
-	?musicFingerPrint@SmfMusicFingerPrint@@QBE?AVQByteArray@@XZ @ 592 NONAME ; class QByteArray SmfMusicFingerPrint::musicFingerPrint(void) const
-	?qt_metacall@SmfPlaylistService@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 593 NONAME ; int SmfPlaylistService::qt_metacall(enum QMetaObject::Call, int, void * *)
-	?events@SmfMusicEvents@@QAEXVSmfLocation@@HH@Z @ 594 NONAME ; void SmfMusicEvents::events(class SmfLocation, int, int)
-	??0SmfComment@@QAE@ABV0@@Z @ 595 NONAME ; SmfComment::SmfComment(class SmfComment const &)
-	??0SmfProvider@@QAE@ABV0@@Z @ 596 NONAME ; SmfProvider::SmfProvider(class SmfProvider const &)
-	?setActionName@SmfActivityEntry@@QAEXW4SmfActivityVerb@@@Z @ 597 NONAME ; void SmfActivityEntry::setActionName(enum SmfActivityVerb)
-	?trUtf8@SmfMusicService@@SA?AVQString@@PBD0H@Z @ 598 NONAME ; class QString SmfMusicService::trUtf8(char const *, char const *, int)
-	??0SmfPicture@@QAE@ABV0@@Z @ 599 NONAME ; SmfPicture::SmfPicture(class SmfPicture const &)
-	?city@SmfLocation@@QBE?AVQString@@XZ @ 600 NONAME ; class QString SmfLocation::city(void) const
-	??4SmfArtists@@QAEAAV0@ABV0@@Z @ 601 NONAME ; class SmfArtists & SmfArtists::operator=(class SmfArtists const &)
-	??1SmfMusicFingerPrint@@QAE@XZ @ 602 NONAME ; SmfMusicFingerPrint::~SmfMusicFingerPrint(void)
-	??0SmfMusicFingerPrint@@QAE@XZ @ 603 NONAME ; SmfMusicFingerPrint::SmfMusicFingerPrint(void)
-	?qt_metacall@SmfPostProvider@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 604 NONAME ; int SmfPostProvider::qt_metacall(enum QMetaObject::Call, int, void * *)
-	??0SmfMusicSearch@@QAE@PAVSmfProvider@@@Z @ 605 NONAME ; SmfMusicSearch::SmfMusicSearch(class SmfProvider *)
-	?setTitle@SmfUrl@@QAEXABVQString@@@Z @ 606 NONAME ; void SmfUrl::setTitle(class QString const &)
-	?getStaticMetaObject@SmfMusicService@@SAABUQMetaObject@@XZ @ 607 NONAME ; struct QMetaObject const & SmfMusicService::getStaticMetaObject(void)
-	?value@SmfContact@@QBE?AVQVariant@@ABVQString@@@Z @ 608 NONAME ; class QVariant SmfContact::value(class QString const &) const
-	?setArtists@SmfAlbum@@QAEXABVSmfArtists@@@Z @ 609 NONAME ; void SmfAlbum::setArtists(class SmfArtists const &)
-	?picturesAvailable@SmfGallery@@IAEXPAV?$QList@VSmfPicture@@@@W4SmfError@@USmfResultPage@@@Z @ 610 NONAME ; void SmfGallery::picturesAvailable(class QList<class SmfPicture> *, enum SmfError, struct SmfResultPage)
-	?setTicketUrl@SmfEvent@@QAEXABVQUrl@@@Z @ 611 NONAME ; void SmfEvent::setTicketUrl(class QUrl const &)
-	?maxRating@SmfMusicRating@@QBEHXZ @ 612 NONAME ; int SmfMusicRating::maxRating(void) const
-	?setPostedDate@SmfPictureAlbum@@QAEXABVQDateTime@@@Z @ 613 NONAME ; void SmfPictureAlbum::setPostedDate(class QDateTime const &)
-	?version@SmfPlaylist@@QBE?AVQString@@XZ @ 614 NONAME ; class QString SmfPlaylist::version(void) const
-	??1SmfLocation@@QAE@XZ @ 615 NONAME ; SmfLocation::~SmfLocation(void)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactId@QtMobility@@@Z @ 616 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactId const &)
-	??0SmfLyrics@@QAE@ABV0@@Z @ 617 NONAME ; SmfLyrics::SmfLyrics(class SmfLyrics const &)
-	??4SmfSubtitle@@QAEAAV0@ABV0@@Z @ 618 NONAME ; class SmfSubtitle & SmfSubtitle::operator=(class SmfSubtitle const &)
-	?caption@SmfActivityObject@@QBE?AVQString@@XZ @ 619 NONAME ; class QString SmfActivityObject::caption(void) const
-	??0SmfActivityObject@@QAE@ABV0@@Z @ 620 NONAME ; SmfActivityObject::SmfActivityObject(class SmfActivityObject const &)
-	?getProvider@SmfPlaylistService@@QAEPAVSmfProvider@@XZ @ 621 NONAME ; class SmfProvider * SmfPlaylistService::getProvider(void)
-	??4SmfEvent@@QAEAAV0@ABV0@@Z @ 622 NONAME ; class SmfEvent & SmfEvent::operator=(class SmfEvent const &)
-	?getStaticMetaObject@SmfGallery@@SAABUQMetaObject@@XZ @ 623 NONAME ; struct QMetaObject const & SmfGallery::getStaticMetaObject(void)
-	?setLink@SmfActivityObject@@QAEXABVQString@@@Z @ 624 NONAME ; void SmfActivityObject::setLink(class QString const &)
-	?setHhreflang@SmfUrl@@QAEXABVQString@@@Z @ 625 NONAME ; void SmfUrl::setHhreflang(class QString const &)
-	?userinfo@SmfMusicService@@QAEXXZ @ 626 NONAME ; void SmfMusicService::userinfo(void)
-	?venue@SmfEvent@@QBE?AVSmfLocation@@XZ @ 627 NONAME ; class SmfLocation SmfEvent::venue(void) const
-	??0SmfSubtitle@@QAE@ABV0@@Z @ 628 NONAME ; SmfSubtitle::SmfSubtitle(class SmfSubtitle const &)
-	?setApplicationUrl@SmfProvider@@QAEXAAVQUrl@@@Z @ 629 NONAME ; void SmfProvider::setApplicationUrl(class QUrl &)
-	?setServiceIcon@SmfProvider@@QAEXAAVQImage@@@Z @ 630 NONAME ; void SmfProvider::setServiceIcon(class QImage &)
-	?info@SmfPlaylist@@QBE?AVQUrl@@XZ @ 631 NONAME ; class QUrl SmfPlaylist::info(void) const
-	?tr@SmfContactFetcher@@SA?AVQString@@PBD0H@Z @ 632 NONAME ; class QString SmfContactFetcher::tr(char const *, char const *, int)
-	?setLyrics@SmfLyrics@@QAEXABVQByteArray@@@Z @ 633 NONAME ; void SmfLyrics::setLyrics(class QByteArray const &)
-	?setMetadata@SmfPlaylist@@QAEXABV?$QMap@VQString@@VQVariant@@@@@Z @ 634 NONAME ; void SmfPlaylist::setMetadata(class QMap<class QString, class QVariant> const &)
-	?remove@SmfRelationMgr@@QAE?AW4SmfError@@AAVQString@@PBVSmfContact@@@Z @ 635 NONAME ; enum SmfError SmfRelationMgr::remove(class QString &, class SmfContact const *)
-	?description@SmfGallery@@QAE?AVQString@@AAVSmfPicture@@@Z @ 636 NONAME ; class QString SmfGallery::description(class SmfPicture &)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactGuid@QtMobility@@@Z @ 637 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactGuid const &)
-	?picture@SmfPicture@@QBE?AVQImage@@XZ @ 638 NONAME ; class QImage SmfPicture::picture(void) const
-	?tr@SmfContactFetcher@@SA?AVQString@@PBD0@Z @ 639 NONAME ; class QString SmfContactFetcher::tr(char const *, char const *)
-	?id@SmfActivityEntry@@QBE?AVQString@@XZ @ 640 NONAME ; class QString SmfActivityEntry::id(void) const
-	?setHref@SmfUrl@@QAEXABVQUrl@@@Z @ 641 NONAME ; void SmfUrl::setHref(class QUrl const &)
-	?setRating@SmfTrackInfo@@QAEXABVSmfMusicRating@@@Z @ 642 NONAME ; void SmfTrackInfo::setRating(class SmfMusicRating const &)
-	?setContent@SmfActivityObject@@QAEXABVQString@@@Z @ 643 NONAME ; void SmfActivityObject::setContent(class QString const &)
-	?street@SmfLocation@@QBE?AVQString@@XZ @ 644 NONAME ; class QString SmfLocation::street(void) const
-	?filtered@SmfActivityFetcher@@QAEXV?$QList@W4SmfActivityObjectType@@@@HH@Z @ 645 NONAME ; void SmfActivityFetcher::filtered(class QList<enum SmfActivityObjectType>, int, int)
-	?setId@SmfTrackInfo@@QAEXABVQString@@@Z @ 646 NONAME ; void SmfTrackInfo::setId(class QString const &)
-	?staticMetaObject@SmfContactFetcher@@2UQMetaObject@@B @ 647 NONAME ; struct QMetaObject const SmfContactFetcher::staticMetaObject
-	?title@SmfActivityEntry@@QBE?AVSmfPost@@XZ @ 648 NONAME ; class SmfPost SmfActivityEntry::title(void) const
-	??0SmfLyrics@@QAE@XZ @ 649 NONAME ; SmfLyrics::SmfLyrics(void)
-	??6@YAAAVQDataStream@@AAV0@ABVQContactGender@QtMobility@@@Z @ 650 NONAME ; class QDataStream & operator<<(class QDataStream &, class QtMobility::QContactGender const &)
-	?rel@SmfUrl@@QBE?AVQString@@XZ @ 651 NONAME ; class QString SmfUrl::rel(void) const
-	?title@SmfPost@@QBE?AVQString@@XZ @ 652 NONAME ; class QString SmfPost::title(void) const
-	?searchById@SmfRelationMgr@@QAE?AVSmfRelationItem@@ABVQString@@@Z @ 653 NONAME ; class SmfRelationItem SmfRelationMgr::searchById(class QString const &)
-	?setExtension@SmfPlaylist@@QAEXABV?$QMap@VQString@@VQVariant@@@@@Z @ 654 NONAME ; void SmfPlaylist::setExtension(class QMap<class QString, class QVariant> const &)
-	?trUtf8@SmfMusicSearch@@SA?AVQString@@PBD0@Z @ 655 NONAME ; class QString SmfMusicSearch::trUtf8(char const *, char const *)
-	?name@SmfLocation@@QBE?AVQString@@XZ @ 656 NONAME ; class QString SmfLocation::name(void) const
-	?text@SmfComment@@QBE?AVQString@@XZ @ 657 NONAME ; class QString SmfComment::text(void) const
-	?type@SmfUrl@@QBE?AVQString@@XZ @ 658 NONAME ; class QString SmfUrl::type(void) const
-	??5@YAAAVQDataStream@@AAV0@AAVQContactGeoLocation@QtMobility@@@Z @ 659 NONAME ; class QDataStream & operator>>(class QDataStream &, class QtMobility::QContactGeoLocation &)
-	?qt_metacast@SmfRelationMgr@@UAEPAXPBD@Z @ 660 NONAME ; void * SmfRelationMgr::qt_metacast(char const *)
-	?trUtf8@SmfMusicEvents@@SA?AVQString@@PBD0H@Z @ 661 NONAME ; class QString SmfMusicEvents::trUtf8(char const *, char const *, int)
-	??1SmfLyrics@@QAE@XZ @ 662 NONAME ; SmfLyrics::~SmfLyrics(void)
-	??0SmfAlbum@@QAE@XZ @ 663 NONAME ; SmfAlbum::SmfAlbum(void)
-	??_ESmfPlaylistService@@UAE@I@Z @ 664 NONAME ; SmfPlaylistService::~SmfPlaylistService(unsigned int)
-	?metaObject@SmfPostProvider@@UBEPBUQMetaObject@@XZ @ 665 NONAME ; struct QMetaObject const * SmfPostProvider::metaObject(void) const
-	?setVenue@SmfEvent@@QAEXABVSmfLocation@@@Z @ 666 NONAME ; void SmfEvent::setVenue(class SmfLocation const &)
-	?search@SmfContactFetcher@@QAEXPAVSmfContact@@HH@Z @ 667 NONAME ; void SmfContactFetcher::search(class SmfContact *, int, int)
-	??_ESmfMusicService@@UAE@I@Z @ 668 NONAME ; SmfMusicService::~SmfMusicService(unsigned int)
-	?addKeywords@SmfPictureAlbum@@QAEXABVQStringList@@@Z @ 669 NONAME ; void SmfPictureAlbum::addKeywords(class QStringList const &)
-	?setTitle@SmfPicture@@QAEXABVQString@@@Z @ 670 NONAME ; void SmfPicture::setTitle(class QString const &)
-	??5@YAAAVQDataStream@@AAV0@AAVSmfLyrics@@@Z @ 671 NONAME ; class QDataStream & operator>>(class QDataStream &, class SmfLyrics &)
-	?setUrl@SmfPost@@QAEXAAVQUrl@@@Z @ 672 NONAME ; void SmfPost::setUrl(class QUrl &)
-	??6@YAAAVQDataStream@@AAV0@ABVSmfAlbum@@@Z @ 673 NONAME ; class QDataStream & operator<<(class QDataStream &, class SmfAlbum const &)
-	?setDuration@SmfSubtitle@@QAEXABN@Z @ 674 NONAME ; void SmfSubtitle::setDuration(double const &)
-	?visibility@SmfPictureAlbum@@QBE?AW4SmfPictureVisibility@@XZ @ 675 NONAME ; enum SmfPictureVisibility SmfPictureAlbum::visibility(void) const
-	??0SmfMusicProfile@@QAE@ABV0@@Z @ 676 NONAME ; SmfMusicProfile::SmfMusicProfile(class SmfMusicProfile const &)
-	?setReleaseYear@SmfSubtitle@@QAEXABVQDateTime@@@Z @ 677 NONAME ; void SmfSubtitle::setReleaseYear(class QDateTime const &)
-	?targetObj@SmfActivityEntry@@QBE?AVSmfActivityObject@@XZ @ 678 NONAME ; class SmfActivityObject SmfActivityEntry::targetObj(void) const
+	?friends@SmfContactFetcher@@QAE_NHH@Z @ 118 NONAME ; bool SmfContactFetcher::friends(int, int)
+	?tr@SmfActivityFetcher@@SA?AVQString@@PBD0H@Z @ 119 NONAME ; class QString SmfActivityFetcher::tr(char const *, char const *, int)
+	?resultsAvailable@SmfActivityFetcher@@IAEXPAV?$QList@VSmfActivityEntry@@@@W4SmfError@@USmfResultPage@@@Z @ 120 NONAME ; void SmfActivityFetcher::resultsAvailable(class QList<class SmfActivityEntry> *, enum SmfError, struct SmfResultPage)
+	??_ESmfPostProvider@@UAE@I@Z @ 121 NONAME ; SmfPostProvider::~SmfPostProvider(unsigned int)
+	?qt_metacall@SmfMusicService@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 122 NONAME ; int SmfMusicService::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?qt_metacall@SmfPlaylistService@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 123 NONAME ; int SmfPlaylistService::qt_metacall(enum QMetaObject::Call, int, void * *)
+	??_ESmfMusicService@@UAE@I@Z @ 124 NONAME ; SmfMusicService::~SmfMusicService(unsigned int)
+	?trUtf8@SmfActivityFetcher@@SA?AVQString@@PBD0@Z @ 125 NONAME ; class QString SmfActivityFetcher::trUtf8(char const *, char const *)
+	?tr@SmfPostProvider@@SA?AVQString@@PBD0H@Z @ 126 NONAME ; class QString SmfPostProvider::tr(char const *, char const *, int)
+	?customRequest@SmfLyricsService@@QAEXABHPAVQByteArray@@@Z @ 127 NONAME ; void SmfLyricsService::customRequest(int const &, class QByteArray *)
+	?customRequest@SmfMusicService@@QAEXABHPAVQByteArray@@@Z @ 128 NONAME ; void SmfMusicService::customRequest(int const &, class QByteArray *)
+	?Delete@SmfRelationMgr@@QAE?AW4SmfError@@AAVQString@@@Z @ 129 NONAME ; enum SmfError SmfRelationMgr::Delete(class QString &)
+	?metaObject@SmfLyricsService@@UBEPBUQMetaObject@@XZ @ 130 NONAME ; struct QMetaObject const * SmfLyricsService::metaObject(void) const
+	??1SmfMusicEvents@@UAE@XZ @ 131 NONAME ; SmfMusicEvents::~SmfMusicEvents(void)
+	?trUtf8@SmfMusicEvents@@SA?AVQString@@PBD0H@Z @ 132 NONAME ; class QString SmfMusicEvents::trUtf8(char const *, char const *, int)
+	?getAll@SmfRelationMgr@@QAE?AV?$QList@VSmfRelationItem@@@@AAVQString@@@Z @ 133 NONAME ; class QList<class SmfRelationItem> SmfRelationMgr::getAll(class QString &)
+	?trUtf8@SmfGallery@@SA?AVQString@@PBD0H@Z @ 134 NONAME ; class QString SmfGallery::trUtf8(char const *, char const *, int)
+	?eventsAvailable@SmfMusicEvents@@IAEXPAV?$QList@VSmfEvent@@@@W4SmfError@@USmfResultPage@@@Z @ 135 NONAME ; void SmfMusicEvents::eventsAvailable(class QList<class SmfEvent> *, enum SmfError, struct SmfResultPage)
+	?tr@SmfMusicEvents@@SA?AVQString@@PBD0H@Z @ 136 NONAME ; class QString SmfMusicEvents::tr(char const *, char const *, int)
+	??_ESmfRelationMgr@@UAE@I@Z @ 137 NONAME ; SmfRelationMgr::~SmfRelationMgr(unsigned int)
+	?events@SmfMusicEvents@@QAEXVSmfLocation@@HH@Z @ 138 NONAME ; void SmfMusicEvents::events(class SmfLocation, int, int)
+	?followersListAvailable@SmfContactFetcher@@IAEXPAV?$QList@VSmfContact@@@@W4SmfError@@USmfResultPage@@@Z @ 139 NONAME ; void SmfContactFetcher::followersListAvailable(class QList<class SmfContact> *, enum SmfError, struct SmfResultPage)
+	?albums@SmfGallery@@QAEXVQStringList@@PAVSmfContact@@HH@Z @ 140 NONAME ; void SmfGallery::albums(class QStringList, class SmfContact *, int, int)
+	??0SmfRelationItem@@QAE@PAVSmfProvider@@@Z @ 141 NONAME ; SmfRelationItem::SmfRelationItem(class SmfProvider *)
+	?recommendations@SmfMusicSearch@@QAEXVSmfTrackInfo@@HH@Z @ 142 NONAME ; void SmfMusicSearch::recommendations(class SmfTrackInfo, int, int)
+	?search@SmfContactFetcher@@QAEXPAVSmfContact@@HH@Z @ 143 NONAME ; void SmfContactFetcher::search(class SmfContact *, int, int)
+	?customRequest@SmfMusicSearch@@QAEXABHPAVQByteArray@@@Z @ 144 NONAME ; void SmfMusicSearch::customRequest(int const &, class QByteArray *)
+	?userinfo@SmfMusicService@@QAEXXZ @ 145 NONAME ; void SmfMusicService::userinfo(void)
+	??0SmfPostProvider@@QAE@PAVSmfProvider@@@Z @ 146 NONAME ; SmfPostProvider::SmfPostProvider(class SmfProvider *)
+	?tr@SmfLyricsService@@SA?AVQString@@PBD0@Z @ 147 NONAME ; class QString SmfLyricsService::tr(char const *, char const *)
+	?getStaticMetaObject@SmfLyricsService@@SAABUQMetaObject@@XZ @ 148 NONAME ; struct QMetaObject const & SmfLyricsService::getStaticMetaObject(void)
+	?playlistUpdated@SmfPlaylistService@@IAEXW4SmfError@@@Z @ 149 NONAME ; void SmfPlaylistService::playlistUpdated(enum SmfError)
+	??_ESmfActivityFetcher@@UAE@I@Z @ 150 NONAME ; SmfActivityFetcher::~SmfActivityFetcher(unsigned int)
+	?trUtf8@SmfMusicService@@SA?AVQString@@PBD0H@Z @ 151 NONAME ; class QString SmfMusicService::trUtf8(char const *, char const *, int)
+	??1SmfActivityFetcher@@UAE@XZ @ 152 NONAME ; SmfActivityFetcher::~SmfActivityFetcher(void)
+	??_ESmfRelationItem@@QAE@I@Z @ 153 NONAME ; SmfRelationItem::~SmfRelationItem(unsigned int)
+	?tr@SmfContactFetcher@@SA?AVQString@@PBD0H@Z @ 154 NONAME ; class QString SmfContactFetcher::tr(char const *, char const *, int)
+	??0SmfMusicSearch@@QAE@PAVSmfProvider@@@Z @ 155 NONAME ; SmfMusicSearch::SmfMusicSearch(class SmfProvider *)
+	?picturesAvailable@SmfGallery@@IAEXPAV?$QList@VSmfPicture@@@@W4SmfError@@USmfResultPage@@@Z @ 156 NONAME ; void SmfGallery::picturesAvailable(class QList<class SmfPicture> *, enum SmfError, struct SmfResultPage)
+	?trUtf8@SmfLyricsService@@SA?AVQString@@PBD0H@Z @ 157 NONAME ; class QString SmfLyricsService::trUtf8(char const *, char const *, int)
+	?getProvider@SmfLyricsService@@ABEPAVSmfProvider@@XZ @ 158 NONAME ; class SmfProvider * SmfLyricsService::getProvider(void) const
+	?posts@SmfPostProvider@@QAEXPAVSmfContact@@HH@Z @ 159 NONAME ; void SmfPostProvider::posts(class SmfContact *, int, int)
+	??1SmfLyricsService@@UAE@XZ @ 160 NONAME ; SmfLyricsService::~SmfLyricsService(void)
+	??0SmfContactFetcher@@QAE@PAVSmfProvider@@PAVSmfContact@@@Z @ 161 NONAME ; SmfContactFetcher::SmfContactFetcher(class SmfProvider *, class SmfContact *)
+	?upload@SmfGallery@@QAEXPAV?$QList@VSmfPicture@@@@PAVSmfPictureAlbum@@@Z @ 162 NONAME ; void SmfGallery::upload(class QList<class SmfPicture> *, class SmfPictureAlbum *)
+	?qt_metacast@SmfMusicService@@UAEPAXPBD@Z @ 163 NONAME ; void * SmfMusicService::qt_metacast(char const *)
+	?postfinished@SmfMusicService@@IAEXW4SmfError@@@Z @ 164 NONAME ; void SmfMusicService::postfinished(enum SmfError)
+	?errorString@SmfClient@@QBE?AVQString@@ABW4SmfError@@@Z @ 165 NONAME ; class QString SmfClient::errorString(enum SmfError const &) const
+	?staticMetaObject@SmfPlaylistService@@2UQMetaObject@@B @ 166 NONAME ; struct QMetaObject const SmfPlaylistService::staticMetaObject
+	?getProvider@SmfContactFetcher@@ABEPAVSmfProvider@@XZ @ 167 NONAME ; class SmfProvider * SmfContactFetcher::getProvider(void) const
+	?trUtf8@SmfPlaylistService@@SA?AVQString@@PBD0H@Z @ 168 NONAME ; class QString SmfPlaylistService::trUtf8(char const *, char const *, int)
+	?groups@SmfContactFetcher@@QAE_NHH@Z @ 169 NONAME ; bool SmfContactFetcher::groups(int, int)
+	?getStaticMetaObject@SmfActivityFetcher@@SAABUQMetaObject@@XZ @ 170 NONAME ; struct QMetaObject const & SmfActivityFetcher::getStaticMetaObject(void)
+	?staticMetaObject@SmfPostProvider@@2UQMetaObject@@B @ 171 NONAME ; struct QMetaObject const SmfPostProvider::staticMetaObject
+	??0SmfRelationItem@@QAE@ABV0@@Z @ 172 NONAME ; SmfRelationItem::SmfRelationItem(class SmfRelationItem const &)
+	?sharePost@SmfPostProvider@@QAEXAAVSmfPost@@AAVSmfContact@@_N@Z @ 173 NONAME ; void SmfPostProvider::sharePost(class SmfPost &, class SmfContact &, bool)
+	?updatePost@SmfPostProvider@@QAEXAAVSmfPost@@@Z @ 174 NONAME ; void SmfPostProvider::updatePost(class SmfPost &)
+	?postFinished@SmfPostProvider@@IAEXW4SmfError@@@Z @ 175 NONAME ; void SmfPostProvider::postFinished(enum SmfError)
+	??_ESmfLyricsService@@UAE@I@Z @ 176 NONAME ; SmfLyricsService::~SmfLyricsService(unsigned int)
+	?customDataAvailable@SmfPlaylistService@@IAEXABHPAVQByteArray@@@Z @ 177 NONAME ; void SmfPlaylistService::customDataAvailable(int const &, class QByteArray *)
+	?getContact@SmfRelationItem@@QBE?AVSmfContact@@XZ @ 178 NONAME ; class SmfContact SmfRelationItem::getContact(void) const
+	?qt_metacall@SmfActivityFetcher@@UAEHW4Call@QMetaObject@@HPAPAX@Z @ 179 NONAME ; int SmfActivityFetcher::qt_metacall(enum QMetaObject::Call, int, void * *)
+	?customDataAvailable@SmfPostProvider@@IAEXHPAVQByteArray@@@Z @ 180 NONAME ; void SmfPostProvider::customDataAvailable(int, class QByteArray *)
+	?postComment@SmfGallery@@QAEXVSmfPicture@@VSmfComment@@@Z @ 181 NONAME ; void SmfGallery::postComment(class SmfPicture, class SmfComment)
+	?staticMetaObject@SmfMusicService@@2UQMetaObject@@B @ 182 NONAME ; struct QMetaObject const SmfMusicService::staticMetaObject
+	?staticMetaObject@SmfMusicSearch@@2UQMetaObject@@B @ 183 NONAME ; struct QMetaObject const SmfMusicSearch::staticMetaObject
+	??_ESmfGallery@@UAE@I@Z @ 184 NONAME ; SmfGallery::~SmfGallery(unsigned int)
+	?trUtf8@SmfMusicService@@SA?AVQString@@PBD0@Z @ 185 NONAME ; class QString SmfMusicService::trUtf8(char const *, char const *)
+	?qt_metacast@SmfGallery@@UAEPAXPBD@Z @ 186 NONAME ; void * SmfGallery::qt_metacast(char const *)
+	?tr@SmfMusicService@@SA?AVQString@@PBD0@Z @ 187 NONAME ; class QString SmfMusicService::tr(char const *, char const *)
+	?playlistsOf@SmfPlaylistService@@QAEXPAVSmfMusicProfile@@HH@Z @ 188 NONAME ; void SmfPlaylistService::playlistsOf(class SmfMusicProfile *, int, int)
+	?metaObject@SmfMusicService@@UBEPBUQMetaObject@@XZ @ 189 NONAME ; struct QMetaObject const * SmfMusicService::metaObject(void) const
+	?trUtf8@SmfMusicSearch@@SA?AVQString@@PBD0H@Z @ 190 NONAME ; class QString SmfMusicSearch::trUtf8(char const *, char const *, int)
+	?tr@SmfMusicSearch@@SA?AVQString@@PBD0H@Z @ 191 NONAME ; class QString SmfMusicSearch::tr(char const *, char const *, int)
+	?getProvider@SmfMusicEvents@@ABEPAVSmfProvider@@XZ @ 192 NONAME ; class SmfProvider * SmfMusicEvents::getProvider(void) const
+	?description@SmfGallery@@QAEXAAVSmfPicture@@@Z @ 193 NONAME ; void SmfGallery::description(class SmfPicture &)
+	?postEvents@SmfMusicEvents@@QAEXV?$QList@VSmfEvent@@@@@Z @ 194 NONAME ; void SmfMusicEvents::postEvents(class QList<class SmfEvent>)
+	?customRequest@SmfPlaylistService@@QAEXABHPAVQByteArray@@@Z @ 195 NONAME ; void SmfPlaylistService::customRequest(int const &, class QByteArray *)
+	?tr@SmfPlaylistService@@SA?AVQString@@PBD0H@Z @ 196 NONAME ; class QString SmfPlaylistService::tr(char const *, char const *, int)
+	?postsAvailable@SmfPostProvider@@IAEXPAV?$QList@VSmfPost@@@@W4SmfError@@USmfResultPage@@@Z @ 197 NONAME ; void SmfPostProvider::postsAvailable(class QList<class SmfPost> *, enum SmfError, struct SmfResultPage)
+	??0SmfMusicEvents@@QAE@PAVSmfProvider@@@Z @ 198 NONAME ; SmfMusicEvents::SmfMusicEvents(class SmfProvider *)
+	??0SmfRelationMgr@@QAE@PAVQObject@@@Z @ 199 NONAME ; SmfRelationMgr::SmfRelationMgr(class QObject *)
+	??1SmfGallery@@UAE@XZ @ 200 NONAME ; SmfGallery::~SmfGallery(void)
+	??0SmfContactFetcher@@QAE@PAVSmfProvider@@@Z @ 201 NONAME ; SmfContactFetcher::SmfContactFetcher(class SmfProvider *)
+	?tr@SmfMusicSearch@@SA?AVQString@@PBD0@Z @ 202 NONAME ; class QString SmfMusicSearch::tr(char const *, char const *)
+	?postDirected@SmfPostProvider@@QAEXAAVSmfPost@@AAVSmfContact@@PAVSmfLocation@@@Z @ 203 NONAME ; void SmfPostProvider::postDirected(class SmfPost &, class SmfContact &, class SmfLocation *)
+	?subtitleAvailable@SmfLyricsService@@IAEXPAV?$QList@VSmfSubtitle@@@@W4SmfError@@USmfResultPage@@@Z @ 204 NONAME ; void SmfLyricsService::subtitleAvailable(class QList<class SmfSubtitle> *, enum SmfError, struct SmfResultPage)
+	?friendsActivities@SmfActivityFetcher@@QAEXABVSmfContact@@HH@Z @ 205 NONAME ; void SmfActivityFetcher::friendsActivities(class SmfContact const &, int, int)
+	?getProvider@SmfMusicService@@ABEPAVSmfProvider@@XZ @ 206 NONAME ; class SmfProvider * SmfMusicService::getProvider(void) const
+	?staticMetaObject@SmfContactFetcher@@2UQMetaObject@@B @ 207 NONAME ; struct QMetaObject const SmfContactFetcher::staticMetaObject
+	?searchNearFinished@SmfContactFetcher@@IAEXPAV?$QList@VSmfContact@@@@W4SmfError@@USmfResultPage@@@Z @ 208 NONAME ; void SmfContactFetcher::searchNearFinished(class QList<class SmfContact> *, enum SmfError, struct SmfResultPage)
+	?searchContactFinished@SmfContactFetcher@@IAEXPAV?$QList@VSmfContact@@@@W4SmfError@@USmfResultPage@@@Z @ 209 NONAME ; void SmfContactFetcher::searchContactFinished(class QList<class SmfContact> *, enum SmfError, struct SmfResultPage)
+	?postRating@SmfMusicService@@QAEXVSmfTrackInfo@@VSmfMusicRating@@@Z @ 210 NONAME ; void SmfMusicService::postRating(class SmfTrackInfo, class SmfMusicRating)
+	?metaObject@SmfContactFetcher@@UBEPBUQMetaObject@@XZ @ 211 NONAME ; struct QMetaObject const * SmfContactFetcher::metaObject(void) const
+	?searchInGroupFinished@SmfContactFetcher@@IAEXPAV?$QList@VSmfContact@@@@W4SmfError@@USmfResultPage@@@Z @ 212 NONAME ; void SmfContactFetcher::searchInGroupFinished(class QList<class SmfContact> *, enum SmfError, struct SmfResultPage)
+	??1SmfRelationMgr@@UAE@XZ @ 213 NONAME ; SmfRelationMgr::~SmfRelationMgr(void)
+	?qt_metacast@SmfPostProvider@@UAEPAXPBD@Z @ 214 NONAME ; void * SmfPostProvider::qt_metacast(char const *)
+	?pictures@SmfGallery@@QAEXAAV?$QList@VSmfPictureAlbum@@@@HH@Z @ 215 NONAME ; void SmfGallery::pictures(class QList<class SmfPictureAlbum> &, int, int)
+	?selfActivities@SmfActivityFetcher@@QAEXHH@Z @ 216 NONAME ; void SmfActivityFetcher::selfActivities(int, int)
+	?getAllRelations@SmfRelationMgr@@QAE?AV?$QList@VQString@@@@XZ @ 217 NONAME ; class QList<class QString> SmfRelationMgr::getAllRelations(void)
+	?qt_metacast@SmfRelationMgr@@UAEPAXPBD@Z @ 218 NONAME ; void * SmfRelationMgr::qt_metacast(char const *)
+	?postComments@SmfMusicService@@QAEXVSmfTrackInfo@@VSmfComment@@@Z @ 219 NONAME ; void SmfMusicService::postComments(class SmfTrackInfo, class SmfComment)
+	?searchInfoAvailable@SmfMusicService@@IAEXPAV?$QList@VSmfMusicProfile@@@@W4SmfError@@USmfResultPage@@@Z @ 220 NONAME ; void SmfMusicService::searchInfoAvailable(class QList<class SmfMusicProfile> *, enum SmfError, struct SmfResultPage)
+	?setProvider@SmfRelationItem@@QAEXAAVSmfProvider@@@Z @ 221 NONAME ; void SmfRelationItem::setProvider(class SmfProvider &)
+	?setIndex@SmfRelationItem@@QAEXI@Z @ 222 NONAME ; void SmfRelationItem::setIndex(unsigned int)
+	?qt_metacast@SmfLyricsService@@UAEPAXPBD@Z @ 223 NONAME ; void * SmfLyricsService::qt_metacast(char const *)
+	?customRequest@SmfPostProvider@@QAEXABHPAVQByteArray@@@Z @ 224 NONAME ; void SmfPostProvider::customRequest(int const &, class QByteArray *)
+	?tr@SmfActivityFetcher@@SA?AVQString@@PBD0@Z @ 225 NONAME ; class QString SmfActivityFetcher::tr(char const *, char const *)
+	?tr@SmfMusicService@@SA?AVQString@@PBD0H@Z @ 226 NONAME ; class QString SmfMusicService::tr(char const *, char const *, int)
+	?postCurrentPlayingPlaylist@SmfPlaylistService@@QAEHVSmfPlaylist@@@Z @ 227 NONAME ; int SmfPlaylistService::postCurrentPlayingPlaylist(class SmfPlaylist)
+	??0SmfPlaylistService@@QAE@PAVSmfProvider@@@Z @ 228 NONAME ; SmfPlaylistService::SmfPlaylistService(class SmfProvider *)
+	?searchUser@SmfMusicService@@QAEXVSmfLocation@@HH@Z @ 229 NONAME ; void SmfMusicService::searchUser(class SmfLocation, int, int)
+	?metaObject@SmfRelationMgr@@UBEPBUQMetaObject@@XZ @ 230 NONAME ; struct QMetaObject const * SmfRelationMgr::metaObject(void) const
+	?tr@SmfMusicEvents@@SA?AVQString@@PBD0@Z @ 231 NONAME ; class QString SmfMusicEvents::tr(char const *, char const *)
+	?metaObject@SmfActivityFetcher@@UBEPBUQMetaObject@@XZ @ 232 NONAME ; struct QMetaObject const * SmfActivityFetcher::metaObject(void) const
+	?playlists@SmfPlaylistService@@QAEXHH@Z @ 233 NONAME ; void SmfPlaylistService::playlists(int, int)
+	?searchNear@SmfContactFetcher@@QAE_NPAVSmfLocation@@W4SmfLocationSearchBoundary@@HH@Z @ 234 NONAME ; bool SmfContactFetcher::searchNear(class SmfLocation *, enum SmfLocationSearchBoundary, int, int)
+	?playlistsListAvailable@SmfPlaylistService@@IAEXPAV?$QList@VSmfPlaylist@@@@W4SmfError@@USmfResultPage@@@Z @ 235 NONAME ; void SmfPlaylistService::playlistsListAvailable(class QList<class SmfPlaylist> *, enum SmfError, struct SmfResultPage)
+	?trackSearchAvailable@SmfMusicSearch@@IAEXPAV?$QList@VSmfTrackInfo@@@@W4SmfError@@USmfResultPage@@@Z @ 236 NONAME ; void SmfMusicSearch::trackSearchAvailable(class QList<class SmfTrackInfo> *, enum SmfError, struct SmfResultPage)
+	?qt_metacast@SmfContactFetcher@@UAEPAXPBD@Z @ 237 NONAME ; void * SmfContactFetcher::qt_metacast(char const *)
+	?upload@SmfGallery@@QAEXPAVSmfPicture@@PAVSmfPictureAlbum@@@Z @ 238 NONAME ; void SmfGallery::upload(class SmfPicture *, class SmfPictureAlbum *)
+	??_ESmfMusicEvents@@UAE@I@Z @ 239 NONAME ; SmfMusicEvents::~SmfMusicEvents(unsigned int)
+	?get@SmfRelationMgr@@QAEPAVSmfRelationItem@@AAVQString@@I@Z @ 240 NONAME ; class SmfRelationItem * SmfRelationMgr::get(class QString &, unsigned int)
+	?searchById@SmfRelationMgr@@QAEPAVSmfRelationItem@@ABVQString@@@Z @ 241 NONAME ; class SmfRelationItem * SmfRelationMgr::searchById(class QString const &)
+	?associate@SmfRelationMgr@@QAE?AW4SmfError@@AAVQString@@PBVSmfContact@@PAVSmfProvider@@@Z @ 242 NONAME ; enum SmfError SmfRelationMgr::associate(class QString &, class SmfContact const *, class SmfProvider *)
+	?postAppearence@SmfPostProvider@@QAE_NW4SmfAppearenceInfo@@ABVQString@@@Z @ 243 NONAME ; bool SmfPostProvider::postAppearence(enum SmfAppearenceInfo, class QString const &)
 

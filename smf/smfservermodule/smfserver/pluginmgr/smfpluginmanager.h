@@ -120,6 +120,23 @@ public:
 			QByteArray& aInputData );
 	
 	/**
+	 * Method called by Smf server to create a synchronous plugin request.
+	 * @param aPluginID The plugin ID that need to perform this operation
+	 * @param aOperation The type of operation to be performed
+	 * @param aInputData The data required by the plugins
+	 * @param aOutputData [out] The output data to be filled by the plugins
+	 * @return SmfError The result of the operation. It can be :-
+	 * SmfPluginNoError (if the request is success) or 
+	 * SmfPluginLoadError (if plugin could not be loaded) or
+	 * SmfPluginNotAuthorised (if the plugin is not authorised) or
+	 * SmfPluginUnknownPluginService (if the requested service is not known or unsupported)
+	 */
+	SmfError createSyncRequest ( const QString& aPluginID, 
+			const SmfRequestTypeID& aOperation, 
+			QByteArray& aInputData,
+			QByteArray& aOutputData );
+	
+	/**
 	 * Method called by Transport Manager when network response is available
 	 * @param aTransportResult The result of Transport Operation
 	 * @param aReply The QNetworkReply instance that requested 
@@ -232,14 +249,14 @@ private:
 	 * This method communicates with Credential and Settings Manager 
 	 * through Smf server, giving the registration token and getting 
 	 * the valid url list if available for this plugin.
-	 * @param aRegToken The registration token given by the plugin
+	 * @param aPluginId The ID of the plugin
 	 * @param aUrlList [out] The list of Urls that the plugin can send 
 	 * request to (to be filled by CSM). This list will be empty if 
 	 * aRegToken is empty
 	 * @return Returns true if plugin is authorised, else returns false.
 	 * Also returns false if aRegToken is empty.
 	 */
-	bool authorisePlugin( const QString &aRegToken, 
+	bool authorisePlugin( const QString &aPluginId, 
 			QList<QUrl> &aUrlList );
 	
 	/**

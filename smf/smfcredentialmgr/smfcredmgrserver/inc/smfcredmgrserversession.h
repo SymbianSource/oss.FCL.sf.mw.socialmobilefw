@@ -7,7 +7,10 @@
  * at the URL "http://www.eclipse.org/legal/epl-v10.html"
  *
  * Initial Contributors:
- * Pritam Roy Biswas, Sasken Communication Technologies Ltd - Initial contribution
+ * Chandradeep Gandhi, Sasken Communication Technologies Ltd - Initial contribution
+ * 
+ * Contributors:
+ * Pritam Roy Biswas, Sasken Communication Technologies Ltd
  *
  * Description:
  * Header file for Credential Manager Server Session.
@@ -17,6 +20,7 @@
 #define SMFCREDMGRSERVERSESSION_H_
 
 #include <e32base.h>
+
 #include "smfcredmgrserver.h"
 #include "smfcredmgrclientdatastruct.h"
 #include "smfkeystoremanager.h"
@@ -27,22 +31,29 @@
 class CSmfCredMgrDbUser;
 
 /**
- * Maximun size for buffer
+ * Maximum size for buffer
  */
 const TInt KMaxBufSize = 512;
 
 /**
  * Class to establish a client session at server side.
- *  Derives from CSession2
+ * Derives from CSession2
  */
 class CSmfCredMgrServerSession : public CSession2
 	{
 public:
 	/**
-	 * New Methods
+	 * NewL Method
 	 * @param aServer the server object
+	 * @return The constructed CSmfCredMgrServerSession instance
 	 */
 	static CSmfCredMgrServerSession* NewL(CSmfCredMgrServer& aServer);
+	
+	/**
+	 * NewLC Method
+	 * @param aServer the server object
+	 * @return The constructed CSmfCredMgrServerSession instance
+	 */
 	static CSmfCredMgrServerSession* NewLC(CSmfCredMgrServer& aServer);
 
 	/**
@@ -50,15 +61,7 @@ public:
 	 */
 	~CSmfCredMgrServerSession();
 
-	/**
-	 * Constructor
-	 * @param aServer The server object
-	 */
-	CSmfCredMgrServerSession(CSmfCredMgrServer& aServer);
-
-public:
-	// from CSession2
-
+public: // from CSession2
 	/**
 	 * Handles the servicing of a client request that has been 
 	 * passed to the server
@@ -67,6 +70,12 @@ public:
 	virtual void ServiceL(const RMessage2& aMessage);
 
 private:
+	/**
+	 * Constructor
+	 * @param aServer The server object
+	 */
+	CSmfCredMgrServerSession(CSmfCredMgrServer& aServer);
+	
 	/**
 	 * Two-Phase constructor
 	 */
@@ -79,26 +88,24 @@ private:
 	void storeInDb(CSmfStoreAuthParams* aParams);
 
 	/**
-	 * Retieves the plugin ids from Db
+	 * Retrieves the plugin ids from Db
 	 * @param aParams class object to be updated
 	 */
-	void fetchPluginIDs(CSmfPluginIDListParams* aParams);
+	void fetchPluginIDsL(CSmfPluginIDListParams* aParams);
 
 	/**
-	 * Retieves the URLs from Db
+	 * Retrieves the URLs from Db
 	 * @param aArg class object to be updated
 	 */
-	void fetchURLs(CSmfURLListParams* aArg);
+	void fetchUrlL(CSmfURLListParams* aArg);
 
 	/**
-	 * retrieves each token set from Db and updates the array of CSmfFetchAuthTokenSet
+	 * Retrieves each token set from Db and updates the array of CSmfFetchAuthTokenSet
 	 * @param aParams class containg the array to be filled
 	 */
-	void getTokenArray(CSmfFetchAuthTokenSet* aParams);
+	void getTokenArrayL(CSmfFetchAuthTokenSet* aParams);
 
-
-private:
-
+private:  // Data
 	CSmfCredMgrServer& iServer;
 	CSmfCredMgrDbUser* iDbUser;
 	CSmfKeyStoreManager* iKeyStore;

@@ -100,40 +100,6 @@ public:
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
 	/**
-	 * Method to post the currently playing track
-	 * @param aRequest [out] The request data to be sent to network
-	 * @param aTrack The current playing track, that should be posted
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
-	 */
-	virtual SmfPluginError postCurrentPlaying( 
-			SmfPluginRequestData &aRequest,
-			const SmfTrackInfo &aTrack ) = 0;
-	
-	/**
-	 * Method to post the rating on a track
-	 * @param aRequest [out] The request data to be sent to network
-	 * @param aTrack The track on which rating should be posted
-	 * @param aRating The rating values
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
-	 */
-	virtual SmfPluginError postRating( 
-			SmfPluginRequestData &aRequest, 
-			const SmfTrackInfo &aTrack, 
-			const SmfMusicRating &aRating ) = 0;
-	
-	/**
-	 * Method to post comment on a track
-	 * @param aRequest [out] The request data to be sent to network
-	 * @param aTrack The track on which comment should be posted
-	 * @param aComment The comment content
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
-	 */
-	virtual SmfPluginError postComments( 
-			SmfPluginRequestData &aRequest, 
-			const SmfTrackInfo &aTrack, 
-			const SmfComment &aComment ) = 0;
-		
-	/**
 	 * Customised method for SmfMusicSearchPlugin interface
 	 * @param aRequest [out] The request data to be sent to network
 	 * @param aOperation The operation type (should be known between 

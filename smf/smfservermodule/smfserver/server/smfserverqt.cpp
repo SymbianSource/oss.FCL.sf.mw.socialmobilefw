@@ -17,94 +17,89 @@
  *
  */
 
+#include <QLocalServer>
+#include <QLocalSocket>
+
 #include "smfserverqt_p.h"
 #include "smfserverqtsession.h"
 #include "smfserver.h"
 
-#include <QLocalServer>
-#include <QLocalSocket>
-
 
 SmfServerQt::SmfServerQt(SmfServer *wrapper)
     : m_generic(wrapper)
-{
+	{
     m_server = new QLocalServer(this);
     connect(m_server, SIGNAL(newConnection()), this, SLOT(newClientConnected()));
-}
+	}
 
 SmfServerQt::~SmfServerQt()
-{
+	{
     m_server->close();
-}
+	}
 
 /**
   * Start the server listening for connections.
   */
 bool SmfServerQt::start()
-{
+	{
     const QString KServerName("SmfServerQt");
     if (m_server->listen(KServerName))
-    {
+    	{
         qDebug()<<(QString(m_server->serverName() + ": listening for connections."));
         return true;
-    }
+    	}
     else
-    {
+    	{
         qDebug()<<(QString(KServerName + ": failed to start"));
         qDebug()<<(QString(m_server->errorString()));
         return false;
-    }
-}
+    	}
+	}
 
 /**
  * Return the number of open sessions
  */
 int SmfServerQt::sessionListCount() const
-{
+		{
     return m_sessions.count();
-}
-
-/*void SmfServerQt::writeLog(QString log) const
-{
-    qDebug() << log.toAscii().constData();
-}*/
+		}
 
 /**
  * Called by the SmfServer when client authorization finishes.
  * @param success success of the authorization
  */
 void SmfServerQt::clientAuthorizationFinished(bool success)
-{
+	{
     Q_UNUSED(success);
-}
+	}
 
 /**
   * Slot to receive incoming connections
   */
 void SmfServerQt::newClientConnected()
-{
+	{
     QLocalSocket *client(m_server->nextPendingConnection());
     if (!client)
-    {
-        qDebug()<<("SmfServerQt::newClientConnected(): no socket - client may have dropped.");
+    	{
+        qDebug()<<"SmfServerQt::newClientConnected(): no socket - client may have dropped.";
         return;
-    }
+    	}
 
     // Create a new session for this client.
-    qDebug()<<("Client connected.");
+    qDebug()<<"Client connected.";
 
     m_sessions.append(new SmfServerQtSession(client, this));
-}
+	}
 
 void  SmfServerQt::removeFromList()
-{
-}
+	{
+	}
 
 int SmfServerQt::findAndServiceclient(int requestID,QByteArray* parsedData,SmfError error)
-{
+	{
     Q_UNUSED(requestID);
     Q_UNUSED(parsedData);
     Q_UNUSED(error);
     return 0;
-}
+	}
 

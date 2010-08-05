@@ -43,18 +43,22 @@
  * PluginList during storing in  storeAuthData() API ,i.e if Flag = 1 the 
  * entire List of Plugins are enabled. 
  * 
- *  The NONCE and Registration Token are to be generated using SecureRandomL() library function.
+ *  The NONCE is generated using rand() library function.
  *   
  *  @Todo-  1)The validity check of the authentication data at the server side is an open item yet and is to be implemented. 
- *  This will require the signal-slot implementation at the client side to notify authentication expiry. The error handling 
- *  and also state-machine (if required) are to be implemented. 2) The process id of SmfServer needs to be checked inside 
- *  credmgr to ensure nobody else reads the keys. 
+ *  This will require the signal-slot implementation at the client side to notify authentication expiry, if decided that 
+ *  credentialmgr will launch authapp. 
+ *  2)The error handling and  state-machine (if required) are to be implemented. 
+ *  3) The process id of smfserver needs to be checked inside credmgr to ensure only smfserver reads the keys. 
  *   
  */
+
 #ifndef COMMON_H_
 #define COMMON_H_
+
 #include <e32base.h>
 #include <e32debug.h>
+
 /**
  *Name of the server.
  */
@@ -79,6 +83,7 @@ enum SmfSignatureMethod
 	 * Enum for no algorithm
 	 */
 	ESmfNoSigningMethod = 0,
+			
 	/**
 	 *Enum for algorithm RSA-SHA1
 	 */
@@ -88,10 +93,12 @@ enum SmfSignatureMethod
 	 *Enum for algorithm HMAC-SHA1
 	 */
 	ESMFHMACProtocol,
+	
 	/**
 	 *Enum for Plain Tezt
 	 */
 	ESMFPlainText,
+	
 	/**
 	 *Enum for SHA256
 	 */
@@ -105,22 +112,22 @@ enum TCredentialServerRequestID
 	{
 	/**
 	 * Op code to check plugin is authorised
-	 * */
+	 */
 	ECheckPluginAuthentication = 1,
 
 	/**
 	 * Op code to store entire set of data while authentication
-	 * */
+	 */
 	EStoreAuthData,
 
 	/**
 	 * Op code to send OAuth key set i.e SmfAuthParams
-	 * */
+	 */
 	ESendAuthDataSet,
 
 	/**
 	 * Op code to send authenticated plugin list
-	 * */
+	 */
 	ESendPluginIDList,
 
 	/**
@@ -137,14 +144,17 @@ enum TCredentialServerRequestID
 	 * Op code to store RSA keys.
 	 */
 	ESmfStoreRSAKey,
+	
 	/**
 	 * Op code to sign message using RSA algo.
 	 */
 	ESmfRSASignMessage,
+	
 	/**
 	 * Op code to sign using HAMC-SHA1 algo.
 	 */
 	ESmfHMACSHA1SignMessage,
+	
 	/**
 	 * Op code to delete RSA keys.
 	 */

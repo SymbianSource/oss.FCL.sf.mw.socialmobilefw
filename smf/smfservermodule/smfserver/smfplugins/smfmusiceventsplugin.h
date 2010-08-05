@@ -56,7 +56,7 @@ public:
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
 	virtual SmfPluginError events( SmfPluginRequestData &aRequest,
-			const QGeoPositionInfo &aLocation,
+			const SmfLocation &aLocation,
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
@@ -69,20 +69,7 @@ public:
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
 	virtual SmfPluginError venues( SmfPluginRequestData &aRequest,
-			const QGeoPositionInfo &aLocation,
-			const int aPageNum = SMF_FIRST_PAGE, 
-			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
-	
-	/**
-	 * Method to get the events based on venues
-	 * @param aRequest [out] The request data to be sent to network
-	 * @param aVenue Venue of the event
-	 * @param aPageNum The page to be extracted
-	 * @param aItemsPerPage Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
-	 */
-	virtual SmfPluginError events( SmfPluginRequestData &aRequest,
-			const SmfLocation &aVenue,
+			const SmfLocation &aLocation,
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	

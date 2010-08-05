@@ -24,6 +24,7 @@
 #include <smfpicture.h>
 #include <smfcomment.h>
 #include <smfpicturealbum.h>
+#include <smfcontact.h>
 
 /**
  * @ingroup smf_plugin_group

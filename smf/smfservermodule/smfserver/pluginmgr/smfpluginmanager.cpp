@@ -26,6 +26,7 @@
 #include <smfpluginbase.h>
 #include <smfpluginutil.h>
 #include <smfprovider.h>
+#include <smfcredmgrclient.h>
 
 #include "smfpluginmanager.h"
 #include "smfpluginmanagerutil.h"
@@ -155,19 +156,18 @@ SmfError SmfPluginManager::createRequest ( const quint32& aSessionID,
 		
 		if(instance)
 		{
-		// Get the registration token of the plugin
-		QString regToken = instance->getProviderInfo()->smfRegistrationId();
 		QList<QUrl> urlList;
 		SmfPluginRequestData reqData;
 
 		// check if the plugin is authorised (with CSM)
-		if( authorisePlugin(regToken, urlList ))
+		if( authorisePlugin(aPluginID, urlList ))
 			{
 			qDebug()<<"Plugin authorised";
 			
 			// call the utility method to create plugin specific request
 			result = SmfUnknownError;
-			m_util->createRequest(plugin, aOperation, aInputData, reqData, result);
+			QByteArray notused;
+			m_util->createRequest(plugin, aOperation, aInputData, reqData, result, notused);
 
 			// If the request is created successfully, call the TM method to send the request
 			if( SmfNoError == result )
@@ -212,6 +212,84 @@ SmfError SmfPluginManager::createRequest ( const quint32& aSessionID,
 	
 	return result;
 	}
+
+
+/**
+ * Method called by Smf server to create a synchronous plugin request.
+ * @param aPluginID The plugin ID that need to perform this operation
+ * @param aOperation The type of operation to be performed
+ * @param aInputData The data required by the plugins
+ * @param aOutputData [out] The output data to be filled by the plugins
+ * @return SmfError The result of the operation. It can be :-
+ * SmfPluginNoError (if the request is success) or 
+ * SmfPluginLoadError (if plugin could not be loaded) or
+ * SmfPluginNotAuthorised (if the plugin is not authorised) or
+ * SmfPluginUnknownPluginService (if the requested service is not known or unsupported)
+ */
+SmfError SmfPluginManager::createSyncRequest ( const QString& aPluginID, 
+		const SmfRequestTypeID& aOperation, 
+		QByteArray& aInputData,
+		QByteArray& aOutputData )
+	{
+	qDebug()<<"Inside SmfPluginManager::createSyncRequest()";
+	
+	SmfError result = SmfUnknownError;
+
+	// Load the plugin
+	QObject *plugin = load(aPluginID, result);
+	
+	// Check if plugin is loaded
+	if(plugin && (SmfNoError == result))
+		{
+		SmfPluginBase* instance = qobject_cast<SmfPluginBase *>(plugin);
+		
+		if(instance)
+		{
+		QList<QUrl> urlList;
+		SmfPluginRequestData reqData;
+
+		// check if the plugin is authorised (with CSM)
+		if( authorisePlugin(aPluginID, urlList ))
+			{
+			qDebug()<<"Plugin authorised";
+			
+			// call the utility method to create plugin specific request
+			result = SmfUnknownError;
+			m_util->createRequest(plugin, aOperation, aInputData, reqData, result, aOutputData );
+
+			// If the request is created successfully, call the TM method to send the request
+			if( SmfNoError == result )
+				qDebug()<<"Plugin request creation successful";
+			else
+				qDebug()<<"Plugin request creation failed!!!, error = "<<result;
+			}
+		
+		else
+			{
+			// plugin not authorised, so unload
+			qDebug()<<"Plugin not authorised!!!";
+			unload(instance);
+				result = SmfPMPluginNotAuthorised;
+			}
+		}
+		else
+			{
+			// plugin instance cannot be casted, so unload
+			qDebug()<<"Plugin instance cannot be casted to SmfPluginBase*!!!";
+			unload(instance);
+			result = SmfPMPluginLoadError;
+			}
+		}
+
+	else
+		{
+		// plugin not loaded
+		qDebug()<<"Plugin not loaded!!!";
+		}
+	
+	return result;
+	}
+
 
 
 /**
@@ -436,7 +514,7 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 				    if (plugin)
 				    	{
 						qDebug()<<"SmfPluginBase found";
-						plugin->initialize(SmfPluginUtil::getInstance());
+						plugin->initialize();
 				    
 						// get the plugin id
 						QString id = plugin->getProviderInfo()->pluginId();
@@ -551,7 +629,7 @@ QObject* SmfPluginManager::load ( const QString &aPluginId,
 		if( pluginLoader->isLoaded() && plugin )
 			{
 			// Initialize the plugin
-			plugin->initialize(SmfPluginUtil::getInstance());
+			plugin->initialize();
 			
 			// update the plugin loader and the loaded plugin lists
 			m_pluginLoaderHash.insertMulti(plugin, pluginLoader);
@@ -746,42 +824,26 @@ void SmfPluginManager::sendRequest ( SmfPluginRequestData &aReqData,
  * This method communicates with Credential and Settings Manager 
  * through Smf server, giving the registration token and getting 
  * the valid url list if available for this plugin.
- * @param aRegToken The registration token given by the plugin
+ * @param aPluginId The ID of the plugin
  * @param aUrlList [out] The list of Urls that the plugin can send 
  * request to (to be filled by CSM). This list will be empty if 
- * aRegToken is empty
+ * aPluginId is not valid or not authorised.
  * @return Returns true if plugin is authorised, else returns false.
  * Also returns false if aRegToken is empty.
  */
-bool SmfPluginManager::authorisePlugin( const QString &aRegToken, 
+bool SmfPluginManager::authorisePlugin( const QString &aPluginId, 
 		QList<QUrl> &aUrlList )
 	{
-	Q_UNUSED(aRegToken)
 	qDebug()<<"Inside SmfPluginManager::authorisePlugin()";
 	
-#ifdef CSM_INTEGRATED
-	aUrlList.clear();
+	bool authorised = false;
+	SmfCredMgrClient csmClient;
 	
-// Get the valid URL list from CSM, giving the reg token
-	if(aRegToken.size())
-		return m_server->authorisePlugin(aRegToken, aUrlList);
-	else
-		return false;
-#else
+	aUrlList = csmClient.URLList(aPluginId);
+	if(aUrlList.count())
+		authorised = true;
 	
-// CSM STUBBING - start
-	QUrl url1 ("http://www.example.com");
-	QUrl url2 ("http://api.facebook.com");
-	QUrl url3 ("http://api.flickr.com");
-
-	aUrlList.append(url1);
-	aUrlList.append(url2);
-	aUrlList.append(url3);
-
-	return true;
-// CSM STUBBING - end
-#endif
-
+	return authorised;
 	}
 
 
@@ -882,7 +944,7 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 		
 		if(instance && (SmfNoError == result))
 			{
-			instance->initialize(SmfPluginUtil::getInstance());
+			instance->initialize();
 			serviceProv = instance->getProviderInfo()->serviceName();
 			interfaceName = dir.dirName();
 			}
@@ -926,7 +988,7 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 		
 		if(instance && (SmfNoError == result))
 			{
-			instance->initialize(SmfPluginUtil::getInstance());
+			instance->initialize();
 			serviceProv = instance->getProviderInfo()->serviceName();
 			interfaceName = dir.dirName();
 			interfaceName.prepend("org.symbian.smf.plugin.");
@@ -993,7 +1055,7 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 		
 		if(instance && (SmfNoError == result))
 			{
-			instance->initialize(SmfPluginUtil::getInstance());
+			instance->initialize();
 			serviceProv = instance->getProviderInfo()->serviceName();
 			interfaceName = dir.dirName();
 			}

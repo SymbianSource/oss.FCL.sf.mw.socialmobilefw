@@ -18,11 +18,14 @@
 #ifndef SETTINGSREPOSITORY_H_
 #define SETTINGSREPOSITORY_H_
 
+#ifdef __FOR_SYMBIAN_CR_USAGE__
+
 const TInt KMaxSettingValue = 50;
 
 #include <centralrepository.h>
 #include <QStringList>
 #include <QMap>
+#include <qsettings.h>
 //#include <BADESCA.H> 
 /*!
   @class CSettingsRepository
@@ -181,5 +184,6 @@ private:
 
     };
 
+#endif
 
 #endif /* SETTINGSREPOSITORY_H_ */

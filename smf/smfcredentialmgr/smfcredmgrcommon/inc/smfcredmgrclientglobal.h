@@ -11,7 +11,7 @@
  *
  * Description:
  * The header represents the error code, typedefs and export macro declaration for
- *  CredMgr Server-client
+ * Smf Credential Manager Server-client
  *
  */
 
@@ -25,9 +25,9 @@
 typedef QMap<QByteArray, QByteArray> SmfAuthParams;
 
 #if defined(SMFCREDMGRCLIENT_LIBRARY)
-#  define SmfCredMgrClient_EXPORT Q_DECL_EXPORT
+#define SmfCredMgrClient_EXPORT Q_DECL_EXPORT
 #else
-#  define SmfCredMgrClient_EXPORT Q_DECL_IMPORT
+#define SmfCredMgrClient_EXPORT Q_DECL_IMPORT
 #endif
 
 /**
@@ -40,14 +40,17 @@ enum SMFCredMgrErrorCode
 	 *No error has occured
 	 */
 	SmfErrNone = 200,
+			
 	/**
 	 *Plugin not autherised
 	 */
 	SmfErrUnAutherised,
+	
 	/**
 	 *Parameters of API are unexpected/invalid
 	 */
 	SmfErrBadParameter,
+	
 	/**
 	 *Error reason is not known
 	 */

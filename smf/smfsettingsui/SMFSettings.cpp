@@ -41,7 +41,7 @@ SMFSettings::SMFSettings(/*QWidget *parent*/)
 	createMenuActions();
 	
 	//Instance of CSettingsRepository
-	#ifdef __FOR_SYMBIAN__
+	#ifdef __FOR_SYMBIAN_CR_USAGE__
 		iSettingsRepository = CSettingsRepository::NewL();
 	#else
 		iSettingsRepository = new CPFIndSettings;
@@ -220,7 +220,7 @@ void SMFSettings::SaveSettings()
 {
 	QStringList PLuginDetails = GetPluginDetails();
 
-	#ifdef __FOR_SYMBIAN__
+	#ifdef __FOR_SYMBIAN_CR_USAGE__
 		//conversion from QString to Descriptor
 		TPtrC PluginName(static_cast<const TUint16*>(PLuginDetails[0].utf16()), PLuginDetails[0].length());
 		TPtrC PluginStatus(static_cast<const TUint16*>(PLuginDetails[1].utf16()), PLuginDetails[1].length());
@@ -232,7 +232,7 @@ void SMFSettings::SaveSettings()
 	iSettingsRepository->SetPluginDetails(PluginName,PluginStatus);
 	
 	
-	#ifdef __FOR_SYMBIAN__
+	#ifdef __FOR_SYMBIAN_CR_USAGE__
 		//conversion from QString to Descriptor
 		TPtrC AthExpValue(static_cast<const TUint16*>(GetAuthExpirationValue().utf16()), GetAuthExpirationValue().length());
 	#else
@@ -241,7 +241,7 @@ void SMFSettings::SaveSettings()
 	
 	iSettingsRepository->SetAuthExpirationValue(AthExpValue);
 	
-	#ifdef __FOR_SYMBIAN__
+	#ifdef __FOR_SYMBIAN_CR_USAGE__
 		//conversion from QString to Descriptor
 		TPtrC MaxDataTrValue(static_cast<const TUint16*>(GetMaxDataTransferLimit().utf16()), GetMaxDataTransferLimit().length());
 	#else
@@ -249,7 +249,7 @@ void SMFSettings::SaveSettings()
 	#endif
 	iSettingsRepository->SetMaxDataTransferLimit(MaxDataTrValue);
 	
-	#ifdef __FOR_SYMBIAN__
+	#ifdef __FOR_SYMBIAN_CR_USAGE__
 		//conversion from QString to Descriptor
 		TPtrC RoamingStatus(static_cast<const TUint16*>(GetRoamingStatusforDataTransfer().utf16()), GetRoamingStatusforDataTransfer().length());
 	#else
@@ -258,7 +258,7 @@ void SMFSettings::SaveSettings()
 		
 	iSettingsRepository->SetRoamingStatusforDataTransfer(RoamingStatus);
 	
-	#ifdef __FOR_SYMBIAN__
+	#ifdef __FOR_SYMBIAN_CR_USAGE__
 	//conversion from QString to Descriptor
 	TPtrC UploadFileType(static_cast<const TUint16*>(GetUploadFileType().utf16()), GetUploadFileType().length());
 	#else
@@ -279,7 +279,7 @@ void SMFSettings::GetDefaultSettings()
 {
 	
 	
-	#ifdef __FOR_SYMBIAN__
+	#ifdef __FOR_SYMBIAN_CR_USAGE__
 		QString myString;
 		TBuf<KMaxSettingValue> Buf;
 		//conversion from Descriptor to QString

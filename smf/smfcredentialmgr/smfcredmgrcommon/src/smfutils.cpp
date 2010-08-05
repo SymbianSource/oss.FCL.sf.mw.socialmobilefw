@@ -10,7 +10,8 @@
  * Lasse Laasonen, Sasken Communication Technologies Ltd - Initial contribution
  *
  * Description:
- * This header contains utility routines used by server and client
+ * This source contains utility routines used by server and client
+ * 
  */
 
 #include <s32strm.h>
@@ -68,6 +69,7 @@ namespace SmfUtils
 		else
 			return NULL;
 		}
+	
 	TInt InternalizeDesL( RBuf16& aDes, RReadStream& aStream )
 	    {
 	    TInt length = aStream.ReadInt32L();
@@ -85,6 +87,7 @@ namespace SmfUtils
 
 	    return length;
 	    }
+	
 	void ExternalizeInt64L(const TInt64& aInt, RWriteStream& aStream)
 		{
 		TInt32 low = I64LOW( aInt );

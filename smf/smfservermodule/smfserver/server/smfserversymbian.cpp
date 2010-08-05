@@ -12,18 +12,15 @@
  * Contributors:
  * Manasij Roy, Nalina Hariharan
  * 
- * 
- * Description: Private implementation for Symbian OS
+ * Description:
+ * SMF Server private implementation for Symbian
  *
  */
-#ifdef WRITE_LOG
-#include <QFile>
-#include <QTextStream>
-#endif
+
 #include <QDataStream>
-#include <QStringList>
-#include <QString>
+#include <QDebug>
 #include <smfrelationmgr.h>
+
 #include "smfserversymbian_p.h"
 
 
@@ -32,20 +29,28 @@ SmfServerSymbian* SmfServerSymbian::NewL(CActive::TPriority aActiveObjectPriorit
 	SmfServerSymbian* self = new(ELeave) SmfServerSymbian(aActiveObjectPriority,aWrapper);
 	CleanupStack::PushL(self);
 	self->ConstructL();
-	CleanupStack::Pop(); // self
+	CleanupStack::Pop();
 	return self;
 	}
+
 void SmfServerSymbian::ConstructL()
 	{
 	}
+
 SmfServerSymbian::SmfServerSymbian( CActive::TPriority aActiveObjectPriority,SmfServer* aWrapper )
 : CPolicyServer(0,myPolicy, ESharableSessions), iWrapper(aWrapper)
 	{
 	Q_UNUSED(aActiveObjectPriority)
 	}
+
+SmfServerSymbian::~SmfServerSymbian()
+	{
+	}
+
 TInt SmfServerSymbian::addToSessionMap(SmfServerSymbianSession* aSession,const RMessage2& aMsg)
 	{
-	qDebug()<<("SmfServerSymbian::addToSessionMap");
+	qDebug()<<"Inside SmfServerSymbian::addToSessionMap()";
+	
 	if(iSessionCount)
 		{
 		//The key generation 
@@ -66,66 +71,55 @@ TInt SmfServerSymbian::addToSessionMap(SmfServerSymbianSession* aSession,const R
 	
 	return (-1);
 	}
+
 TInt SmfServerSymbian::removeFromSessionMap(SmfServerSymbianSession* aSession,RMessage2& aMsg)
 	{
+	//To be implemented
 	Q_UNUSED(aSession)
-Q_UNUSED(aMsg)
-//To be implemented
+	Q_UNUSED(aMsg)
 	return 0;
 	}
 
-//TODO - change this to a macro using qdebug  to avoid file opening and closing
-/*void SmfServerSymbian::writeLog(QString log) const
-	{
-#ifdef WRITE_LOG
-	QFile file("c:\\data\\SmfServerLogs.txt");
-	if (!file.open(QIODevice::Append | QIODevice::Text))
-		return;
-	QTextStream out(&file);
-	out << log << "\n";
-	file.close();
-#else
-	Q_UNUSED(log)
-#endif
-	}*/
-SmfServerSymbian::~SmfServerSymbian()
-	{
 
-	}
 SmfServer* SmfServerSymbian::wrapper()
 	{
 	return iWrapper;
 	}
+
 CSession2* SmfServerSymbian::NewSessionL(const TVersion& aVersion, const RMessage2& /*aMessage*/) const
 	{
+	qDebug()<<"Inside SmfServerSymbian::NewSessionL()";
+	
 	Q_UNUSED(aVersion)
 	// Check that the version is OK
 	//    TVersion v( 0, 1, 0 );
 	//    if (!User::QueryVersionSupported( v, aVersion ))
-	//        User::Leave( KErrNotSupported );  
+	//        User::Leave( KErrNotSupported ); 
+	
 	// Create the session.
-	QString log("New session created");
-	qDebug()<<(log);
+	qDebug()<<"New session created";
 	return new (ELeave) SmfServerSymbianSession( const_cast<SmfServerSymbian*>(this) );
 	}
+
 SmfServerSymbianSession* SmfServerSymbian::findSession(TInt id)
 	{
-	qDebug()<<("SmfServerSymbian::findSession");
+	qDebug()<<"Inside SmfServerSymbian::findSession()";
 	CSessionStruct* sessionStruct = iMap.Find(id);	
 	if(sessionStruct)
 		{
-		qDebug()<<("Session id found");
+		qDebug()<<"Session id found";
 		return sessionStruct->iSession;
 		}
 	else
 		{
-		qDebug()<<("Session id not found");
+		qDebug()<<"Session id not found";
 		return NULL;
 		}
 	}
+
 TInt SmfServerSymbian::findAndServiceclient(TInt requestID,QByteArray* parsedData,SmfError error)
 	{
-	qDebug()<<("SmfServerSymbian::findAndServiceclient");
+	qDebug()<<"Inside SmfServerSymbian::findAndServiceclient()";
 	SmfServerSymbianSession* sessionToservice = findSession(requestID);
 	if(sessionToservice)
 		{
@@ -133,23 +127,30 @@ TInt SmfServerSymbian::findAndServiceclient(TInt requestID,QByteArray* parsedDat
 		}
 	return 0;
 	}
+
+
+
 SmfServerSymbianSession::SmfServerSymbianSession(SmfServerSymbian* aServer):
 			iServer(aServer),iPtrToBuf(NULL,0) ,
-			iIntfNmaeSymbian(NULL,0), iProviderSymbian(NULL,0),
-			iIntfNameSymbian16(NULL,0) ,iXtraDataPtr(NULL,0),
-			iPtrToDataForClient(NULL,0) ,iPtrDataForDSM(NULL,0),iPtrDataFromDSM(NULL,0)  
+			iIntfNameSymbian8(NULL,0), iProviderSymbian8(NULL,0),
+			iIntfNameSymbian(NULL,0) ,iXtraDataPtr8(NULL,0),
+			iPtrToDataForClient(NULL,0) ,iPtr8DataForDSM(NULL,0),iPtr8DataFromDSM(NULL,0)  
 	{
+	qDebug()<<"Inside SmfServerSymbianSession::SmfServerSymbianSession()";
 	iServer->iSessionCount++;
 	}
+
 SmfServerSymbianSession::~SmfServerSymbianSession()
 	{
+	qDebug()<<"Inside SmfServerSymbianSession::~SmfServerSymbianSession()";
 	//cleanup of client resources
 	iServer->iSessionCount--;
 	}
 
-
-void SmfServerSymbianSession::clientathorizationFinished(bool success)
+void SmfServerSymbianSession::clientAuthorizationFinished(bool success)
 	{
+	qDebug()<<"Inside SmfServerSymbianSession::clientAuthorizationFinished() = "<<success;
+	
 	//Client authorization failed
 	if(!success)
 		{
@@ -161,12 +162,14 @@ void SmfServerSymbianSession::clientathorizationFinished(bool success)
 		HandleClientMessageL(iMessage);
 		}
 	}
+
 void SmfServerSymbianSession::resultsAvailable(QByteArray* parsedData,SmfError error)
 	{
-
+	qDebug()<<"Inside SmfServerSymbianSession::resultsAvailable()";
+	
 	//Note:- The order of serialization of parsedData - Error value followed by the data
 	//parsedData is already serialized by PM
-	qDebug()<<("SmfServerSymbianSession::resultsAvailable");
+	
 	//We should remove the request from the map as soon its no longer outstanding
 	iServer->removeFromSessionMap(this,iMessage);
 	
@@ -181,33 +184,29 @@ void SmfServerSymbianSession::resultsAvailable(QByteArray* parsedData,SmfError e
 	iPtrToDataForClient.Copy(reinterpret_cast<const TText8*>(parsedData->constData()),parsedData->length());
 
 	TInt writeErr = iMessage.Write(2,iPtrToDataForClient);
-	qDebug()<<("Write=");
-	QString wrErr = QString::number(writeErr);
-	qDebug()<<(wrErr);
+	qDebug()<<"iMessage.Write() = "<<writeErr;
+
 	//signal completion for the last request
 	iMessage.Complete(error);
 	}
+
 void SmfServerSymbianSession::ServiceL(const RMessage2& aMessage)
 	{    
+	qDebug()<<"Inside SmfServerSymbianSession::ServiceL() = "<<iMessage.Function();
+	iMessage = aMessage;
 
-	qDebug()<<("SmfServerSymbianSession::ServiceL=");
-	iMessage = aMessage ;
-	QString log;
-	log = QString::number(iMessage.Function());
-	qDebug()<<(log);
 	//construct the client auth id
 	SmfClientAuthID clientAuthID;
 	clientAuthID.pid = aMessage.SecureId();
 	clientAuthID.session = this;
 	//TODO:- No client pid checking?No capability? So why symbian client-server?
 	HandleClientMessageL(iMessage);
-
 	}
+
 void SmfServerSymbianSession::HandleClientMessageL(const RMessage2& aMessage)
 	{
-	qDebug()<<("HandleClientMessageL");
+	qDebug()<<"Inside SmfServerSymbianSession::HandleClientMessageL() = "<<aMessage.Function();
 	iLastRequest = aMessage.Function();
-	
 	
 	/**Note:- Only ESmfGetService needs to be taken care separately as it doesn't involve createrequest for PM
 	 *See SmfRequestTypeID for list of opcodes
@@ -220,9 +219,14 @@ void SmfServerSymbianSession::HandleClientMessageL(const RMessage2& aMessage)
 	 *TODO:- to be changed after GetServices returns SmfProvider+pluginID 
 	 * 
 	 */
-	if(iLastRequest == SmfGetService)
+	if( (SmfGetService == iLastRequest) 			||
+		(SmfPostGetMaxCharsInPost == iLastRequest)	||
+		(SmfPostGetMaxItems == iLastRequest)		||
+		(SmfPostGetSupportedFormats == iLastRequest)||
+		(SmfPostGetAppearanceSupport == iLastRequest) )
+			
 		{
-		HandleGetService(aMessage);
+		HandleSyncServiceL(aMessage);
 		}
 	else if(iLastRequest == SmfRelationCreate ||
 			iLastRequest == SmfRelationAssociate || 
@@ -231,7 +235,8 @@ void SmfServerSymbianSession::HandleClientMessageL(const RMessage2& aMessage)
 			iLastRequest == SmfRelationCount ||
 			iLastRequest == SmfRelationGet ||
 			iLastRequest == SmfRelationGetAll ||
-			iLastRequest == SmfRelationGetAllRelations
+			iLastRequest == SmfRelationGetAllRelations ||
+			iLastRequest == SmfRelationDeleteRelation
 			)
 		{
 		HandleDSMServiceL(aMessage);
@@ -241,71 +246,103 @@ void SmfServerSymbianSession::HandleClientMessageL(const RMessage2& aMessage)
 		HandleCommonServiceL(aMessage);
 		}
 	}
+
 void SmfServerSymbianSession::HandleDSMServiceL(const RMessage2 & aMessage)
 	{
+	qDebug()<<"Inside SmfServerSymbianSession::HandleDSMServiceL()";
 	//TODO:-If DSM takes care of deserialization and formation of User and social 
 	//profile from the params then switch case can be removed
-	if(iDataForDSM)
+	if(iData8ForDSM)
 		{
-		delete iDataForDSM;
-		iDataForDSM = NULL;
+		delete iData8ForDSM;
+		iData8ForDSM = NULL;
 		}
 	
 	switch(iLastRequest)
 		{
 		case SmfRelationCreate:
 			{
-			iDataForDSM = HBufC8::New(maxSmfRelationIdSize);
-			iPtrDataForDSM.Set(iDataForDSM->Des());
-			TInt readerr0 = aMessage.Read(0,iPtrDataForDSM); 
-
+			iData8ForDSM = HBufC8::New(maxSmfRelationIdSize);
+			iPtr8DataForDSM.Set(iData8ForDSM->Des());
+			TInt readerr0 = aMessage.Read(0,iPtr8DataForDSM); 
 			}
 			break;
 		case SmfRelationAssociate:
 			{
 			int maxAlloc = 100;
-			iDataForDSM = HBufC8::New(maxAlloc);
-			iPtrDataForDSM.Set(iDataForDSM->Des());
-			TInt readerr0 = aMessage.Read(0,iPtrDataForDSM); 
+			iData8ForDSM = HBufC8::New(maxAlloc);
+			iPtr8DataForDSM.Set(iData8ForDSM->Des());
+			TInt readerr0 = aMessage.Read(0,iPtr8DataForDSM); 
 			}
 			break;
+		case SmfRelationRemove:
+			{
+			iData8ForDSM = HBufC8::New(100);
+			iPtr8DataForDSM.Set(iData8ForDSM->Des());
+			TInt readerr0 = aMessage.Read(0,iPtr8DataForDSM); 
+			break;
+			}
 		case SmfRelationSearchById:
 			{
 			int maxAlloc = MaxSmfContactSize;
-			iDataForDSM = HBufC8::New(maxAlloc);
-			iPtrDataForDSM.Set(iDataForDSM->Des());
-			TInt readerr0 = aMessage.Read(0,iPtrDataForDSM); 
+			iData8ForDSM = HBufC8::New(maxAlloc);
+			iPtr8DataForDSM.Set(iData8ForDSM->Des());
+			TInt readerr0 = aMessage.Read(0,iPtr8DataForDSM); 
+			}
+			break;
+		case SmfRelationSearchByContact:
+			{
+			int maxAlloc = 500; // hard coded in relation manager
+			iData8ForDSM = HBufC8::New(maxAlloc);
+			iPtr8DataForDSM.Set(iData8ForDSM->Des());
+			TInt readerr0 = aMessage.Read(0,iPtr8DataForDSM); 
 			}
 			break;
 		case SmfRelationCount:
 			{
 			int maxAlloc = 100;
-			iDataForDSM = HBufC8::New(maxAlloc);
-			iPtrDataForDSM.Set(iDataForDSM->Des());
-			TInt readerr0 = aMessage.Read(0,iPtrDataForDSM);
+			iData8ForDSM = HBufC8::New(maxAlloc);
+			iPtr8DataForDSM.Set(iData8ForDSM->Des());
+			TInt readerr0 = aMessage.Read(0,iPtr8DataForDSM);
 			}
 			break;
 		case SmfRelationGet:
 			{
 			int maxAlloc = maxSmfRelationItemSize*maxRelationItems;
-			iDataForDSM = HBufC8::New(maxAlloc);
-			iPtrDataForDSM.Set(iDataForDSM->Des());
-			TInt readerr0 = aMessage.Read(0,iPtrDataForDSM); 
+			iData8ForDSM = HBufC8::New(maxAlloc);
+			iPtr8DataForDSM.Set(iData8ForDSM->Des());
+			TInt readerr0 = aMessage.Read(0,iPtr8DataForDSM); 
 			}
 			break;
 		case SmfRelationGetAll:
 			{
 			int maxAlloc = maxSmfRelationItemSize*maxRelationItems;
-			iDataForDSM = HBufC8::New(maxAlloc);
-			iPtrDataForDSM.Set(iDataForDSM->Des());
-			TInt readerr0 = aMessage.Read(0,iPtrDataForDSM); 
+			iData8ForDSM = HBufC8::New(maxAlloc);
+			iPtr8DataForDSM.Set(iData8ForDSM->Des());
+			TInt readerr0 = aMessage.Read(0,iPtr8DataForDSM); 
 			}
 			break;
+		case SmfRelationGetAllRelations:
+			{
+			int maxAlloc = maxSmfRelationItemSize*maxRelationItems;
+			iData8ForDSM = HBufC8::New(maxAlloc);
+			iPtr8DataForDSM.Set(iData8ForDSM->Des());
+			TInt readerr0 = aMessage.Read(0,iPtr8DataForDSM); 
+			break;
+			}
+		case SmfRelationDeleteRelation:
+			{
+			int maxAlloc = 100;
+			iData8ForDSM = HBufC8::New(maxAlloc);
+			iPtr8DataForDSM.Set(iData8ForDSM->Des());
+			TInt readerr0 = aMessage.Read(0,iPtr8DataForDSM); 
+			break;
+			}
 		default:
 			break;
 		}
 	//Convert into QByteArray
-	QByteArray qtdataForDSM(reinterpret_cast<const char*>(iPtrDataForDSM.Ptr()),iPtrDataForDSM.Length()) ;
+	QByteArray qtdataForDSM(reinterpret_cast<const char*>(iPtr8DataForDSM.Ptr()),iPtr8DataForDSM.Length()) ;
 	QByteArray qtdataFromDSM;
 	SmfRequestTypeID opcode = (SmfRequestTypeID)iLastRequest;
 	SmfError dsmErr = iServer->wrapper()->sendToDSM(qtdataForDSM,opcode,qtdataFromDSM);
@@ -313,15 +350,15 @@ void SmfServerSymbianSession::HandleDSMServiceL(const RMessage2 & aMessage)
 		{
 		if(qtdataFromDSM.size())
 			{
-			if(iDataFromDSM)
+			if(iData8FromDSM)
 				{
-				delete iDataFromDSM;
-				iDataFromDSM = NULL;
+				delete iData8FromDSM;
+				iData8FromDSM = NULL;
 				}
-			iDataFromDSM = HBufC8::NewL(qtdataFromDSM.size());
-			iPtrDataFromDSM.Set(iDataFromDSM->Des());
-			iPtrDataFromDSM.Copy(reinterpret_cast<const TText8*>(qtdataFromDSM.constData()),qtdataFromDSM.length());
-			TInt writeErr = aMessage.Write(1,iPtrDataFromDSM);
+			iData8FromDSM = HBufC8::NewL(qtdataFromDSM.size());
+			iPtr8DataFromDSM.Set(iData8FromDSM->Des());
+			iPtr8DataFromDSM.Copy(reinterpret_cast<const TText8*>(qtdataFromDSM.constData()),qtdataFromDSM.length());
+			TInt writeErr = aMessage.Write(1,iPtr8DataFromDSM);
 			}
 		}
 	else
@@ -332,46 +369,137 @@ void SmfServerSymbianSession::HandleDSMServiceL(const RMessage2 & aMessage)
 		TInt writeErr = aMessage.Write(2,iDSMErr);
 		}
 	}
-void SmfServerSymbianSession::HandleGetService(const RMessage2 & aMessage)
+
+
+void SmfServerSymbianSession::HandleSyncServiceL(const RMessage2 & aMessage)
 	{
-	qDebug()<<("SmfServerSymbianSession::HandleGetService");
+	qDebug()<<"Inside SmfServerSymbianSession::HandleSyncServiceL()";
 	
-	/**
-	 * Note:- client sends message for this opcode in the following format,-
-	 * Slot 0:- Interface Name buffer
-	 * Slot 1:- Ptr to data block to be filled with SmfProvideList* serialized into QByteArray
-	 * Slot 2:- Max data size allocated in the client side
-	 * TODO:- What if size of SmfProviderList to be passed to client is greater than
-	 * this size???
-	 */
+	// Following is the data format sent by client
+	// 1. SmfProvider +PageInfo flag+ aPageNum + aPerPage (if pageinfoflag is set) + XtraInfo flag(size of xtra data) Serialized 
+	// 2. Interface name as string ("org.symbian.smf.client.gallery")
+	// 3. Data pointer to be filled by serialized data(eg: QList<smfProvider>)
+	// 4. Input Data if xtra flag is set
 	
-	iInterfaceNametbuf.Zero();
-	TInt readerr = aMessage.Read(0,iInterfaceNametbuf);
-	qDebug()<<(QString::number(readerr));
-	QByteArray bytearray(reinterpret_cast<const char*>(iInterfaceNametbuf.Ptr()),iInterfaceNametbuf.Length()) ;
-	QDataStream stream3(&bytearray,QIODevice::ReadOnly);
-	stream3>>iInterfaceID;
-	qDebug()<<("iInterfaceID=");
-	qDebug()<<(iInterfaceID);
+	TInt intfNameSize = aMessage.GetDesLength(1);
+	if(iIntfNameBuf8)
+		{
+		delete iIntfNameBuf8;
+		iIntfNameBuf8 = NULL;
+		}
+	iIntfNameBuf8 = HBufC8::NewL(intfNameSize);
+	iIntfNameSymbian8.Set(iIntfNameBuf8->Des());
+
+	//read it into iIntfNameSymbian8
+	aMessage.ReadL(1,iIntfNameSymbian8);
+	
+	QByteArray intfName(reinterpret_cast<const char*>(iIntfNameSymbian8.Ptr()),iIntfNameSymbian8.Length()) ;
+	QDataStream readIntfNameStream(&intfName,QIODevice::ReadOnly);
+	iInterfaceID.clear();
+	readIntfNameStream>>iInterfaceID;
+	qDebug()<<"After de-serializing into iInterfaceID = "<<iInterfaceID;
+	
 	//Interface names are diff in client and plugin, replacing *.client.* with *.plugin.*
 	iInterfaceID.replace(QString(".client"),QString(".plugin"));
-	iServer->wrapper()->getPlugins(iInterfaceID,iPluginIDMap);
-	//form the plugin id list from the map
-	QMapIterator<SmfPluginID, SmfProvider> iter(iPluginIDMap);
-	iPluginIDList.clear();
-	while (iter.hasNext()) 
+	
+	// for get services
+	if(SmfGetService == aMessage.Function())
+		HandleGetService(aMessage, iInterfaceID);
+	
+	// for other services
+	else
 		{
-	iter.next();
-	iPluginIDList<<iter.key();
+		// read provider info
+		TInt providerSize = aMessage.GetDesLength(0);
+		if(iProviderBuf8)
+			{
+			delete iProviderBuf8;
+			iProviderBuf8 = NULL;
+			}
+		iProviderBuf8 = HBufC8::NewL(providerSize);
+		iProviderSymbian8.Set(iProviderBuf8->Des());
+	
+		//read it into iProviderSymbian8
+		aMessage.ReadL(0,iProviderSymbian8);
+	
+		//convert SmfProvider info from Symbian into bytearray
+		QByteArray providerBufQt(reinterpret_cast<const char*>(iProviderSymbian8.Ptr()),iProviderSymbian8.Length());
+		qDebug()<<"providerBufQt.size = "<<providerBufQt.size();
+	
+		//now de-serialize it
+		QDataStream readProviderStream(&providerBufQt,QIODevice::ReadOnly);
+		SmfProvider provider;
+		readProviderStream>>provider;
+		QByteArray XtraBufQt;
+		readProviderStream>>XtraBufQt;
+		
+		//Get the plugin ID who matches provider info for a given intf name
+		SmfPluginID pluginID = iServer->wrapper()->getPlugin(iInterfaceID,provider);
+		qDebug()<<"pluginID from PM = "<<pluginID;
+	
+		//we need to check only this pluginID is authorized
+		iPluginIDList.clear();
+		iPluginIDList<<pluginID;
+		
+		//iAuthList will contain pluginID for a successfull case
+		iAuthList.clear();
+		iServer->wrapper()->getAuthorizedPlugins(iPluginIDList,iAuthList);
+		
+		if(iAuthList.contains(pluginID))
+			{
+			//Plugin ID is authorised, service the request
+			//Generate request id only if the plugin ID is authorised
+			//request PM to get the data
+			SmfRequestTypeID opcode = (SmfRequestTypeID)aMessage.Function();
+			resultData.clear();
+			SmfError err = iServer->wrapper()->sendToPluginManager(pluginID,iInterfaceID,opcode,XtraBufQt, resultData);
+	
+			if(resultData.size())
+				{
+				TPtrC8 resultPtr8(reinterpret_cast<const TText8*>(resultData.constData()),resultData.length());
+				
+				TInt writeErr = aMessage.Write(2,resultPtr8);
+				qDebug()<<"aMessage.Write(2) = "<<writeErr;
+				}
+			else
+				{
+				iErrBuf.Zero();
+				iErrBuf.AppendNum(err);
+				iMessage.Write(2,iErrBuf);
+				}
+	
+			//signal completion
+			aMessage.Complete(iLastRequest);
+			}
+		else
+			{
+			SmfError err = SmfNoAuthorizedPlugin;
+			iErrBuf.Zero();
+			iErrBuf.AppendNum(err);
+			iMessage.Write(2,iErrBuf);
+			aMessage.Complete(iLastRequest);
+			}
 		}
+	}
+
+void SmfServerSymbianSession::HandleGetService(const RMessage2 & aMessage, const SmfInterfaceID& aInterfaceID)
+	{
+	qDebug()<<"Inside SmfServerSymbianSession::HandleGetService()";
+	
+	iServer->wrapper()->getPlugins(aInterfaceID,iPluginIDMap);
+	
+	//form the plugin id list from the map
+	iPluginIDList.clear();
+	iPluginIDList = iPluginIDMap.uniqueKeys();
+	
 	//iAuthList will be filled by credential manager
 	iServer->wrapper()->getAuthorizedPlugins(iPluginIDList,iAuthList);
 
-	//iPluginIDMap now contains SmfProvider info to return to the client
-	//No need to add this to session map, as we are not requesting PM for this
+	// iPluginIDMap now contains SmfProvider info to return to the client
+	// No need to add this to session map, as we are not requesting PM for this
 	QMap<SmfPluginID, SmfProvider> tempMap;
 	QMapIterator<SmfPluginID, SmfProvider> i(iPluginIDMap);
-	while (i.hasNext()) 
+	while(i.hasNext()) 
 		{
 		i.next();
 		if(iAuthList.contains(i.key()))
@@ -379,37 +507,35 @@ void SmfServerSymbianSession::HandleGetService(const RMessage2 & aMessage)
 			tempMap.insert(i.key(),i.value());
 			}
 		}
-	//now tempMapcontains the info to be passed to the client
+	//now tempMap contains the info to be passed to the client
 	iPluginIDMap.clear();
 	iPluginIDMap = tempMap;
+	
 	//form list of smfprovider from this map,-
-	QList<SmfProvider> providerList;
-	i = iPluginIDMap;
-	while(i.hasNext())
-		{
-		i.next();
-		providerList.append(i.value());
-		}
+	QList<SmfProvider> providerList = iPluginIDMap.values();
+	
 	//now serialize this list into bytearray
-	byteArrayToClnt.clear();
-	QDataStream stream(&byteArrayToClnt,QIODevice::WriteOnly);
+	resultData.clear();
+	QDataStream stream(&resultData,QIODevice::WriteOnly);
 	stream<<providerList;
-	qDebug()<<("providerList.count()=");
-	qDebug()<<(QString::number(providerList.count()));
-	qDebug()<<("Before providerListSymbian");
+	qDebug()<<"providerList.count() = "<<providerList.count();
+
+	qDebug()<<"Before providerListSymbian";
 	//now convert it into TPtr8
-	TPtrC8 providerListSymbian(reinterpret_cast<const TText8*>(byteArrayToClnt.constData()),byteArrayToClnt.length());
-	qDebug()<<("After providerListSymbian");
-	TInt writeErr = aMessage.Write(1,providerListSymbian);
-	qDebug()<<("Write=");
-	QString wrErr = QString::number(writeErr);
-	qDebug()<<(wrErr);
+	TPtrC8 providerListSymbian(reinterpret_cast<const TText8*>(resultData.constData()),resultData.length());
+	qDebug()<<"After providerListSymbian";
+	
+	TInt writeErr = aMessage.Write(2,providerListSymbian);
+	qDebug()<<"aMessage.Write(2) = "<<writeErr;
+
 	//signal completion
-	TInt completion = SmfGetServiceComplete ;
+	TInt completion = SmfGetService;
 	aMessage.Complete(completion);
 	}
+
 void SmfServerSymbianSession::HandleCommonServiceL(const RMessage2& aMessage)
 	{
+	qDebug()<<"Inside SmfServerSymbianSession::HandleCommonServiceL() = "<<aMessage.Function();
 	/**
 	 * Note:- client sends message in the following format,-
 	 * Slot 0:- SmfProvider* serialized+Page info flag+page number+per page (if page info flag)+xtra info flag
@@ -418,80 +544,59 @@ void SmfServerSymbianSession::HandleCommonServiceL(const RMessage2& aMessage)
 	 * Slot 3 :- Xtra Data if xtra data flag
 	 */
 	//TODO:- Use macro instead, shared betn client-server
-	TInt maxProvidersize = 1000;
-	TInt maxOtherInfoSize = 300;
 	TInt providerSize = aMessage.GetDesLength(0);
-	if(iProviderBuf)
+	if(iProviderBuf8)
 		{
-		delete iProviderBuf;
-		iProviderBuf = NULL;
+		delete iProviderBuf8;
+		iProviderBuf8 = NULL;
 		}
-	iProviderBuf = HBufC8::NewL(maxProvidersize + maxOtherInfoSize);
-	iProviderSymbian.Set(iProviderBuf->Des());
-
-	TInt intfNameSize = aMessage.GetDesLength(1);
-	if(iIntfNameBuf)
-		{
-		delete iIntfNameBuf;
-		iIntfNameBuf = NULL;
-		}
-	iIntfNameBuf = HBufC8::NewL(1000);//for safeside
-	iIntfNmaeSymbian.Set(iIntfNameBuf->Des());
-
-
-	//read it into iProviderSymbian
-	aMessage.ReadL(0,iProviderSymbian);
-	//read it into iIntfNmaeSymbian
-	aMessage.ReadL(1,iIntfNmaeSymbian);
+	iProviderBuf8 = HBufC8::NewL(providerSize);
+	iProviderSymbian8.Set(iProviderBuf8->Des());
+	
+	//read it into iProviderSymbian8
+	aMessage.ReadL(0,iProviderSymbian8);
 	
 	//convert SmfProvider info from Symbian into bytearray
-	QByteArray providerBufQt(reinterpret_cast<const char*>(iProviderSymbian.Ptr()),iProviderSymbian.Length());
-	qDebug()<<("providerBufQt.size=");
-	qDebug()<<(QString::number(providerBufQt.size()));
+	QByteArray providerBufQt(reinterpret_cast<const char*>(iProviderSymbian8.Ptr()),iProviderSymbian8.Length());
+	qDebug()<<"providerBufQt.size = "<<providerBufQt.size();
 
 	//now de-serialize it
 	QDataStream stream(&providerBufQt,QIODevice::ReadOnly);
 	SmfProvider provider;
-	stream>>provider ;
-	TInt pageinfoFlag=0;
-	stream>>pageinfoFlag;
-	TInt pageNo=-1;
-	TInt perpage=-1;
-	if(pageinfoFlag)
+	stream>>provider;
+	QByteArray XtraBufQt;
+	stream>>XtraBufQt;
+	qDebug()<<"XtraBufQt size = "<<XtraBufQt.size();
+	TInt intfNameSize = aMessage.GetDesLength(1);
+	if(iIntfNameBuf8)
 		{
-		stream>>pageNo;
-		stream>>perpage;
-		qDebug()<<("pageNo=");
-		qDebug()<<(QString::number(pageNo));
-		qDebug()<<("perpage=");
-		qDebug()<<(QString::number(perpage));
+		delete iIntfNameBuf8;
+		iIntfNameBuf8 = NULL;
 		}
-	TInt XtraInfoFlag = 0;
-	TBool isXtraData = EFalse;
-	stream>>XtraInfoFlag;
-	if(XtraInfoFlag)
-		{
-		isXtraData = ETrue;
-		qDebug()<<("XtraInfoFlag=");
-		qDebug()<<(QString::number(XtraInfoFlag));
-		}
-	qDebug()<<("iIntfNmaeSymbian.Size=");
-	qDebug()<<(QString::number(iIntfNmaeSymbian.Size()));
-	QByteArray bytearray(reinterpret_cast<const char*>(iIntfNmaeSymbian.Ptr()),iIntfNmaeSymbian.Length()) ;
+	iIntfNameBuf8 = HBufC8::NewL(intfNameSize);
+	iIntfNameSymbian8.Set(iIntfNameBuf8->Des());
+
+	//read it into iIntfNameSymbian8
+	aMessage.ReadL(1,iIntfNameSymbian8);
+	qDebug()<<"iIntfNameSymbian8.Size = "<<iIntfNameSymbian8.Size();
+
+	QByteArray bytearray(reinterpret_cast<const char*>(iIntfNameSymbian8.Ptr()),iIntfNameSymbian8.Length()) ;
 	QDataStream intfNameStream(&bytearray,QIODevice::ReadOnly);
 	iInterfaceID.clear();
 	intfNameStream>>iInterfaceID;
-	qDebug()<<("After de-serializing into iInterfaceID=");
-	qDebug()<<(iInterfaceID);
+	qDebug()<<"Interface Name = "<<iInterfaceID;
+	
 	//Interface names are diff in client and plugin, replacing *.client.* with *.plugin.*
 	iInterfaceID.replace(QString(".client"),QString(".plugin"));
+	
 	//Get the plugin ID who matches provider info for a given intf name
 	SmfPluginID pluginID = iServer->wrapper()->getPlugin(iInterfaceID,provider);
-	qDebug()<<("pluginID from PM=");
-	qDebug()<<(pluginID);
-	iPluginIDList.clear();
+	qDebug()<<"pluginID from PM = "<<pluginID;
+
 	//we need to check only this pluginID is authorized?
+	iPluginIDList.clear();
 	iPluginIDList<<pluginID;
+	
 	//iAuthList will contain pluginID for a successfull case
 	iAuthList.clear();
 	iServer->wrapper()->getAuthorizedPlugins(iPluginIDList,iAuthList);
@@ -502,24 +607,8 @@ void SmfServerSymbianSession::HandleCommonServiceL(const RMessage2& aMessage)
 		TInt id = iServer->addToSessionMap(this,aMessage);
 		//request PM to get the data
 		SmfRequestTypeID opcode = (SmfRequestTypeID)iLastRequest;
-		if(isXtraData)
-			{
-			if(iXtraDataBuf)
-				{
-				delete iXtraDataBuf;
-				iXtraDataBuf = NULL;	
-				}
-			iXtraDataBuf = HBufC8::NewL(XtraInfoFlag);
-			iXtraDataPtr.Set(iXtraDataBuf->Des());
-			QByteArray XtraBufQt(reinterpret_cast<const char*>(iXtraDataPtr.Ptr()),iXtraDataPtr.Length());
-			qDebug()<<("XtraBufQt size=");
-			qDebug()<<(QString::number(XtraBufQt.size()));
-			iServer->wrapper()->sendToPluginManager(id,pluginID,iInterfaceID,opcode,XtraBufQt);
-			}
-		else
-			{
-			iServer->wrapper()->sendToPluginManager(id,pluginID,iInterfaceID,opcode);
-			}
+		
+		iServer->wrapper()->sendToPluginManager(id,pluginID,iInterfaceID,opcode,XtraBufQt);
 		}
 	else
 		{
@@ -528,6 +617,4 @@ void SmfServerSymbianSession::HandleCommonServiceL(const RMessage2& aMessage)
 		iErrBuf.AppendNum(err);
 		iMessage.Write(2,iErrBuf);
 		}
-
-
 	}

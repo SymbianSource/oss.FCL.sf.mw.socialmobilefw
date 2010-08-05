@@ -19,6 +19,8 @@
  */
 
 // plugin interfaces
+#include <QVector>
+#include <QTextFormat>
 #include <smfactivityfetcherplugin.h>
 #include <smfcontactfetcherplugin.h>
 #include <smfpostproviderplugin.h>
@@ -77,18 +79,22 @@ SmfPluginManagerUtil::~SmfPluginManagerUtil ( )
  * @param aInstance Instance of the loaded plugin that perform this operation
  * @param aOperation The type of operation to be performed
  * @param aInputData The data required to create the web query
- * @param aReqData [out] The request data created by the plugin
+ * @param aReqData [out] The request data created by the 
+ * plugin (don't consider for synchronous requests)
  * @param aResult [out] SmfError, The result of the operation
  * It can be :-
  * SmfPluginNoError (if plugin has created the request successfully)
  * SmfPluginUnknownPluginService (if plugin service is not known or unsupported)
  * SmfPluginRequestCreationFailed (if request creation has failed)
+ * @param aOutputData [out] The output data to be filled by the 
+ * plugins (for synchronous request only), don't consider for asynchronous requests
  */
 void SmfPluginManagerUtil::createRequest ( QObject* aInstance, 
 		const SmfRequestTypeID &aOperation, 
 		QByteArray &aInputData,
 		SmfPluginRequestData &aReqData,
-		SmfError &aResult )
+		SmfError &aResult,
+		QByteArray &aOutputData )
 	{
 	qDebug()<<"SmfPluginManagerUtil::createRequest()";
 	SmfPluginError pluginErrorVal = SmfPluginErrServiceNotSupported;
@@ -130,6 +136,14 @@ void SmfPluginManagerUtil::createRequest ( QObject* aInstance,
 					aInputData, aReqData);
 			break;
 			
+		case SmfPostGetMaxCharsInPost:
+		case SmfPostGetMaxItems:
+		case SmfPostGetSupportedFormats:
+		case SmfPostGetAppearanceSupport:
+			pluginErrorVal = createSyncRequest(aInstance, aOperation, 
+					aInputData, aOutputData);
+			break;
+			
 		case SmfMusicGetLyrics:
 		case SmfMusicGetSubtitle:
 		case SmfMusicLyricsCustomRequest:
@@ -140,7 +154,6 @@ void SmfPluginManagerUtil::createRequest ( QObject* aInstance,
 	
 		case SmfMusicGetEventsOnLoc:
 		case SmfMusicGetVenueOnLoc:
-		case SmfMusicGetEventsOnVenue:
 		case SmfMusicPostEvents:
 		case SmfMusicEventsCustomRequest:
 			// Authorise the plugin and call create request methods
@@ -152,7 +165,6 @@ void SmfPluginManagerUtil::createRequest ( QObject* aInstance,
 		case SmfMusicGetTracks:
 		case SmfMusicGetTrackInfo:
 		case SmfMusicGetStores:
-		case SmfMusicPostCurrentPlaying:
 		case SmfMusicSearchCustomRequest:
 			// Authorise the plugin and call create request methods
 			pluginErrorVal = createMusicSearchRequest(aInstance, aOperation, 
@@ -161,6 +173,9 @@ void SmfPluginManagerUtil::createRequest ( QObject* aInstance,
 			
 		case SmfMusicGetUserInfo:
 		case SmfMusicSearchUser:
+		case SmfMusicPostCurrentPlaying:
+		case SmfMusicPostRating:
+		case SmfMusicPostComment:
 		case SmfMusicServiceCustomRequest:
 			// Authorise the plugin and call create request methods
 			pluginErrorVal = createMusicServiceRequest(aInstance, aOperation, 
@@ -177,6 +192,7 @@ void SmfPluginManagerUtil::createRequest ( QObject* aInstance,
 					aInputData, aReqData);
 			break;
 			
+		case SmfPictureGetAlbums:
 		case SmfPictureGetPictures:
 		case SmfPictureDescription:
 		case SmfPictureUpload:
@@ -223,12 +239,15 @@ SmfPluginError SmfPluginManagerUtil::createActivityFetcherRequest ( QObject *aPl
 		{
 		QDataStream stream(aInputData);
 		int pageNum, itemPerPage;
+		quint8 flag = 0;
 
 		switch(aOperation)
 			{
 			case SmfActivitySelfActivity:
 				qDebug()<<"Plugin Operation requested : selfactivities()";
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->selfActivities(aReqData, pageNum, itemPerPage);
 				break;
@@ -237,8 +256,11 @@ SmfPluginError SmfPluginManagerUtil::createActivityFetcherRequest ( QObject *aPl
 				{
 				qDebug()<<"Plugin Operation requested : friendsActivities()";
 				SmfContact contact;
+				stream>>flag;
 				stream>>contact;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->friendsActivities(aReqData, contact, pageNum, itemPerPage);
 				break;
@@ -249,6 +271,7 @@ SmfPluginError SmfPluginManagerUtil::createActivityFetcherRequest ( QObject *aPl
 				qDebug()<<"Plugin Operation requested : filtered()";
 				QList<SmfActivityObjectType> list;
 				QList<int> intList;
+				stream>>flag;
 				stream>>intList;
 				list.clear();
 				foreach(int val, intList)
@@ -257,7 +280,9 @@ SmfPluginError SmfPluginManagerUtil::createActivityFetcherRequest ( QObject *aPl
 					list.append(type);
 					}
 				
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->filtered(aReqData, list, pageNum, itemPerPage);
 				break;
@@ -267,9 +292,12 @@ SmfPluginError SmfPluginManagerUtil::createActivityFetcherRequest ( QObject *aPl
 				{
 				qDebug()<<"Plugin Operation requested : customRequest()";
 				int operationType;
+				stream>>flag;
 				stream>>operationType;
 				QByteArray data;
-				stream>>data;
+				stream>>flag;
+				if(flag)
+					stream>>data;
 				pluginErrorVal = plugin->customRequest(aReqData, operationType, &data);
 				break;
 				}
@@ -317,19 +345,24 @@ SmfPluginError SmfPluginManagerUtil::createContactFetcherRequest ( QObject *aPlu
 		{
 		QDataStream stream(aInputData);
 		int pageNum, itemPerPage;
+		quint8 flag = 0;
 
 		switch(aOperation)
 			{
 			case SmfContactGetFriends:
 				qDebug()<<"Plugin Operation requested : friends()";
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->friends(aReqData, pageNum, itemPerPage);
 				break;
 				
 			case SmfContactGetFollowers:
 				qDebug()<<"Plugin Operation requested : followers()";
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->followers(aReqData, pageNum, itemPerPage);
 				break;
@@ -338,8 +371,12 @@ SmfPluginError SmfPluginManagerUtil::createContactFetcherRequest ( QObject *aPlu
 				{
 				qDebug()<<"Plugin Operation requested : search()";
 				SmfContact searchContact;
-				stream>>searchContact;
+				stream>>flag;
+				if(flag)
+					stream>>searchContact;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->search(aReqData, searchContact, pageNum, itemPerPage);
 				break;
@@ -349,10 +386,16 @@ SmfPluginError SmfPluginManagerUtil::createContactFetcherRequest ( QObject *aPlu
 				{
 				qDebug()<<"Plugin Operation requested : searchNear()";
 				SmfLocation location;
+				stream>>flag;
+				if(flag)
+					stream>>location;
+				stream>>flag;
 				int i;
 				stream>>i;
 				SmfLocationSearchBoundary proximity = (SmfLocationSearchBoundary)i;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->searchNear(aReqData, location, proximity, pageNum, itemPerPage);
 				break;
@@ -361,7 +404,9 @@ SmfPluginError SmfPluginManagerUtil::createContactFetcherRequest ( QObject *aPlu
 			case SmfContactGetGroups:
 				{
 				qDebug()<<"Plugin Operation requested : groups()";
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->groups(aReqData, pageNum, itemPerPage);
 				break;
@@ -371,8 +416,11 @@ SmfPluginError SmfPluginManagerUtil::createContactFetcherRequest ( QObject *aPlu
 				{
 				qDebug()<<"Plugin Operation requested : searchInGroup()";
 				SmfGroup group;
+				stream>>flag;
 				stream>>group;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->searchInGroup(aReqData, group, pageNum, itemPerPage);
 				break;
@@ -382,9 +430,12 @@ SmfPluginError SmfPluginManagerUtil::createContactFetcherRequest ( QObject *aPlu
 				{
 				qDebug()<<"Plugin Operation requested : customRequest()";
 				int operationType;
+				stream>>flag;
 				stream>>operationType;
 				QByteArray data;
-				stream>>data;
+				stream>>flag;
+				if(flag)
+					stream>>data;
 				pluginErrorVal = plugin->customRequest(aReqData, operationType, &data);
 				break;
 				}
@@ -436,35 +487,46 @@ SmfPluginError SmfPluginManagerUtil::createContactPostRequest ( QObject *aPlugin
 		SmfPost post;
 		SmfLocation location;
 		int pageNum, itemPerPage;
-	
+		quint8 flag = 0;
 		switch(aOperation)
 			{
 			case SmfContactRetrievePosts:
 				qDebug()<<"Plugin Operation requested : retrieve()";
-				stream>>contact;
+				stream>>flag;
+				if(flag)
+					stream>>contact;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->retrieve(aReqData, &contact, pageNum, itemPerPage);
 				break;
 				
 			case SmfContactPost:
 				qDebug()<<"Plugin Operation requested : post()";
+				stream>>flag;
 				stream>>post;
+				stream>>flag;
 				stream>>location;
 				pluginErrorVal = plugin->post(aReqData, post, location);
 				break;
 				
 			case SmfContactUpdatePost:
 				qDebug()<<"Plugin Operation requested : updatePost()";
+				stream>>flag;
 				stream>>post;
 				pluginErrorVal = plugin->updatePost(aReqData, post);
 				break;
 				
 			case SmfContactPostDirected:
 				qDebug()<<"Plugin Operation requested : postDirected()";
+				stream>>flag;
 				stream>>post;
+				stream>>flag;
 				stream>>contact;
-				stream>>location;
+				stream>>flag;
+				if(flag)
+					stream>>location;
 				qDebug()<<"Post data = "<<post.description();
 				qDebug()<<"Contact ID = "<<contact.value("Guid").value<QContactGuid>().guid();
 				pluginErrorVal = plugin->postDirected(aReqData, post, contact, &location);
@@ -474,9 +536,13 @@ SmfPluginError SmfPluginManagerUtil::createContactPostRequest ( QObject *aPlugin
 				{
 				qDebug()<<"Plugin Operation requested : commentOnAPost()";
 				SmfPost post2;
+				stream>>flag;
 				stream>>post;
+				stream>>flag;
 				stream>>post2;
-				stream>>location;
+				stream>>flag;
+				if(flag)
+					stream>>location;
 				pluginErrorVal = plugin->commentOnAPost(aReqData, post, post2, &location);
 				break;
 				}
@@ -486,8 +552,10 @@ SmfPluginError SmfPluginManagerUtil::createContactPostRequest ( QObject *aPlugin
 				qDebug()<<"Plugin Operation requested : postAppearence()";
 				QString status;
 				int i;
+				stream>>flag;
 				stream>>i;
 				SmfPresenceInfo presence = (SmfPresenceInfo)i;
+				stream>>flag;
 				stream>>status;
 				pluginErrorVal = plugin->postAppearence(aReqData, presence, status);
 				break;
@@ -497,8 +565,11 @@ SmfPluginError SmfPluginManagerUtil::createContactPostRequest ( QObject *aPlugin
 				{
 				qDebug()<<"Plugin Operation requested : sharePost()";
 				bool edited;
+				stream>>flag;
 				stream>>post;
+				stream>>flag;
 				stream>>contact;
+				stream>>flag;
 				stream>>edited;
 				pluginErrorVal = plugin->sharePost(aReqData, post, contact, edited);
 				break;
@@ -508,9 +579,12 @@ SmfPluginError SmfPluginManagerUtil::createContactPostRequest ( QObject *aPlugin
 				{
 				qDebug()<<"Plugin Operation requested : customRequest()";
 				int operationType;
+				stream>>flag;
 				stream>>operationType;
 				QByteArray data;
-				stream>>data;
+				stream>>flag;
+				if(flag)
+					stream>>data;
 				pluginErrorVal = plugin->customRequest(aReqData, operationType, &data);
 				break;
 				}
@@ -560,13 +634,17 @@ SmfPluginError SmfPluginManagerUtil::createMusicLyricsRequest ( QObject *aPlugin
 		QDataStream stream(aInputData);
 		SmfTrackInfo trackInfo;
 		int pageNum, itemPerPage;
+		quint8 flag = 0;
 
 		switch(aOperation)
 			{
 			case SmfMusicGetLyrics:
 				qDebug()<<"Plugin Operation requested : lyrics()";
+				stream>>flag;
 				stream>>trackInfo;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->lyrics(aReqData, trackInfo, pageNum, itemPerPage);
 				break;
@@ -576,9 +654,12 @@ SmfPluginError SmfPluginManagerUtil::createMusicLyricsRequest ( QObject *aPlugin
 				qDebug()<<"Plugin Operation requested : subtitles()";
 				stream>>trackInfo;
 				int i;
+				stream>>flag;
 				stream>>i;
 				SmfSubtitleSearchFilter filter = (SmfSubtitleSearchFilter)i;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->subtitles(aReqData, trackInfo, filter, pageNum, itemPerPage);
 				break;
@@ -588,9 +669,12 @@ SmfPluginError SmfPluginManagerUtil::createMusicLyricsRequest ( QObject *aPlugin
 				{
 				qDebug()<<"Plugin Operation requested : customRequest()";
 				int operationType;
+				stream>>flag;
 				stream>>operationType;
 				QByteArray data;
-				stream>>data;
+				stream>>flag;
+				if(flag)
+					stream>>data;
 				pluginErrorVal = plugin->customRequest(aReqData, operationType, &data);
 				break;
 				}
@@ -638,41 +722,38 @@ SmfPluginError SmfPluginManagerUtil::createMusicEventsRequest ( QObject *aPlugin
 		{
 		QDataStream stream(aInputData);
 		int pageNum, itemPerPage;
-		QtMobility::QGeoPositionInfo location;
-
+		SmfLocation location;
+		quint8 flag = 0;
+		
 		switch(aOperation)
 			{
 			case SmfMusicGetEventsOnLoc:
 				qDebug()<<"Plugin Operation requested : events() OnLoc";
+				stream>>flag;
 				stream>>location;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->events(aReqData, location, pageNum, itemPerPage);
 				break;
 				
 			case SmfMusicGetVenueOnLoc:
 				qDebug()<<"Plugin Operation requested : venues()";
+				stream>>flag;
 				stream>>location;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->venues(aReqData, location, pageNum, itemPerPage);
 				break;
-				
-			case SmfMusicGetEventsOnVenue:
-				{
-				qDebug()<<"Plugin Operation requested : events() OnVenue";
-				SmfLocation venue;
-				stream>>venue;
-				stream>>pageNum;
-				stream>>itemPerPage;
-				pluginErrorVal = plugin->events(aReqData, venue, pageNum, itemPerPage);
-				break;
-				}
 				
 			case SmfMusicPostEvents:
 				{
 				qDebug()<<"Plugin Operation requested : postEvents()";
 				QList<SmfEvent> list;
+				stream>>flag;
 				stream>>list;
 				pluginErrorVal = plugin->postEvents(aReqData, list);
 				break;
@@ -682,9 +763,12 @@ SmfPluginError SmfPluginManagerUtil::createMusicEventsRequest ( QObject *aPlugin
 				{
 				qDebug()<<"Plugin Operation requested : customRequest()";
 				int operationType;
+				stream>>flag;
 				stream>>operationType;
 				QByteArray data;
-				stream>>data;
+				stream>>flag;
+				if(flag)
+					stream>>data;
 				pluginErrorVal = plugin->customRequest(aReqData, operationType, &data);
 				break;
 				}
@@ -734,21 +818,28 @@ SmfPluginError SmfPluginManagerUtil::createMusicSearchRequest ( QObject *aPlugin
 		QDataStream stream(aInputData);
 		int pageNum, itemPerPage;
 		SmfTrackInfo trackInfo;
+		quint8 flag = 0;
 
 		switch(aOperation)
 			{
 			case SmfMusicGetRecommendations:
 				qDebug()<<"Plugin Operation requested : recommendations()";
+				stream>>flag;
 				stream>>trackInfo;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->recommendations(aReqData, trackInfo, pageNum, itemPerPage);
 				break;
 				
 			case SmfMusicGetTracks:
 				qDebug()<<"Plugin Operation requested : tracks()";
+				stream>>flag;
 				stream>>trackInfo;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->tracks(aReqData, trackInfo, pageNum, itemPerPage);
 				break;
@@ -757,8 +848,11 @@ SmfPluginError SmfPluginManagerUtil::createMusicSearchRequest ( QObject *aPlugin
 				{
 				qDebug()<<"Plugin Operation requested : trackInfo()";
 				SmfMusicFingerPrint fp;
+				stream>>flag;
 				stream>>fp;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->trackInfo(aReqData, fp, pageNum, itemPerPage);
 				break;
@@ -766,45 +860,25 @@ SmfPluginError SmfPluginManagerUtil::createMusicSearchRequest ( QObject *aPlugin
 				
 			case SmfMusicGetStores:
 				qDebug()<<"Plugin Operation requested : stores()";
+				stream>>flag;
 				stream>>trackInfo;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->stores(aReqData, trackInfo, pageNum, itemPerPage);
 				break;
-				
-			case SmfMusicPostCurrentPlaying:
-				qDebug()<<"Plugin Operation requested : postCurrentPlaying()";
-				stream>>trackInfo;
-				pluginErrorVal = plugin->postCurrentPlaying(aReqData, trackInfo);
-				break;
-				
-			case SmfMusicPostRating:
-				{
-				qDebug()<<"Plugin Operation requested : postRating()";
-				stream>>trackInfo;
-				SmfMusicRating rating;
-				stream>>rating;
-				pluginErrorVal = plugin->postRating(aReqData, trackInfo, rating);
-				break;
-				}
-				
-			case SmfMusicPostComment:
-				{
-				qDebug()<<"Plugin Operation requested : postComment()";
-				stream>>trackInfo;
-				SmfComment comment;
-				stream>>comment;
-				pluginErrorVal = plugin->postComments(aReqData, trackInfo, comment);
-				break;
-				}
 				
 			case SmfMusicSearchCustomRequest:
 				{
 				qDebug()<<"Plugin Operation requested : customRequest()";
 				int operationType;
+				stream>>flag;
 				stream>>operationType;
 				QByteArray data;
-				stream>>data;
+				stream>>flag;
+				if(flag)
+					stream>>data;
 				pluginErrorVal = plugin->customRequest(aReqData, operationType, &data);
 				break;
 				}
@@ -853,6 +927,8 @@ SmfPluginError SmfPluginManagerUtil::createMusicServiceRequest ( QObject *aPlugi
 		{
 		QDataStream stream(aInputData);
 		int pageNum, itemPerPage;
+		SmfTrackInfo trackInfo;
+		quint8 flag = 0;
 
 		switch(aOperation)
 			{
@@ -865,10 +941,44 @@ SmfPluginError SmfPluginManagerUtil::createMusicServiceRequest ( QObject *aPlugi
 				{
 				qDebug()<<"Plugin Operation requested : serachNear() for Music";
 				SmfLocation place;
+				stream>>flag;
 				stream>>place;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->searchUser(aReqData, place, pageNum, itemPerPage);
+				break;
+				}
+				
+			case SmfMusicPostCurrentPlaying:
+				qDebug()<<"Plugin Operation requested : postCurrentPlaying()";
+				stream>>flag;
+				stream>>trackInfo;
+				pluginErrorVal = plugin->postCurrentPlaying(aReqData, trackInfo);
+				break;
+				
+			case SmfMusicPostRating:
+				{
+				qDebug()<<"Plugin Operation requested : postRating()";
+				stream>>flag;
+				stream>>trackInfo;
+				SmfMusicRating rating;
+				stream>>flag;
+				stream>>rating;
+				pluginErrorVal = plugin->postRating(aReqData, trackInfo, rating);
+				break;
+				}
+				
+			case SmfMusicPostComment:
+				{
+				qDebug()<<"Plugin Operation requested : postComment()";
+				stream>>flag;
+				stream>>trackInfo;
+				SmfComment comment;
+				stream>>flag;
+				stream>>comment;
+				pluginErrorVal = plugin->postComments(aReqData, trackInfo, comment);
 				break;
 				}
 				
@@ -876,9 +986,12 @@ SmfPluginError SmfPluginManagerUtil::createMusicServiceRequest ( QObject *aPlugi
 				{
 				qDebug()<<"Plugin Operation requested : customRequest()";
 				int operationType;
+				stream>>flag;
 				stream>>operationType;
 				QByteArray data;
-				stream>>data;
+				stream>>flag;
+				if(flag)
+					stream>>data;
 				pluginErrorVal = plugin->customRequest(aReqData, operationType, &data);
 				break;
 				}
@@ -928,12 +1041,15 @@ SmfPluginError SmfPluginManagerUtil::createMusicPlaylistRequest ( QObject *aPlug
 		QDataStream stream(aInputData);
 		int pageNum, itemPerPage;
 		SmfPlaylist playlist;
+		quint8 flag = 0;
 
 		switch(aOperation)
 			{
 			case SmfMusicGetPlaylists:
 				qDebug()<<"Plugin Operation requested : playlists()";
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->playlists(aReqData, pageNum, itemPerPage);
 				break;
@@ -942,8 +1058,12 @@ SmfPluginError SmfPluginManagerUtil::createMusicPlaylistRequest ( QObject *aPlug
 				{
 				qDebug()<<"Plugin Operation requested : playlistsOf()";
 				SmfMusicProfile user;
-				stream>>user;
+				stream>>flag;
+				if(flag)
+					stream>>user;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->playlistsOf(aReqData, user, pageNum, itemPerPage);
 				break;
@@ -953,14 +1073,18 @@ SmfPluginError SmfPluginManagerUtil::createMusicPlaylistRequest ( QObject *aPlug
 				{
 				qDebug()<<"Plugin Operation requested : addToPlaylist()";
 				QList<SmfTrackInfo> list;
+				stream>>flag;
 				stream>>playlist;
-				stream>>list;
+				stream>>flag;
+				if(flag)
+					stream>>list;
 				pluginErrorVal = plugin->addToPlaylist(aReqData, playlist, list);
 				break;
 				}
 				
 			case SmfMusicPostCurrentPlayingPlaylist:
 				qDebug()<<"Plugin Operation requested : postCurrentPlayingPlaylist()";
+				stream>>flag;
 				stream>>playlist;
 				pluginErrorVal = plugin->postCurrentPlayingPlaylist(aReqData, playlist);
 				break;
@@ -969,9 +1093,12 @@ SmfPluginError SmfPluginManagerUtil::createMusicPlaylistRequest ( QObject *aPlug
 				{
 				qDebug()<<"Plugin Operation requested : customRequest()";
 				int operationType;
+				stream>>flag;
 				stream>>operationType;
 				QByteArray data;
-				stream>>data;
+				stream>>flag;
+				if(flag)
+					stream>>data;
 				pluginErrorVal = plugin->customRequest(aReqData, operationType, &data);
 				break;
 				}
@@ -1019,6 +1146,7 @@ SmfPluginError SmfPluginManagerUtil::createGalleryRequest ( QObject *aPlugin,
 		{
 		QDataStream stream(aInputData);
 		SmfPicture picture;
+		quint8 flag = 0;
 		
 		switch(aOperation)
 			{
@@ -1029,8 +1157,11 @@ SmfPluginError SmfPluginManagerUtil::createGalleryRequest ( QObject *aPlugin,
 				QStringList names;
 				SmfContact contact;
 				int pageNum, itemPerPage;
+				stream>>flag;
 				stream>>names;
-				stream>>contact;
+				stream>>flag;
+				if(flag)
+					stream>>contact;
 				stream>>pageNum;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->albums(aReqData, names, &contact, pageNum, itemPerPage);
@@ -1042,8 +1173,11 @@ SmfPluginError SmfPluginManagerUtil::createGalleryRequest ( QObject *aPlugin,
 				qDebug()<<"Plugin Operation requested : pictures()";
 				int pageNum, itemPerPage;
 				SmfPictureAlbumList albumList;
+				stream>>flag;
 				stream>>albumList;
+				stream>>flag;
 				stream>>pageNum;
+				stream>>flag;
 				stream>>itemPerPage;
 				pluginErrorVal = plugin->pictures(aReqData, albumList, pageNum, itemPerPage);
 				break;
@@ -1051,6 +1185,7 @@ SmfPluginError SmfPluginManagerUtil::createGalleryRequest ( QObject *aPlugin,
 				
 			case SmfPictureDescription:
 				qDebug()<<"Plugin Operation requested : description()";
+				stream>>flag;
 				stream>>picture;
 				pluginErrorVal = plugin->description(aReqData, picture);
 				break;
@@ -1059,8 +1194,12 @@ SmfPluginError SmfPluginManagerUtil::createGalleryRequest ( QObject *aPlugin,
 				{
 				qDebug()<<"Plugin Operation requested : upload() single";
 				SmfPictureAlbum album;
-				stream>>picture;
-				stream>>album;
+				stream>>flag;
+				if(flag)
+					stream>>picture;
+				stream>>flag;
+				if(flag)
+					stream>>album;
 				pluginErrorVal = plugin->upload(aReqData, picture, &album);
 				break;
 				}
@@ -1070,8 +1209,12 @@ SmfPluginError SmfPluginManagerUtil::createGalleryRequest ( QObject *aPlugin,
 				qDebug()<<"Plugin Operation requested : upload() Multiple";
 				QList<SmfPicture> list;
 				SmfPictureAlbum album;
-				stream>>list;
-				stream>>album;
+				stream>>flag;
+				if(flag)
+					stream>>list;
+				stream>>flag;
+				if(flag)
+					stream>>album;
 				pluginErrorVal = plugin->upload(aReqData, list, &album);
 				break;
 				}
@@ -1080,7 +1223,9 @@ SmfPluginError SmfPluginManagerUtil::createGalleryRequest ( QObject *aPlugin,
 				{
 				qDebug()<<"Plugin Operation requested : postComment()";
 				SmfComment comment;
+				stream>>flag;
 				stream>>picture;
+				stream>>flag;
 				stream>>comment;
 				pluginErrorVal = plugin->postComment(aReqData, picture, comment);
 				break;
@@ -1090,9 +1235,12 @@ SmfPluginError SmfPluginManagerUtil::createGalleryRequest ( QObject *aPlugin,
 				{
 				qDebug()<<"Plugin Operation requested : customRequest()";
 				int operationType;
+				stream>>flag;
 				stream>>operationType;
 				QByteArray data;
-				stream>>data;
+				stream>>flag;
+				if(flag)
+					stream>>data;
 				pluginErrorVal = plugin->customRequest(aReqData, operationType, &data);
 				break;
 				}
@@ -1112,6 +1260,123 @@ SmfPluginError SmfPluginManagerUtil::createGalleryRequest ( QObject *aPlugin,
 	}
 	
 	
+/**
+ * Method called to create a synchronous plugin request.
+ * @param aPlugin The instance of the loaded plugin that performs the 
+ * contact fetch operation.
+ * @param aOperation The type of operation to be performed
+ * @param aInputData The data required to create the web query
+ * @param aOutputData [out] The output data to be filled by the plugins
+ * @return SmfPluginError
+ */
+SmfPluginError SmfPluginManagerUtil::createSyncRequest ( QObject *aPlugin, 
+		const SmfRequestTypeID &aOperation, 
+		QByteArray &aInputData,
+		QByteArray &aOutputData )
+	{
+	qDebug()<<"SmfPluginManagerUtil::createSyncRequest";
+	Q_UNUSED(aInputData)
+	
+	SmfPluginError pluginErrorVal = SmfPluginErrServiceNotSupported;	
+	
+	if(aPlugin)
+		{
+		QDataStream outStream(&aOutputData, QIODevice::ReadWrite);
+			
+		switch(aOperation)
+			{
+			case SmfPostGetMaxCharsInPost:
+				{
+				qDebug()<<"Plugin Operation requested : maxCharsInPost()";
+				SmfPostProviderPlugin *plugin = NULL;
+				plugin = qobject_cast<SmfPostProviderPlugin *>(aPlugin);
+				
+				if(!plugin)
+					{
+					qDebug()<<"Plugin instance couldn't be typecasted!!!";
+					pluginErrorVal = SmfPluginErrRequestNotCreated;
+					break;
+					}
+
+				qint32 val = plugin->maxCharsInPost();
+				outStream<<val;
+				pluginErrorVal = SmfPluginErrNone;
+				break;
+				}
+				
+			case SmfPostGetMaxItems:
+				{
+				qDebug()<<"Plugin Operation requested : maxItems()";
+				SmfPostProviderPlugin *plugin = NULL;
+				plugin = qobject_cast<SmfPostProviderPlugin *>(aPlugin);
+				
+				if(!plugin)
+					{
+					qDebug()<<"Plugin instance couldn't be typecasted!!!";
+					pluginErrorVal = SmfPluginErrRequestNotCreated;
+					break;
+					}
+
+				qint32 val = plugin->maxItems();
+				outStream<<val;
+				pluginErrorVal = SmfPluginErrNone;
+				break;
+				}
+				
+			case SmfPostGetSupportedFormats:
+				{
+				qDebug()<<"Plugin Operation requested : supportedFormats()";
+				SmfPostProviderPlugin *plugin = NULL;
+				plugin = qobject_cast<SmfPostProviderPlugin *>(aPlugin);
+				
+				if(!plugin)
+					{
+					qDebug()<<"Plugin instance couldn't be typecasted!!!";
+					pluginErrorVal = SmfPluginErrRequestNotCreated;
+					break;
+					}
+
+				QVector<QTextFormat> formats = plugin->supportedFormats();
+				outStream<<formats;
+				pluginErrorVal = SmfPluginErrNone;
+				break;
+				}
+				
+			case SmfPostGetAppearanceSupport:
+				{
+				qDebug()<<"Plugin Operation requested : maxItems()";
+				SmfPostProviderPlugin *plugin = NULL;
+				plugin = qobject_cast<SmfPostProviderPlugin *>(aPlugin);
+				
+				if(!plugin)
+					{
+					qDebug()<<"Plugin instance couldn't be typecasted!!!";
+					pluginErrorVal = SmfPluginErrRequestNotCreated;
+					break;
+					}
+
+				bool val = plugin->supportsAppearence();
+				outStream<<val;
+				pluginErrorVal = SmfPluginErrNone;
+				break;
+				}
+				
+			default:
+				// do nothing, unknown service
+				qDebug()<<"No API found for this operation type!!!";
+			}
+		}
+	else
+		{
+		qDebug()<<"Plugin instance couldn't be typecasted!!!";
+		pluginErrorVal = SmfPluginErrRequestNotCreated; 
+		}
+	
+	return pluginErrorVal;
+	}
+
+
+
 /**
  * Method called by Plugin Manager when network response is available
  * @param aInstance The instance of the loaded plugin that requested 
@@ -1147,6 +1412,7 @@ SmfError SmfPluginManagerUtil::responseAvailable (
 		case SmfContactSearchNear:
 		case SmfContactGetGroups:
 		case SmfContactSearchInGroup:
+		case SmfContactCustomRequest:
 		case SmfContactRetrievePosts:
 		case SmfContactPost:
 		case SmfContactUpdatePost:
@@ -1154,28 +1420,41 @@ SmfError SmfPluginManagerUtil::responseAvailable (
 		case SmfContactCommentOnAPost:
 		case SmfContactPostAppearence:
 		case SmfContactSharePost:
+		case SmfContactPostCustomRequest:
 		case SmfMusicGetLyrics:
 		case SmfMusicGetSubtitle:
+		case SmfMusicLyricsCustomRequest:
 		case SmfMusicGetEventsOnLoc:
 		case SmfMusicGetVenueOnLoc:
-		case SmfMusicGetEventsOnVenue:
 		case SmfMusicPostEvents:
+		case SmfMusicEventsCustomRequest:
 		case SmfMusicGetRecommendations:
 		case SmfMusicGetTracks:
 		case SmfMusicGetTrackInfo:
 		case SmfMusicGetStores:
-		case SmfMusicPostCurrentPlaying:
+		case SmfMusicSearchCustomRequest:
 		case SmfMusicGetUserInfo:
 		case SmfMusicSearchUser:
+		case SmfMusicPostCurrentPlaying:
+		case SmfMusicPostRating:
+		case SmfMusicPostComment:
+		case SmfMusicServiceCustomRequest:
 		case SmfMusicGetPlaylists:
 		case SmfMusicGetPlaylistsOfUser:
 		case SmfMusicAddToPlaylist:
 		case SmfMusicPostCurrentPlayingPlaylist:
+		case SmfMusicPlaylistCustomRequest:
+		case SmfPictureGetAlbums:
 		case SmfPictureGetPictures:
 		case SmfPictureDescription:
 		case SmfPictureUpload:
 		case SmfPictureMultiUpload:
 		case SmfPicturePostComment:
+		case SmfPictureCustomRequest:
+		case SmfActivityFriendsActivities:
+		case SmfActivityFiltered:
+		case SmfActivitySelfActivity:
+		case SmfActivityCustomRequest:
 			{
 			pluginRet = aInstance->responseAvailable(aOperation, aTransportResult, aResponse, 
 					aResult, aRetType, aPageResult );
@@ -1236,6 +1515,20 @@ void SmfPluginManagerUtil::serializeResult (
 	qDebug()<<"SmfPluginManagerUtil::serializeResult";
 	switch(aOperation)
 		{
+		// FOR ACTIVITY - FETCHER
+		case SmfActivitySelfActivity:
+		case SmfActivityFriendsActivities:
+		case SmfActivityFiltered:
+			{
+			qDebug()<<"Serializing to : QList<SmfActivityEntry>";
+			QList<SmfActivityEntry> activityList;
+			if( aResult->canConvert<SmfActivityEntryList>() )
+				activityList = aResult->value<SmfActivityEntryList>();
+			aDataStream<<activityList;
+			break;
+			}
+		
+			
 		// FOR CONTACT - FETCHER
 		case SmfContactGetFriends:
 		case SmfContactGetFollowers:
@@ -1315,7 +1608,6 @@ void SmfPluginManagerUtil::serializeResult (
 
 		// FOR MUSIC - EVENTS
 		case SmfMusicGetEventsOnLoc:
-		case SmfMusicGetEventsOnVenue:
 			{
 			qDebug()<<"Serializing to : QList<SmfEvent>";
 			QList<SmfEvent> eventList;
@@ -1370,17 +1662,6 @@ void SmfPluginManagerUtil::serializeResult (
 			break;
 			}
 			
-		case SmfMusicPostCurrentPlaying:
-			{
-			qDebug()<<"Serializing to : bool";
-			bool value;
-			if( QVariant::Bool == aResult->type() )
-				value = aResult->toBool();
-			aDataStream<<value;
-			break;
-			}
-		
-
 		// FOR MUSIC - SERVICE
 		case SmfMusicGetUserInfo:
 			{
@@ -1402,6 +1683,18 @@ void SmfPluginManagerUtil::serializeResult (
 			break;
 			}
 	 
+		case SmfMusicPostCurrentPlaying:
+		case SmfMusicPostRating:
+		case SmfMusicPostComment:
+			{
+			qDebug()<<"Serializing to : bool";
+			bool value;
+			if( QVariant::Bool == aResult->type() )
+				value = aResult->toBool();
+			aDataStream<<value;
+			break;
+			}
+			
 			// FOR MUSIC - PLAYLIST SERVICE
 		case SmfMusicGetPlaylists:
 		case SmfMusicGetPlaylistsOfUser:
@@ -1426,6 +1719,16 @@ void SmfPluginManagerUtil::serializeResult (
 			}
 				 
 			// FOR PICTURES - GALLERY SERVICES
+		case SmfPictureGetAlbums:
+			{
+			qDebug()<<"Serializing to : QList<SmfPictureAlbum>";
+			QList<SmfPictureAlbum> albumList;
+			if( aResult->canConvert<SmfPictureAlbumList>() )
+				albumList = aResult->value<SmfPictureAlbumList>();
+			aDataStream<<albumList;
+			break;
+			}
+			
 		case SmfPictureGetPictures:
 			{
 			qDebug()<<"Serializing to : QList<SmfPicture>";
@@ -1455,6 +1758,26 @@ void SmfPluginManagerUtil::serializeResult (
 			if( QVariant::Bool == aResult->type() )
 				value = aResult->toBool();
 			aDataStream<<value;
+			break;
+			}
+			
+			// FOR ALL INTERFACES CUSTOM REQUESTS
+		case SmfContactCustomRequest:
+		case SmfContactPostCustomRequest:
+		case SmfMusicLyricsCustomRequest:
+		case SmfMusicEventsCustomRequest:
+		case SmfMusicSearchCustomRequest:
+		case SmfMusicServiceCustomRequest:
+		case SmfMusicPlaylistCustomRequest:
+		case SmfPictureCustomRequest:
+		case SmfActivityCustomRequest:
+			{
+			qDebug()<<"Custom Requests are handled as bytearrays in PM now!!!";
+			qDebug()<<"Serializing to : QByteArray";
+			QByteArray customResult;
+			if( QVariant::ByteArray == aResult->type() )
+				customResult.append(aResult->toByteArray());
+			aDataStream<<customResult;
 			break;
 			}
 			

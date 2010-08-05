@@ -10,10 +10,11 @@
  * Pritam Roy Biswas, Sasken Communication Technologies Ltd - Initial contribution
  *
  * Description:
- *	This header file gives different data classes to be used
- * by Credential Manager Client and Server for data transfer.	
+ * This header file gives different data classes to be used
+ * by Smf Credential Manager Client and Server for data transfer.	
  *
  */
+
 #ifndef CSMFCREDMGRCLIENTDATASTRUCT_H_
 #define CSMFCREDMGRCLIENTDATASTRUCT_H_
 
@@ -53,6 +54,8 @@ const TInt KMaxAuthIdLength = 256;
  * Maximum Length for SignedMessage
  */
 const TInt KMaxSignedMsgLength = 256;
+
+
 /**
  * This class provide details and to serialize Authentication Key And Secret   
  */
@@ -60,12 +63,13 @@ class TSmfAuthToken
 	{
 public:
 	/**
-	 * constructor
+	 * Constructor
 	 */
 	inline TSmfAuthToken() :
 		iKey(NULL), iSecret(NULL)
 		{
 		}
+	
 	/**
 	 * Method to externalize the member variables
 	 * @param aStream The Write Stream to be filled.
@@ -79,14 +83,16 @@ public:
 	void InternalizeL(RReadStream& aStream);
 	
 	/**
-	 * buf to hold the key
+	 * Buffer to hold the key
 	 */
 	HBufC* iKey;
+	
 	/**
-	 * buf to hold the secret
+	 * Buffer to hold the secret
 	 */
 	HBufC* iSecret;
 	};
+
 
 /**
  * This class provide details and to serialize for the API fetching Authentication Parameters  
@@ -95,7 +101,7 @@ class CSmfFetchAuthTokenSet : public CBase
 	{
 public:
 	/**
-	 * destructor
+	 * Destructor
 	 */
 	~CSmfFetchAuthTokenSet()
 		{
@@ -111,22 +117,26 @@ public:
 
 	/**
 	 * Method to internalize the member variables
-	 * @param aSource the source to read from
+	 * @param aSource The Source Stream to read from
 	 */
 	void InternalizeL(const RBuf8& aSource);
+	
 	/**
-	 * buf to hold registration token
+	 * Buffer to hold registration token
 	 */
 	HBufC* iRegistrationToken;
+	
 	/**
 	 * Time by which the Auth set will expire
 	 */
 	TUint32 iValidity;
+	
 	/**
-	 * array in symbian to hold the key-value pair
+	 * Array in symbian to hold the key-value pair
 	 */
 	RArray<TSmfAuthToken> iAuthTokenArray;
 	};
+
 
 /**
  * This class provide details and to serialize of data to the API retreiving URL List 
@@ -135,7 +145,7 @@ class CSmfURLListParams : public CBase
 	{
 public:
 	/**
-	 * destructor
+	 * Destructor
 	 */
 	~CSmfURLListParams()
 		{
@@ -151,20 +161,21 @@ public:
 
 	/**
 	 * Method to internalize the member variables
-	 * @param aSource the source to read from
+	 * @param aSource The source stream to read from
 	 */
 	void InternalizeL(const TDesC8& aSource);
 	
 	/**
-	 * array in symbian to hold url list
+	 * Array in symbian to hold url list
 	 */
 	RPointerArray<HBufC> iURLList;
 	
 	/**
-	 * buf to hold the plugin id for which urls will be queried
+	 * Buffer to hold the plugin id for which urls will be queried
 	 */
 	HBufC* iPluginID;
 	};
+
 
 /**
  * This class provide details and to serialize data to the API retreiving Authenticated PluginID List 
@@ -173,7 +184,7 @@ class CSmfPluginIDListParams : public CBase
 	{
 public:
 	/**
-	 * destructor
+	 * Destructor
 	 */
 	~CSmfPluginIDListParams()
 		{
@@ -189,15 +200,17 @@ public:
 
 	/**
 	 * Method to internalize the member variables
-	 * @param aSource the source to read from
+	 * @param aSource The source stream to read from
 	 */
 	void InternalizeL(const RBuf8& aSource);
+	
 	/**
-	 * array in symbian to hold plugin list
+	 * Array in symbian to hold plugin list
 	 */
 	RPointerArray<HBufC> iPluginList;
+	
 	/**
-	 * buf to hold registration token for which the list of plugins will be queried
+	 * Buffer to hold registration token for which the list of plugins will be queried
 	 */
 	HBufC* iRegistrationToken;
 	};
@@ -228,33 +241,40 @@ public:
 
 	/**
 	 * Method to internalize the member variables
-	 * @param aSource the source to read from
+	 * @param aSource The source stream to read from
 	 */
 	void InternalizeL(const RBuf8& aSource);
+	
 	/**
-	 * array to hold TSmfAuthToken elements
+	 * Array to hold TSmfAuthToken elements
 	 */
 	RArray<TSmfAuthToken> iAuthTokenArray;
+	
 	/**
-	 * array to hold list of plugins
+	 * Array to hold list of plugins
 	 */
 	RPointerArray<HBufC> iPluginIDList;
+	
 	/**
-	 * array to hold URl list
+	 * Array to hold URL list
 	 */
 	RPointerArray<HBufC> iURLList;
+	
 	/**
-	 * buf to hold the registration token
+	 * Buffer to hold the registration token
 	 */
 	HBufC* iRegistrationToken;
+	
 	/**
-	 * buf to hold the authentication application ID
+	 * Buffer to hold the authentication application ID
 	 */
 	HBufC* iAuthAppID;
+	
 	/**
-	 * flag to indicate an enabled pluginID 
+	 * Flag to indicate an enabled pluginID 
 	 */
 	TBool pluginIDEnabled;
+	
 	/**
 	 * Time by which the Auth set will expire
 	 */
@@ -282,7 +302,7 @@ public:
 
 	/**
 	 * Method to internalize the member variables
-	 * @param aSource the source to read from
+	 * @param aSource The source stream to read from
 	 */
 	void InternalizeL(const RBuf8& aSource);
 
@@ -290,10 +310,12 @@ public:
 	 * Id of new plugin
 	 */
 	HBufC* iNewPluginID;
+	
 	/**
 	 * Id of the old plugin to be replaced
 	 */
 	HBufC* iOldPluginID;
+	
 	/**
 	 * flag to indicate an enabled pluginID 
 	 */
@@ -307,25 +329,40 @@ class CSmfSignParameters : public CBase
 {
 public:
 	/**
-	 * New Functions 
+	 * NewL method
+	 * @param aMessage The message to be signed
+	 * @param aKey The key
+	 * @return The constructed CSmfSignParameters instance
 	 */
 	static CSmfSignParameters* NewL( const TDesC8& aMessage, const TDesC8& aKey );
+	
+	/**
+	 * Overloaded NewL method
+	 * @param aMessage The message to be signed
+	 * @return The constructed CSmfSignParameters instance
+	 */
 	static CSmfSignParameters* NewL( const TDesC8& aData );
+	
 	/**
 	 * Destructor 
 	 */
 	~CSmfSignParameters();
+	
 	/**
 	 * Method to externalize the member variables
 	 * @param aStream The Write Stream to be filled.
 	 */
 	void ExternalizeL( RWriteStream& aStream ) const;
+	
 	/**
-	 * Get Method for key. 
+	 * Method to get the Key for the signature
+	 * @return The Key for the signature
 	 */
 	const TDesC8& Key() const;
+	
 	/**
-	 * Get Method for message. 
+	 * Method to get the message
+	 * @return The message 
 	 */
 	const TDesC8& Message() const;
 	
@@ -334,17 +371,26 @@ private:
 	 * Constructor 
 	 */
 	CSmfSignParameters();
+	
 	/**
-	 * Two Phase constructors 
+	 * Two Phase constructor
+	 * @param aKey The Key for the signature
+	 * @return The constructed CSmfSignParameters instance
 	 */
 	void ConstructL( const TDesC8& aMessage, const TDesC8& aKey );
+	
+	/**
+	 * Two Phase constructor
+	 * @return The constructed CSmfSignParameters instance
+	 */
 	void ConstructL( const TDesC8& aData );
 	
 private:
 	/**
-	 * Message to sign 
+	 * Message to be signed 
 	 */
 	RBuf8 iMessage;
+	
 	/**
 	 * Key for the signature 
 	 */
@@ -358,46 +404,77 @@ class CSmfRsaKeyParameters : public CBase
 	{
 public:
 	/**
-	 * New methods 
+	 * NewL method
+	 * @param aKeyName
+	 * @param startDate
+	 * @param endDate
+	 * @param aKeydata
+	 * @return The constructed CSmfRsaKeyParameters instance
 	 */
-	static CSmfRsaKeyParameters* NewL(
-			const TDesC& aKeyName, const TTime& startDate,
-			const TTime& endDate, const TDesC8& aKeyData );
+	static CSmfRsaKeyParameters* NewL( const TDesC& aKeyName, 
+			const TTime& startDate,
+			const TTime& endDate, 
+			const TDesC8& aKeyData );
+	
+	/**
+	 * Overloaded NewL method
+	 * @param aData
+	 * @return The constructed CSmfRsaKeyParameters instance
+	 */
 	static CSmfRsaKeyParameters* NewL( const TDesC8& aData );
 	
 	/**
 	 * Destructor 
 	 */
 	~CSmfRsaKeyParameters();
+	
 	/**
 	 * Method to externalize the member variables
 	 * @param aStream The Write Stream to be filled.
 	 */
 	void ExternalizeL( RWriteStream& aStream ) const;
+	
 	/**
-	 * Get Method for keyname. 
+	 * Method to get the key name
+	 * @return The key name 
 	 */
 	const TDesC& KeyName() const;
+	
 	/**
-	 * Get Method for keydata. 
+	 * Method to get the key data
+	 * @return The key data
 	 */
 	const TDesC8& KeyData() const;
+	
 	/**
-	 * Get Method for start date. 
+	 * Method to get the start date
+	 * @return The start date
 	 */
 	const TTime& StartDate() const;
+	
 	/**
-	 * Get Method for end date. 
+	 * Method to get the end date
+	 * @return The end date
 	 */
 	const TTime& EndDate() const;
 	
 private:
 	/**
-	 * Two phase constructors 
+	 * Two phase constructor
+	 * @param aKeyName
+	 * @param startDate
+	 * @param endDate
+	 * @param aKeydata
 	 */
-	void ConstructL(
-			const TDesC& aKeyName, const TTime& startDate,
-			const TTime& endDate, const TDesC8& aKeyData );
+	void ConstructL( const TDesC& aKeyName, 
+			const TTime& startDate,
+			const TTime& endDate, 
+			const TDesC8& aKeyData );
+	
+	/**
+	 * Two phase constructor
+	 * @param aData
+	 */
 	void ConstructL( const TDesC8& aData );
 			
 private:
@@ -405,14 +482,17 @@ private:
 	 * Name of the key pair 
 	 */
 	RBuf iKeyName;
+	
 	/**
 	 * Data of the key pair 
 	 */
 	RBuf8 iKeyData;
+	
 	/**
 	 * Start date of validity 
 	 */
 	TTime iStartDate;
+	
 	/**
 	 * End date of validity 
 	 */

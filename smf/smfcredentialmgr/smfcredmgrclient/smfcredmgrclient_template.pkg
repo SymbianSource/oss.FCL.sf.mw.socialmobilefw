@@ -25,8 +25,8 @@
 (0x2001E61C), 4, 6, 1, {"Qt"}
 
 ; Executable and default resource files
-"/S60/devices/S60_5th_Edition_SDK_v1.0/epoc32/release/$(PLATFORM)/$(TARGET)/smfcredmgrclient.dll"    - "!:\sys\bin\smfcredmgrclient.dll"
-"/S60/devices/S60_5th_Edition_SDK_v1.0/epoc32/data/z/resource/apps/SmfCredMgrClient.rsc"    - "!:\resource\apps\SmfCredMgrClient.rsc"
-"/S60/devices/S60_5th_Edition_SDK_v1.0/epoc32/data/z/private/10003a3f/import/apps/SmfCredMgrClient_reg.rsc"    - "!:\private\10003a3f\import\apps\SmfCredMgrClient_reg.rsc"
+"/S60/devices/S60_5th_Edition_SDK_v0.9/epoc32/release/$(PLATFORM)/$(TARGET)/smfcredmgrclient.dll"    - "!:\sys\bin\smfcredmgrclient.dll"
+;"/S60/devices/S60_5th_Edition_SDK_v0.9/epoc32/data/z/resource/apps/SmfCredMgrClient.rsc"    - "!:\resource\apps\SmfCredMgrClient.rsc"
+;"/S60/devices/S60_5th_Edition_SDK_v0.9/epoc32/data/z/private/10003a3f/import/apps/SmfCredMgrClient_reg.rsc"    - "!:\private\10003a3f\import\apps\SmfCredMgrClient_reg.rsc"
 
 ; Manual PKG post-rules from PRO files

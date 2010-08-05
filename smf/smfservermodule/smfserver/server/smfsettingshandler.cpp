@@ -16,17 +16,20 @@
  * Reads/Writes settings key in a platform independent way
  */
 #include "smfsettingshandler.h"
-#ifdef Q_OS_SYMBIAN
-#include "smfsettingshandler_symbian.h"
+
+#ifdef __FOR_SYMBIAN_CR_USAGE__
+	#include "smfsettingshandler_symbian.h"
 #else
-#include "smfsettingshandler_qt.h"
+	#include "smfsettingshandler_qt.h"
 #endif
+
 SmfSettingsHandler::SmfSettingsHandler(QObject *parent)
 {
-#ifdef Q_OS_SYMBIAN
+	Q_UNUSED(parent)
+#ifdef __FOR_SYMBIAN_CR_USAGE__
 	m_repository = CSettingsRepository::NewL();
 #else
-	m_repository = new SettingsRepositoryQt(this);
+	m_repository = new SmfSettingsRepositoryQt(this);
 #endif
 }
 SmfSettingsHandler::~SmfSettingsHandler()

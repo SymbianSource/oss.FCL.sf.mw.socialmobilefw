@@ -116,7 +116,7 @@ private:
 	 */
     Ui::SMFSettingsClass *ui;
     
-	#ifdef __FOR_SYMBIAN__
+	#ifdef __FOR_SYMBIAN_CR_USAGE__
 		CSettingsRepository* iSettingsRepository;
 	#else
 		CPFIndSettings* iSettingsRepository;
