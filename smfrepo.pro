@@ -1,5 +1,4 @@
-TEMPLATE  = 	subdirs
-
-SUBDIRS   =	smf \
-		example
+TEMPLATE = subdirs
+SUBDIRS = smf \
+    example
 CONFIG += ordered

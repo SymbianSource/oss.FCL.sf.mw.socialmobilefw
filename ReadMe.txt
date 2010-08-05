@@ -7,9 +7,12 @@ This is pre-beta version of Social Mobile Framework code. Folder organization is
 
                 \example - contains sample plugins, auth application and client test application
                                     \example\AuthApp
+                                    \example\fbactivityfetcherplugin
                                     \example\fbcontactfetcherplugin
                                     \example\fbpostproviderplugin
+                                    \example\FlickrAuthApp
                                     \example\flickrcontactfetcherplugin
+                                    \example\flickrgalleryplugin
                                     \example\smfclientapp
 
 
