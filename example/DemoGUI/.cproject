@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?>
+
+<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+<storageModule buildFromInf="true" buildingTestComps="true" cleanLevel="0" concurrentBuildJobs="4" defaultMMPChangedAction="0" extraSBSv2Args="" infBuildComponents="" infFileLocation="bld.inf" macrosFile="" makeEngineToUse="make" manageDependencies="true" moduleId="com.nokia.carbide.cdt.builder.carbideCPPBuilder" overrideMakeEngine="false" overrideWorkspaceSettings="false" promptForMMPChangedAction="true" useConcurrentBuilding="true" useDebugMode="false" useIncrementalBuilder="false" useKeepGoing="false" useMMPMacros="true"/>
+<storageModule moduleId="org.eclipse.cdt.core.settings">
+<cconfiguration id="Emulator Debug (WINSCW) [Nokia_Symbian3_SDK_v0.8]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Emulator Debug (WINSCW) [Nokia_Symbian3_SDK_v0.8]" moduleId="org.eclipse.cdt.core.settings" name="Emulator Debug (WINSCW) [Nokia_Symbian3_SDK_v0.8]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MWLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MWCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="D:\S60\devices\Nokia_Symbian3_SDK_v0.8\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="D:\smf\MissingCode\DemoGUI\DemoGUI_0xE9d1bae8.mmp;D:\smf\MissingCode\DemoGUI\bld.inf;" includesCache="D:/Qt/4.6.2/include/QtCore;D:/Qt/4.6.2/include/QtCore/tmp;D:/Qt/4.6.2/include/QtNetwork;D:/Qt/4.6.2/include/QtNetwork/tmp;D:/Qt/4.6.2/include/QtGui;D:/Qt/4.6.2/include/QtGui/tmp;D:/Qt/4.6.2/include;D:/Qt/4.6.2/include/tmp;D:/smf/MissingCode/DemoGUI;D:/smf/MissingCode/DemoGUI/tmp;D:/Qt/4.6.2/mkspecs/common/symbian;D:/Qt/4.6.2/mkspecs/common/symbian/tmp;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis/sys;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/mw;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/app;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/app;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw/loc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/app/loc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw/loc/sc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis/stlportv5;" macrosCache="QT_CORE_LIB;_UNICODE;__SUPPORT_CPP_EXCEPTIONS__;__WINSCW__;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;__EXE__;QT_USE_MATH_H_FLOATS;__CW32__;__WINS__;QT_GUI_LIB;UNICODE;QT_NETWORK_LIB;QT_SOFTKEYS_ENABLED;_DEBUG;" moduleId="configDataCache" sourcesCache="" timestampCache="1280473572226" useMmpMacrosCache="true"/>
+<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+</cconfiguration>
+<cconfiguration id="Phone Debug (ARMV5) [Nokia_Symbian3_SDK_v0.8]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Phone Debug (ARMV5) [Nokia_Symbian3_SDK_v0.8]" moduleId="org.eclipse.cdt.core.settings" name="Phone Debug (ARMV5) [Nokia_Symbian3_SDK_v0.8]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTLinkerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.Elf2E32ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTCompilerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="D:\S60\devices\Nokia_Symbian3_SDK_v0.8\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="D:\smf\MissingCode\DemoGUI\DemoGUI_0xE9d1bae8.mmp;D:\smf\MissingCode\DemoGUI\bld.inf;" includesCache="D:/Qt/4.6.2/include/QtCore;D:/Qt/4.6.2/include/QtCore/tmp;D:/Qt/4.6.2/include/QtNetwork;D:/Qt/4.6.2/include/QtNetwork/tmp;D:/Qt/4.6.2/include/QtGui;D:/Qt/4.6.2/include/QtGui/tmp;D:/Qt/4.6.2/include;D:/Qt/4.6.2/include/tmp;D:/smf/MissingCode/DemoGUI;D:/smf/MissingCode/DemoGUI/tmp;D:/Qt/4.6.2/mkspecs/common/symbian;D:/Qt/4.6.2/mkspecs/common/symbian/tmp;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis/sys;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/mw;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/app;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/app;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw/loc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/app/loc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw/loc/sc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis/stlportv5;" macrosCache="QT_CORE_LIB;_UNICODE;__SUPPORT_CPP_EXCEPTIONS__;__MARM_ARMV5__;__ARMCC__;__ARMCC_2_2__;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;__MARM__;QT_USE_MATH_H_FLOATS;__EXE__;__ARMCC_2__;__EPOC32__;__GENERIC_MARM__;QT_GUI_LIB;UNICODE;QT_NETWORK_LIB;QT_SOFTKEYS_ENABLED;__EABI__;_DEBUG;" moduleId="configDataCache" sourcesCache="" timestampCache="1280473572257" useMmpMacrosCache="true"/>
+</cconfiguration>
+<cconfiguration id="Phone Release (ARMV5) [Nokia_Symbian3_SDK_v0.8]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Phone Release (ARMV5) [Nokia_Symbian3_SDK_v0.8]" moduleId="org.eclipse.cdt.core.settings" name="Phone Release (ARMV5) [Nokia_Symbian3_SDK_v0.8]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTLinkerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.Elf2E32ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RVCTCompilerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="D:\S60\devices\Nokia_Symbian3_SDK_v0.8\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="D:\smf\MissingCode\DemoGUI\DemoGUI_0xE9d1bae8.mmp;D:\smf\MissingCode\DemoGUI\bld.inf;" includesCache="D:/Qt/4.6.2/include/QtCore;D:/Qt/4.6.2/include/QtCore/tmp;D:/Qt/4.6.2/include/QtNetwork;D:/Qt/4.6.2/include/QtNetwork/tmp;D:/Qt/4.6.2/include/QtGui;D:/Qt/4.6.2/include/QtGui/tmp;D:/Qt/4.6.2/include;D:/Qt/4.6.2/include/tmp;D:/smf/MissingCode/DemoGUI;D:/smf/MissingCode/DemoGUI/tmp;D:/Qt/4.6.2/mkspecs/common/symbian;D:/Qt/4.6.2/mkspecs/common/symbian/tmp;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis/sys;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/mw;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/app;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/app;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw/loc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/app/loc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw/loc/sc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis/stlportv5;" macrosCache="QT_CORE_LIB;_UNICODE;__SUPPORT_CPP_EXCEPTIONS__;__MARM_ARMV5__;NDEBUG;__ARMCC__;__ARMCC_2_2__;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;__MARM__;QT_USE_MATH_H_FLOATS;__EXE__;__ARMCC_2__;__EPOC32__;__GENERIC_MARM__;QT_GUI_LIB;UNICODE;QT_NETWORK_LIB;QT_SOFTKEYS_ENABLED;__EABI__;" moduleId="configDataCache" sourcesCache="" timestampCache="1280473572273" useMmpMacrosCache="true"/>
+</cconfiguration>
+<cconfiguration id="Phone Debug (GCCE) [Nokia_Symbian3_SDK_v0.8]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Phone Debug (GCCE) [Nokia_Symbian3_SDK_v0.8]" moduleId="org.eclipse.cdt.core.settings" name="Phone Debug (GCCE) [Nokia_Symbian3_SDK_v0.8]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.Elf2E32ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.GCCECompilerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.GCCEAssemblerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.GCCELinkerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="D:\S60\devices\Nokia_Symbian3_SDK_v0.8\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="D:\smf\MissingCode\DemoGUI\DemoGUI_0xE9d1bae8.mmp;D:\smf\MissingCode\DemoGUI\bld.inf;" includesCache="D:/Qt/4.6.2/include/QtCore;D:/Qt/4.6.2/include/QtCore/tmp;D:/Qt/4.6.2/include/QtNetwork;D:/Qt/4.6.2/include/QtNetwork/tmp;D:/Qt/4.6.2/include/QtGui;D:/Qt/4.6.2/include/QtGui/tmp;D:/Qt/4.6.2/include;D:/Qt/4.6.2/include/tmp;D:/smf/MissingCode/DemoGUI;D:/smf/MissingCode/DemoGUI/tmp;D:/Qt/4.6.2/mkspecs/common/symbian;D:/Qt/4.6.2/mkspecs/common/symbian/tmp;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis/sys;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/mw;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/app;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/app;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw/loc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/app/loc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw/loc/sc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis/stlportv5;" macrosCache="QT_CORE_LIB;_UNICODE;__SUPPORT_CPP_EXCEPTIONS__;__MARM_ARMV5__;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;__GCCE__;__MARM__;QT_USE_MATH_H_FLOATS;__EXE__;__EPOC32__;__GENERIC_MARM__;QT_GUI_LIB;UNICODE;QT_NETWORK_LIB;QT_SOFTKEYS_ENABLED;__EABI__;_DEBUG;" moduleId="configDataCache" sourcesCache="" timestampCache="1280473572304" useMmpMacrosCache="true"/>
+</cconfiguration>
+<cconfiguration id="Phone Release (GCCE) [Nokia_Symbian3_SDK_v0.8]">
+<storageModule buildSystemId="com.nokia.carbide.cdt.builder.CarbideConfigurationDataProvider" id="Phone Release (GCCE) [Nokia_Symbian3_SDK_v0.8]" moduleId="org.eclipse.cdt.core.settings" name="Phone Release (GCCE) [Nokia_Symbian3_SDK_v0.8]">
+<externalSettings/>
+<extensions>
+<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.cdt.debug.cw.symbian.SymbianE32" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.CarbideMakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.SBSv2ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.Elf2E32ErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.RCOMPErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.GCCECompilerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.MakeDefErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.GCCEAssemblerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+<extension id="com.nokia.carbide.cdt.builder.GCCELinkerErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+</extensions>
+</storageModule>
+<storageModule moduleId="CarbideConfigurationDataProvider">
+<ENV_VAR_DATA_ID/>
+<ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
+<ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="D:\S60\devices\Nokia_Symbian3_SDK_v0.8\epoc32\rom\"/>
+</storageModule>
+<storageModule filesCache="D:\smf\MissingCode\DemoGUI\DemoGUI_0xE9d1bae8.mmp;D:\smf\MissingCode\DemoGUI\bld.inf;" includesCache="D:/Qt/4.6.2/include/QtCore;D:/Qt/4.6.2/include/QtCore/tmp;D:/Qt/4.6.2/include/QtNetwork;D:/Qt/4.6.2/include/QtNetwork/tmp;D:/Qt/4.6.2/include/QtGui;D:/Qt/4.6.2/include/QtGui/tmp;D:/Qt/4.6.2/include;D:/Qt/4.6.2/include/tmp;D:/smf/MissingCode/DemoGUI;D:/smf/MissingCode/DemoGUI/tmp;D:/Qt/4.6.2/mkspecs/common/symbian;D:/Qt/4.6.2/mkspecs/common/symbian/tmp;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis/sys;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/mw;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/app;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/app;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw/loc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/app/loc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/platform/mw/loc/sc;D:/S60/devices/Nokia_Symbian3_SDK_v0.8/epoc32/include/stdapis/stlportv5;" macrosCache="QT_CORE_LIB;_UNICODE;__SUPPORT_CPP_EXCEPTIONS__;__MARM_ARMV5__;NDEBUG;__SYMBIAN32__;QT_KEYPAD_NAVIGATION;__GCCE__;__MARM__;QT_USE_MATH_H_FLOATS;__EXE__;__EPOC32__;__GENERIC_MARM__;QT_GUI_LIB;UNICODE;QT_NETWORK_LIB;QT_SOFTKEYS_ENABLED;__EABI__;" moduleId="configDataCache" sourcesCache="" timestampCache="1280473572320" useMmpMacrosCache="true"/>
+</cconfiguration>
+</storageModule>
+</cproject>
