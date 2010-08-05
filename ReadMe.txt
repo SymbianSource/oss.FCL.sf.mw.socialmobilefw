@@ -7,6 +7,7 @@ This is pre-beta version of Social Mobile Framework code. Folder organization is
 
                 \example - contains sample plugins, auth application and client test application
                                     \example\AuthApp
+                                    \example\DemoGUI
                                     \example\fbactivityfetcherplugin
                                     \example\fbcontactfetcherplugin
                                     \example\fbpostproviderplugin
@@ -82,9 +83,9 @@ see https://www.symbiansigned.com/app/page
 
 Running Sample Application
 ==============================================================================
-1. Run project from \example\smfclientapp. This should fetch names of the friends from facebook [for the user who
-provided the keys in step 2 in pre-build steps]
-2. The results might not show properly on UI due to problems in S^3 SDK. However textual result can be viewed
-at the generated log file - \epoc32\winscw\c\data\SmfClientLogs.txt
-3. The Smf Server generates a separate log file under same directiry - \epoc32\winscw\c\data\SmfLog.txt
-If the 
+1. Run AuthApp - this would authenticate to Facebook.
+2. Run Flickr Auth App - this would authenticate to Flickr.
+3.Run project from \example\DemoGui. This should fetch names of the friends from facebook [for the user who
+provided the keys in step 2 in pre-build steps] and pictures from Flickr
+4. The results might not show properly on UI due to problems in S^3 SDK for Webkit. However textual result can be viewed
+at the generated log file - \epoc32\winscw\c\data\SmfLogs.txt
