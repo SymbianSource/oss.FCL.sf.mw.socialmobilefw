@@ -11,7 +11,7 @@ TARGET		  smfcredmgrserver.exe
 TARGETTYPE	  exe
 UID			 0 0xEF0FFBD7   /*5*/
 
-CAPABILITY  CAP_APPLICATION 
+CAPABILITY  WriteUserData ReadUserData WriteDeviceData 
 
 USERINCLUDE	 ..\inc
 SYSTEMINCLUDE   \epoc32\include
@@ -42,7 +42,6 @@ LIBRARY		ctframework.lib
 #endif
 LIBRARY		hash.lib
 LIBRARY		flogger.lib
-LIBRARY		estor.lib
 LIBRARY		random.lib
 STATICLIBRARY	smfcredmgrcommon.lib
 

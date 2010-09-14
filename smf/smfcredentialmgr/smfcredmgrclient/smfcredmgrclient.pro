@@ -40,5 +40,5 @@ symbian {
 symbian::LIBS += -leuser \
     -lestor \
     -lefsrv \
-     -lsmfcredmgrcommon
+    -lsmfcredmgrcommon.lib
     

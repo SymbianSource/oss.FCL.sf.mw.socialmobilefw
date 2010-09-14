@@ -23,18 +23,15 @@ MACRO		QT_GUI_LIB
 MACRO		QT_NETWORK_LIB
 MACRO		QT_CORE_LIB
 
-SYSTEMINCLUDE		../../../../../Qt/4.6.1/include/QtCore
-SYSTEMINCLUDE		../../../../../Qt/4.6.1/include/QtNetwork
-SYSTEMINCLUDE		../../../../../Qt/4.6.1/include/QtGui
-SYSTEMINCLUDE		../../../../../Qt/4.6.1/include
-SYSTEMINCLUDE		../../../../../Qt/4.6.1/mkspecs/common/symbian
-SYSTEMINCLUDE		/epoc32/include
 SYSTEMINCLUDE		.
+SYSTEMINCLUDE		/epoc32/include
 SYSTEMINCLUDE		/epoc32/include/stdapis
 SYSTEMINCLUDE		/epoc32/include/stdapis/sys
+/* 
 SYSTEMINCLUDE		/epoc32/include/stdapis/stlport
 SYSTEMINCLUDE		/epoc32/include/domain/middleware
 SYSTEMINCLUDE		/epoc32/include/domain/middleware/loc
+*/
 SYSTEMINCLUDE		/epoc32/include/platform
 
 LIBRARY		 estor.lib
