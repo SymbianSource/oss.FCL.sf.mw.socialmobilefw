@@ -47,7 +47,7 @@ STATICLIBRARY	qtmain.lib
 CAPABILITY		None
 
 OPTION CW -wchar_t on
-OPTION ARMCC --visibility_inlines_hidden --fpu ssoftvfp
+
 
 VERSION 10.0
 
