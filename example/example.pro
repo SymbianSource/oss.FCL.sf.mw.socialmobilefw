@@ -6,6 +6,11 @@ SUBDIRS   =	AuthApp \
 		fbpostproviderplugin \
 		flickrcontactfetcherplugin \
 		flickrgalleryplugin \
+		lastfmmusicsearchplugin \
+		lastfmmusicserviceplugin \
+		lastfmplaylistserviceplugin \
+		lastfmmusiceventplugin \
+		MusicLyricsPlugin \
 		smfclientapp \
 		DemoGUI
 CONFIG += ordered

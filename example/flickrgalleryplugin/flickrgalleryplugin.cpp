@@ -31,7 +31,7 @@
 
 #include "flickrgalleryplugin.h"
 
-static int count = 1;
+static int count = 0;
 static int chance = 0; // 0 = for pics from album, 1 = pics not in any album
 static int listIndex = 0;// For Mutliple Load
 QByteArray payload;
@@ -1008,6 +1008,45 @@ SmfPluginError FlickrGalleryPlugin::responseAvailable(
 				}
 #endif
 			}
+		   else if (SmfPictureMultiUpload == aOperation)
+			   {
+				    bool result;
+					qDebug()<<("SmfMultiPictureUpload");
+					QXmlStreamReader xml(response);
+					while (!xml.atEnd())
+					   {
+						 xml.readNext();
+						 if (xml.tokenType() == QXmlStreamReader::StartElement)
+						 {
+						 	qDebug()<<("inside tag");
+						 	//If the tag is contact
+						 	if (xml.name() == "photoid")
+						 	{
+						 		qDebug()<<("photoid tag found");
+						 		result=TRUE;
+				             }
+						 	 else
+						 		result=FALSE;
+						 	}//end If
+						}//endWhile;
+						 		
+						aResult->setValue(result);
+						if (listIndex < count)
+						 {
+						    listIndex=listIndex+1;
+						    error = SmfPluginErrNone;
+							aRetType = SmfSendRequestAgain;
+							  
+						  }
+						 else
+							{
+						      //Final result sent 
+						      count=1; //clear counter 
+						      aRetType = SmfRequestComplete;
+				 		      error = SmfPluginErrNone;
+							}
+				 
+			 }
 		else if (SmfPicturePostComment == aOperation)
 			{
 			qDebug()<<"Response for adding comment on a photo";

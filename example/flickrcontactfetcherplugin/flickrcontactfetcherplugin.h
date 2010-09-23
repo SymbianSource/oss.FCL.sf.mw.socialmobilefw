@@ -111,12 +111,14 @@ public: // From SmfContactFetcherPlugin interface
 	 * Method to search for a contact in a group
 	 * @param aRequest [out] The request data to be sent to network
 	 * @param aGroup the group in which to search
+	 * @param aContact The contact to be searched, default (NULL) is the self contact.
 	 * @param aPageNum The page to be extracted
 	 * @param aItemsPerPage Number of items per page
 	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
 	 */
 	SmfPluginError searchInGroup( SmfPluginRequestData &aRequest,
 			const SmfGroup &aGroup,
+			SmfContact *aContact = NULL,
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE );
 	

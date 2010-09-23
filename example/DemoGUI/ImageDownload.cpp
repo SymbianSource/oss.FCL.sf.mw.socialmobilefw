@@ -65,9 +65,6 @@ ImageDownload::ImageDownload(QObject *parent)
     // For proxy settings on emulator only - REMOVE for device
     QString httpProxy = "10.1.0.214";
     QString httpPort = "3128";
-    
-	qDebug()<<httpUser;
-	qDebug()<<httpPass;
 
     //==Classes used from Network Module==
     QNetworkProxy proxy;
