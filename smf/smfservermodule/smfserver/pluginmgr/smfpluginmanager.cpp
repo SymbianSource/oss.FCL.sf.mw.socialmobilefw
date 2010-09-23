@@ -58,8 +58,6 @@ SmfPluginManager::SmfPluginManager ( SmfServer *aServer )
 	// Save the server instance
 	m_server = aServer;
 	
-	qDebug()<<"Inside SmfPluginManager::SmfPluginManager()";
-	
 	// initialize the file watcher to monitor plugin addition/upgradation/removal
 	initializeFileWatcher ( );
 	
@@ -373,12 +371,12 @@ void SmfPluginManager::responseAvailable (
 
 /**
  * Method to cancel the service request
- * @param aPluginId The plugin whose current operation is to be cancelled.
+ * @param aSessionID The session to be cancelled.
  * If the plugin is not loaded currently, this method just returns true.
  * @return Returns true if the plugin operation could be cancelled 
  * else returns false.
  */
-bool SmfPluginManager::cancelRequest ( const QString& aPluginId )
+bool SmfPluginManager::cancelRequest (  const quint32& aSessionID )
 	{
 	bool retValue = true;
 	qDebug()<<"Inside SmfPluginManager::cancelRequest()";
@@ -386,7 +384,7 @@ bool SmfPluginManager::cancelRequest ( const QString& aPluginId )
 	// Get the plugin for which cancel is requested
 	foreach(SmfWaitingPluginInfoStruc* iPluginInfo, m_waitingPluginHash.values())
 		{
-		if( 0 == iPluginInfo->iPluginId.compare(aPluginId))
+		if( aSessionID == iPluginInfo->iSessionID )
 			{
 			qDebug()<<"Plugin to be cancelled found in the waiting list";
 			
@@ -463,8 +461,9 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 		qDebug()<<"Database could not be opened, returning !!!";	
 		return false;
 		}
-	
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"Database opened";
+#endif
 	
 	// Create a query to create the DB table for Plugin Manager (if it doesn't exists)
 	QSqlQuery query;
@@ -483,8 +482,9 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 		m_pluginDataBase.close();
 		return false;
 		}
-	
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"Table created";
+#endif
 	
 	// Get the directory having the Qt plugin stubs
 	QDir dir(QLibraryInfo::location(QLibraryInfo::PluginsPath));
@@ -492,28 +492,38 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 	// If Smf folder exists
 	if(dir.cd("smf/plugin"))
 		{
+#ifdef DETAILEDDEBUGGING
 		qDebug()<<"Smf/plugin folder exists";
+#endif
 		// Get each interface folders names
 		foreach(QString intfName, dir.entryList(QDir::AllDirs))
 			{
 			dir.cd(intfName);
+#ifdef DETAILEDDEBUGGING
 			qDebug()<<"Interface name : "<<dir.dirName();
+#endif
 			
 			// Get each plugin in this folder
 			foreach(QString pluginName, dir.entryList(QDir::Files))
 				{
+#ifdef DETAILEDDEBUGGING
 				qDebug()<<"plugins for this Interface : "<<pluginName;
+#endif
 				
 				// load this plugin
 				QPluginLoader pluginLoader(dir.absoluteFilePath(pluginName));
 				QObject *instance = pluginLoader.instance();
 				if (instance)
 					{
+#ifdef DETAILEDDEBUGGING
 					qDebug()<<"instance found";
+#endif
 					SmfPluginBase* plugin = qobject_cast<SmfPluginBase *>(instance);
 				    if (plugin)
 				    	{
+#ifdef DETAILEDDEBUGGING
 						qDebug()<<"SmfPluginBase found";
+#endif
 						plugin->initialize();
 				    
 						// get the plugin id
@@ -522,7 +532,9 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 						// get the interface implemented by the plugin
 						QString intfImplemented = dir.dirName();
 						intfImplemented.prepend("org.symbian.smf.plugin.");
+#ifdef DETAILEDDEBUGGING
 						qDebug()<<"intfImplemented = "<<intfImplemented;
+#endif
 						
 						// get the service provider
 						QString serProv = plugin->getProviderInfo()->serviceName();
@@ -756,38 +768,50 @@ void SmfPluginManager::sendRequest ( SmfPluginRequestData &aReqData,
 		{
 		// Http HEAD
 		case QNetworkAccessManager::HeadOperation:
+#ifdef DETAILEDDEBUGGING
 			qDebug()<<"http::head Operation requested";
+#endif
 			reply = m_transMngrUtil->head(aReqData.iNetworkRequest, aUrlList, sopCompliant);
 			break;
 		
 		// Http GET
 		case QNetworkAccessManager::GetOperation:
+#ifdef DETAILEDDEBUGGING
 			qDebug()<<"http::get Operation requested";
+#endif
 			reply = m_transMngrUtil->get(aReqData.iNetworkRequest, aUrlList, sopCompliant);
 			break;
 			
 		// Http PUT	
 		case QNetworkAccessManager::PutOperation:
+#ifdef DETAILEDDEBUGGING
 			qDebug()<<"http::put Operation requested";
+#endif
 			reply = m_transMngrUtil->put(aReqData.iNetworkRequest, aReqData.iPostData->buffer(), aUrlList, sopCompliant);
 			delete aReqData.iPostData;
 			break;
 			
 		// Http POST
 		case QNetworkAccessManager::PostOperation:
+#ifdef DETAILEDDEBUGGING
 			qDebug()<<"http::post Operation requested";
+#endif
 			reply = m_transMngrUtil->post(aReqData.iNetworkRequest, aReqData.iPostData->buffer(), aUrlList, sopCompliant);
 			delete aReqData.iPostData;
 			break;
 			
 		// Http DELETE
 		case QNetworkAccessManager::DeleteOperation:
+#ifdef DETAILEDDEBUGGING
 			qDebug()<<"http::delete Operation requested";
+#endif
 			reply = m_transMngrUtil->deleteResource(aReqData.iNetworkRequest, aUrlList, sopCompliant);
 			break;
 			
 		default:
+#ifdef DETAILEDDEBUGGING
 			qDebug()<<"unknown http Operation requested!!!";
+#endif
 			aResult = SmfPMPluginUnknownHttpService;
 			return;
 		}
@@ -1103,8 +1127,9 @@ void SmfPluginManager::getPlugins(const QString& aInterface, QMap<QString,SmfPro
 		qDebug()<<"Data base not opened, exiting getplugins()!!!";
 		return;
 		}
-	
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"Data base opened";
+#endif
 	
 	// Query the database for all pluginIDs that implement the given interface
 	QSqlQuery query(QString("SELECT pluginId, interfaceName, serviceProvider, description, "
@@ -1112,7 +1137,9 @@ void SmfPluginManager::getPlugins(const QString& aInterface, QMap<QString,SmfPro
 	
 	while(query.next())
 		{
+#ifdef DETAILEDDEBUGGING
 		qDebug()<<"Query is success";
+#endif
 
 		SmfProvider prov;
 		
@@ -1124,22 +1151,30 @@ void SmfPluginManager::getPlugins(const QString& aInterface, QMap<QString,SmfPro
 		QStringList servicetypes;
 		servicetypes.insert(0, query.value(1).toString());
 		prov.setSupportedInterfaces(servicetypes);
+#ifdef DETAILEDDEBUGGING
 		qDebug()<<"  Its interface = "<<servicetypes.at(0);
+#endif
 		
 		// Get the serv provider
 		QString servName = query.value(2).toString();
 		prov.setServiceName(servName);
+#ifdef DETAILEDDEBUGGING
 		qDebug()<<"  Its serv prov = "<<servName;
+#endif
 		
 		// Get the description
 		QString desc = query.value(3).toString();
 		prov.setDescription(desc);
+#ifdef DETAILEDDEBUGGING
 		qDebug()<<"  Its description = "<<desc;
+#endif
 		
 		// Get the service URL
 		QUrl url(query.value(4).toString());
 		prov.setServiceUrl(url);
+#ifdef DETAILEDDEBUGGING
 		qDebug()<<"  Its url = "<<url.toString();
+#endif
 
 		aMap.insert(pluginId, prov);
 		}
@@ -1182,7 +1217,9 @@ void SmfPluginManager::getPluginId(const QString& aInterface, const SmfProvider&
 		return;
 		}
 	
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"Data base opened";
+#endif
 
 	// Query the database for a pluginID with given interface name and service provider
 	QSqlQuery query(QString("SELECT pluginId FROM pluginDetails where interfaceName = '%1' AND "
@@ -1190,7 +1227,9 @@ void SmfPluginManager::getPluginId(const QString& aInterface, const SmfProvider&
 	
 	if (query.next())
 		{
+#ifdef DETAILEDDEBUGGING
 		qDebug()<<"Query is success";
+#endif
 		
 		// get the pluginId
 		aPluginId = query.value(0).toString();

@@ -244,6 +244,11 @@ private:
      */
     void HandleDSMServiceL(const RMessage2 & aMessage);
     
+    /**
+     * Handles a session's cancel request
+     */
+    void HandleCancelRequest(const RMessage2 & aMessage);
+    
     
 private:
     SmfServerSymbian* iServer;

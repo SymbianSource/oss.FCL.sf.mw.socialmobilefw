@@ -20,9 +20,8 @@
 #include "smfrelationmgr.h"
 #include "smfrelationmgr_p.h"
 
-SmfRelationItem::SmfRelationItem(SmfProvider* provider)
+SmfRelationItem::SmfRelationItem()
 	{
-	m_provider = *(provider);
 	}
 
 SmfProvider SmfRelationItem::getProvider() const

@@ -65,11 +65,13 @@ public:
 	/**
 	 * Method to get a list of albums
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aNames The subject or any keywords to be used to filter albums with that name
-	 * @param aUser The user whose albums are requested
-	 * @param aPageNum The page to be extracted
-	 * @param aItemsPerPage Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aNames [in] The subject or any keywords to be used to filter 
+	 * albums with that name
+	 * @param aUser [in] The user whose albums are requested
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError albums( SmfPluginRequestData &aRequest, 
 			const QStringList &aNames, 
@@ -80,10 +82,11 @@ public:
 	/**
 	 * Method to get a list of pictures
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aAlbums The album(s) whose pictures are being requested
-	 * @param aPageNum The page to be extracted
-	 * @param aItemsPerPage Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aAlbums [in] The album(s) whose pictures are being requested
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError pictures( SmfPluginRequestData &aRequest, 
 			const SmfPictureAlbumList &aAlbums, 
@@ -93,8 +96,9 @@ public:
 	/**
 	 * Method to get a description
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aImage The image abot which the description is required
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aImage [in] The image about which the description is required
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError description( SmfPluginRequestData &aRequest,
 			const SmfPicture &aImage ) = 0;
@@ -102,9 +106,10 @@ public:
 	/**
 	 * Method to upload a picture
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aImage The image to be uploaded
-	 * @param aAlbum the optional destination album name
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aImage [in] The image to be uploaded
+	 * @param aAlbum [in] the optional destination album name
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError upload( SmfPluginRequestData &aRequest,
 			const SmfPicture &aImage,
@@ -113,9 +118,10 @@ public:
 	/**
 	 * Method to upload a list of pictures
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aImages The list of images to be uploaded
-	 * @param aAlbum the optional destination album name
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aImages [in] The list of images to be uploaded
+	 * @param aAlbum [in] the optional destination album name
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError upload( SmfPluginRequestData &aRequest,
 			const QList<SmfPicture> &aImages, 
@@ -124,9 +130,11 @@ public:
 	/**
 	 * Method to post comment on a picture is available
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aImage The image on which comment is to be posted
-	 * @param aComment The comment to be posted
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aImage [in] The image on which comment is to be 
+	 * posted (its id should be present)
+	 * @param aComment [in] The comment to be posted
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError postComment( SmfPluginRequestData &aRequest,
 			const SmfPicture &aImage, 
@@ -135,11 +143,12 @@ public:
 	/**
 	 * Customised method for SmfGalleryPlugin interface
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aOperation The operation type (should be known between 
+	 * @param aOperation [in] The operation type (should be known between 
 	 * the client interface and the plugin)
-	 * @param aData The data required to form the request (The type 
+	 * @param aData [in] The data required to form the request (The type 
 	 * of data should be known between client and the plugin)
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError customRequest( SmfPluginRequestData &aRequest, 
 			const int &aOperation, QByteArray *aData ) = 0;

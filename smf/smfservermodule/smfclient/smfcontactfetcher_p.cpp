@@ -59,31 +59,36 @@ SmfContactFetcherPrivate::~SmfContactFetcherPrivate()
  * by the user default values are used. 
  * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
  * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
- * @return true if success, else false
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-bool SmfContactFetcherPrivate::friends(int pageNum,int perPage)
+SmfError SmfContactFetcherPrivate::friends(int pageNum,int perPage)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
-	m_argFlag = 1;
 	SmfProvider* m_baseProvider = m_contactFetcher->getProvider();
 	
 	//serialize start
 	m_dataSerialized.clear();
 	QDataStream write(&m_dataSerialized,QIODevice::WriteOnly);
 	write<<*(m_baseProvider);
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
 	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
+
 	QString intfName(contactFetcherInterface);
 	int maxAllocation = MaxSmfContactSize*perPage;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_dataSerialized, intfName, 
 			SmfContactGetFriends, maxAllocation);
-	
-	return true;
+	return err;
 	}
 
 /**
@@ -94,10 +99,11 @@ bool SmfContactFetcherPrivate::friends(int pageNum,int perPage)
  * If not supplied by the user default values are used.
  * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
  * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
- * @return true if success, else false
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-bool SmfContactFetcherPrivate::followers(int pageNum,int perPage)
+SmfError SmfContactFetcherPrivate::followers(int pageNum,int perPage)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_contactFetcher->getProvider();
 	
@@ -105,11 +111,16 @@ bool SmfContactFetcherPrivate::followers(int pageNum,int perPage)
 	m_dataSerialized.clear();
 	QDataStream write(&m_dataSerialized,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 		
 	QString intfName(contactFetcherInterface);
 	int maxAllocation = MaxSmfContactSize*perPage;
@@ -117,8 +128,7 @@ bool SmfContactFetcherPrivate::followers(int pageNum,int perPage)
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_dataSerialized, intfName,
 			SmfContactGetFollowers, maxAllocation);
-	
-	return true;
+	return err;
 	}
   
 /**
@@ -130,31 +140,38 @@ bool SmfContactFetcherPrivate::followers(int pageNum,int perPage)
  * set as one of its fields.
  * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
  * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void  SmfContactFetcherPrivate::search(SmfContact* contact,int pageNum,int perPage) 
+SmfError SmfContactFetcherPrivate::search(SmfContact* contact,int pageNum,int perPage) 
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider+SmfContact serialized into bytearray 
 	SmfProvider* m_baseProvider = m_contactFetcher->getProvider();
 	m_dataSerialized.clear();
 	//serialize start
 	QDataStream write(&m_dataSerialized,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	if(contact)
 		{
 		m_argFlag = 1;
-		write<<m_argFlag;
-		write<<*contact;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*contact;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(contactFetcherInterface);
 	int maxAllocation = MaxSmfContactSize*perPage;
@@ -162,6 +179,7 @@ void  SmfContactFetcherPrivate::search(SmfContact* contact,int pageNum,int perPa
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_dataSerialized, intfName,
 			SmfContactSearch, maxAllocation);
+	return err;
 	}
 
 /**
@@ -174,34 +192,42 @@ void  SmfContactFetcherPrivate::search(SmfContact* contact,int pageNum,int perPa
  * @param proximity The search boundary criteria
  * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
  * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-bool  SmfContactFetcherPrivate::searchNear(SmfLocation* location,
+SmfError SmfContactFetcherPrivate::searchNear(SmfLocation* location,
 		SmfLocationSearchBoundary proximity,
 		int pageNum,int perPage) 
 	{
+	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_contactFetcher->getProvider();
 	m_dataSerialized.clear();
 	
 	//serialize start
 	QDataStream write(&m_dataSerialized,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	if(location)
 		{
 		m_argFlag = 1;
-		write<<m_argFlag;
-		write<<*location;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*location;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
-	write<<m_argFlag;
-	write<<proximity;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<proximity;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(contactFetcherInterface);
 	int maxAllocation = MaxSmfContactSize*perPage;
@@ -209,8 +235,7 @@ bool  SmfContactFetcherPrivate::searchNear(SmfLocation* location,
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_dataSerialized, intfName,
 			SmfContactSearchNear, maxAllocation);
-	
-	return true;
+	return err;
 	}
 
 /**
@@ -221,9 +246,11 @@ bool  SmfContactFetcherPrivate::searchNear(SmfLocation* location,
  * by the user default values are used.
  * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
  * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-bool SmfContactFetcherPrivate::groups(int pageNum,int perPage) 
+SmfError SmfContactFetcherPrivate::groups(int pageNum,int perPage) 
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_contactFetcher->getProvider();
 	m_dataSerialized.clear();
@@ -231,20 +258,24 @@ bool SmfContactFetcherPrivate::groups(int pageNum,int perPage)
 	//serialize start
 	QDataStream write(&m_dataSerialized,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
-		
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
+			
 	QString intfName(contactFetcherInterface);
 	int maxAllocation = MaxSmfGroupSize*perPage;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_dataSerialized, intfName,
 			SmfContactGetGroups, maxAllocation);
-	
-	return true;
+	return err;
 	}
 
 /**
@@ -253,12 +284,15 @@ bool SmfContactFetcherPrivate::groups(int pageNum,int perPage)
  * can specify the page number and per page item data. If not supplied by the 
  * user default values are used.
  * @param group The group to be searched in
+ * @contact The contact to be searched, default (NULL) is the self contact.
  * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
  * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
- * @return true if success, else false
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-bool  SmfContactFetcherPrivate::searchInGroup(SmfGroup group,int pageNum,int perPage) 
+SmfError SmfContactFetcherPrivate::searchInGroup(SmfGroup group, SmfContact *contact,
+		int pageNum,int perPage) 
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider+SmfGroup serialized into bytearray 
 	SmfProvider* m_baseProvider = m_contactFetcher->getProvider();
 	
@@ -266,22 +300,37 @@ bool  SmfContactFetcherPrivate::searchInGroup(SmfGroup group,int pageNum,int per
 	m_dataSerialized.clear();
 	QDataStream write(&m_dataSerialized,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
-	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<group;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
 	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<group;
+	if(contact)
+		{
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*contact;
+		}
+	else
+		{
+		m_argFlag = 0;
+		streamToPlugin<<m_argFlag;
+		}
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
+		
 	QString intfName(contactFetcherInterface);
 	int maxAllocation = MaxSmfContactSize*perPage;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_dataSerialized, intfName,
 			SmfContactSearchInGroup, maxAllocation);
-	
-	return true;
+	return err;
 	}
 
 /**
@@ -289,12 +338,14 @@ bool  SmfContactFetcherPrivate::searchInGroup(SmfGroup group,int pageNum,int per
  * when the result is available.
  * @param operationId OperationId
  * @param customData Custom data to be sent
+ * @return SmfError. SmfNoError if success, else appropriate error code
  * Note:-Interpretation of operationId and customData is upto the concerned
  * plugin and client application. service provider should provide some
  * serializing-deserializing utilities for these custom data
  */
-void SmfContactFetcherPrivate::customRequest ( const int& operationId, QByteArray* customData )
+SmfError SmfContactFetcherPrivate::customRequest ( const int& operationId, QByteArray* customData )
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider+SmfGroup serialized into bytearray 
 	SmfProvider* m_baseProvider = m_contactFetcher->getProvider();
 	
@@ -302,19 +353,24 @@ void SmfContactFetcherPrivate::customRequest ( const int& operationId, QByteArra
 	m_dataSerialized.clear();
 	QDataStream write(&m_dataSerialized,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<operationId;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<operationId;
 	if(customData)
 		{
-		write<<m_argFlag;
-		write<<*customData;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*customData;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
+	
+	write<<dataToPlugins;
 	
 	QString intfName(contactFetcherInterface);
 //ToDo:- How much size to allocate for custom data? keeping MaxSmfContactSize for now
@@ -323,6 +379,21 @@ void SmfContactFetcherPrivate::customRequest ( const int& operationId, QByteArra
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_dataSerialized, intfName,
 			SmfContactCustomRequest, maxAllocation);
+	return err;
+	}
+
+SmfError SmfContactFetcherPrivate::cancelRequest()
+	{
+	qDebug()<<"Inside SmfContactFetcherPrivate::cancelRequest()";
+	QByteArray notused;
+	QByteArray retData = m_SmfClientPrivate->sendSyncRequest(notused,SmfCancelRequest,1000, notused);
+	
+	//De-serialize it into SmfError
+	QDataStream reader(&retData,QIODevice::ReadOnly);
+	int val;
+	reader>>val;
+	SmfError error = (SmfError) val;
+	return error;
 	}
 
 /**

@@ -67,14 +67,11 @@ SmfServer::~SmfServer()
 
 bool SmfServer::startServer()
 	{
-	qDebug()<<"Inside SmfServer::startServer()";
-	
 	bool success = false;
 	
 	//Initialize all the component handles
 	SmfTransportInitializeResult networkStatus = prepareTransport();
 	
-	qDebug()<<"Before m_pluginManager construction";
 	m_pluginManager = SmfPluginManager::getInstance(this);
 	qDebug()<<"After m_pluginManager construction";
 	
@@ -166,7 +163,6 @@ void SmfServer::getAuthorizedPlugins(QList<SmfPluginID>& list,QList<SmfPluginID>
 
 SmfTransportInitializeResult SmfServer::prepareTransport()
 	{
-	qDebug()<<"Inside SmfServer::prepareTransport()";
 	m_transportManager = SmfTransportManager::getInstance();
 	
 	//checking the network status
@@ -175,19 +171,24 @@ SmfTransportInitializeResult SmfServer::prepareTransport()
 	return networkStatus;
 	}
 
-void SmfServer::sendToPluginManager ( int requestID, SmfPluginID pluginID, 
+SmfError SmfServer::sendToPluginManager ( int requestID, SmfPluginID pluginID, 
 		SmfInterfaceID interfaceID, SmfRequestTypeID requestTypeID, 
 		QByteArray dataForPlugin )
 	{
 	qDebug()<<"Inside SmfServer::sendToPluginManager()";
+	Q_UNUSED(interfaceID)
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"Request ID = "<<requestID;
 	qDebug()<<"PluginID = "<<pluginID;
 	qDebug()<<"Interface = "<<interfaceID;
 	qDebug()<<"RequestType = "<<requestTypeID;
-
+#endif
+	
 	//TODO:-PM should take page info too
 	SmfError err = m_pluginManager->createRequest(requestID,pluginID,requestTypeID,dataForPlugin);
-	qDebug()<<"m_pluginManager->createRequest() = "<<err;
+	qDebug()<<"m_pluginManager->createRequest() ret value = "<<err;
+	
+	return err;
 	}
 
 /**
@@ -202,9 +203,12 @@ SmfError SmfServer::sendToPluginManager ( SmfPluginID pluginID,
 		QByteArray dataForPlugin, QByteArray &outputData)
 	{
 	qDebug()<<"Inside SmfServer::sendToPluginManager() for sync req";
+	Q_UNUSED(interfaceID)
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"PluginID = "<<pluginID;
 	qDebug()<<"Interface = "<<interfaceID;
 	qDebug()<<"RequestType = "<<requestTypeID;
+#endif
 
 	//TODO:-PM should take page info too
 	SmfError err = m_pluginManager->createSyncRequest(pluginID,requestTypeID,dataForPlugin, outputData);
@@ -221,56 +225,93 @@ SmfError SmfServer::sendToDSM ( QByteArray qtdataForDSM, SmfRequestTypeID opcode
 	
 	//Note:- deserialization and formation of user profile and social profile are done by server
 	QDataStream readStream(&qtdataForDSM,QIODevice::ReadOnly);
-	QDataStream writeStream(&qtdataFromDSM,QIODevice::ReadOnly);
+	QDataStream writeStream(&qtdataFromDSM,QIODevice::WriteOnly);
 	quint8 flag = 0;
 	switch(opcode)
 		{
 		case SmfRelationCreate:
 			{
 			//read the incoming data
-			SmfProvider provider;
-			SmfContact contact;
+			SmfProvider *provider = new SmfProvider();
+			SmfContact *contact = new SmfContact();
 			readStream>>flag;
 			if(flag)
-				readStream>>provider;
+				readStream>>*provider;
+			else 
+				{
+				delete provider;
+				provider = NULL;
+				}
 			readStream>>flag;
 			if(flag)
-				readStream>>contact;
-
-			SmfRelationId relnId = dsm->create(&provider,&contact);
+				readStream>>*contact;
+			else 
+				{
+				delete contact;
+				contact = NULL;
+				}
+			SmfRelationId relnId = dsm->create(provider,contact);
 			writeStream<<relnId;
+			if(provider != NULL)
+				delete provider;
+			if(contact != NULL)
+				delete contact;
 			}
 			break;
 		case SmfRelationAssociate:
 			{
 			SmfRelationId relnId;
-			SmfContact contact;
-			SmfProvider provider;
+			SmfContact *contact = new SmfContact();
+			SmfProvider *provider = new SmfProvider();
 			readStream>>relnId;
 			readStream>>flag;
 			if(flag)
-				readStream>>contact;
+				readStream>>*contact;
+			else 
+				{
+				delete contact;
+				contact = NULL;
+				}
 			readStream>>flag;
 			if(flag)
-				readStream>>provider;
+				readStream>>*provider;
+			else 
+				{
+				delete provider;
+				provider = NULL;
+				}
 
-			SmfError err = dsm->associate(relnId,&contact,&provider);
+			QString snsName = provider->serviceName();
+			QString snsUrl = (provider->serviceUrl()).toString();
+			QString snsDesc = provider->description();
+			
+			SmfError err = dsm->associate(relnId,contact,provider);
 			int errInt = err;
 			writeStream<<errInt;
+			if(contact != NULL)
+				delete contact;
+			if(provider != NULL)
+				delete provider;
 			}
 			break;
 		case SmfRelationRemove:
 			{
 			SmfRelationId relnId;
-			SmfContact contact;
+			SmfContact *contact = new SmfContact();
 			readStream>>relnId;
 			readStream>>flag;
 			if(flag)
-				readStream>>contact;
-
-			SmfError err = dsm->remove(relnId, &contact);
+				readStream>>*contact;
+			else 
+				{
+				delete contact;
+				contact = NULL;
+				}
+			SmfError err = dsm->remove(relnId, contact);
 			int errInt = err;
 			writeStream<<errInt;
+			if(NULL != contact)
+				delete contact;
 			break;
 			}
 		case SmfRelationSearchById:
@@ -382,10 +423,12 @@ void SmfServer::clientAuthorizationFinished(bool success,SmfClientAuthID authID 
 void SmfServer::resultsAvailable ( int requestID, QByteArray* parsedData, SmfError error )
 	{
 	qDebug()<<"Inside SmfServer::resultsAvailable()";
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"requestID = "<<requestID;
 	qDebug()<<"parsedData->size() = "<<parsedData->size();
 	qDebug()<<"Error = "<<error;
-
+#endif
+	
 	//Serialize error followed by actual data
 	QByteArray dataWithError;
 	QDataStream writer(&dataWithError,QIODevice::WriteOnly);

@@ -25,6 +25,8 @@
 #include <smfplaylist.h>
 #include <smfmusicprofile.h>
 #include <smftrackinfo.h>
+#include <smfcontact.h>
+
 
 /**
  * @ingroup smf_plugin_group
@@ -47,9 +49,10 @@ public:
 	/**
 	 * Method to get the playlist
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aPageNum The page to be extracted
-	 * @param aItemsPerPage Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError playlists( SmfPluginRequestData &aRequest,
 			const int aPageNum = SMF_FIRST_PAGE, 
@@ -58,22 +61,24 @@ public:
 	/**
 	 * Method to get the playlist of a particular user
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aUser The user whose playlists need to be fetched
-	 * @param aPageNum The page to be extracted
-	 * @param aItemsPerPage Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aUser [in] The user whose playlists need to be fetched
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError playlistsOf( SmfPluginRequestData &aRequest,
-			const SmfMusicProfile &aUser,
+			const SmfContact &aUser,
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
 	/**
 	 * Method to add tracks to a playlist
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aPlaylist The playlist where tracks should be added
-	 * @param aTracks The tracks to be added to the playlist
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aPlaylist [in] The playlist where tracks should be added
+	 * @param aTracks [in] The tracks to be added to the playlist
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError addToPlaylist( SmfPluginRequestData &aRequest,
 			const SmfPlaylist &aPlaylist, 
@@ -82,8 +87,9 @@ public:
 	/**
 	 * Method to post the current playing playlist
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aPlaylist The current playing playlist which should be posted
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aPlaylist [in] The current playing playlist which should be posted
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError postCurrentPlayingPlaylist(
 			SmfPluginRequestData &aRequest, 
@@ -92,11 +98,12 @@ public:
 	/**
 	 * Customised method for SmfPlaylistServicePlugin interface
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aOperation The operation type (should be known between 
+	 * @param aOperation [in] The operation type (should be known between 
 	 * the client interface and the plugin)
-	 * @param aData The data required to form the request (The type 
+	 * @param aData [in] The data required to form the request (The type 
 	 * of data should be known between client and the plugin)
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError customRequest( SmfPluginRequestData &aRequest, 
 			const int &aOperation, QByteArray *aData ) = 0;

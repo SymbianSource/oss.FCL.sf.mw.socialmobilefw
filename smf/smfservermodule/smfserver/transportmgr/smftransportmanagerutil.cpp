@@ -161,7 +161,7 @@ QNetworkReply* SmfTransportManagerUtil::get (
 		
 		// Set the cache control
 		aRequest.setRawHeader("Cache-Control", kSmfCacheControl);
-
+		
 		// Put the same user agent for all requests sent by Smf
 		aRequest.setRawHeader("User-Agent", kSmfUserAgent);
 		
@@ -601,7 +601,7 @@ void SmfTransportManagerUtil::networkReplyFinished ( QNetworkReply *aNetworkRepl
 				{
 				gzipEncoded = true;
 				qDebug()<<"Response is gzip encoded!!!";
-			arr = inflateResponse(response, error);
+				arr = inflateResponse(response, error);
 				if(!arr)
 					trResult = SmfTransportOpGzipError;
 			}
@@ -664,7 +664,9 @@ QByteArray* SmfTransportManagerUtil::inflateResponse ( QByteArray &aResponse, Sm
 	QByteArray sizeStr;
 	for(int count = 1 ; count <= 4 ; count++)
 		sizeStr.append(aResponse[aResponse.size()-count]);
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"Size string as a string = "<<QString(sizeStr.toHex());
+#endif
 	bool ok = false;
 	int uncomSize = sizeStr.toHex().toInt(&ok, 16);
 	qDebug()<<"Size of uncompressed data = "<<uncomSize;
@@ -688,7 +690,9 @@ QByteArray* SmfTransportManagerUtil::inflateResponse ( QByteArray &aResponse, Sm
 	stream.next_in = Z_NULL;
 	
 	int ret = inflateInit2(&stream, 16+MAX_WBITS);
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"return value of inflateInit2() = "<<ret;
+#endif
 	if(Z_OK != ret)
 		{
 		qDebug()<<"Error in inflateInit2, returning...";
@@ -711,7 +715,9 @@ QByteArray* SmfTransportManagerUtil::inflateResponse ( QByteArray &aResponse, Sm
 	stream.next_out = out;
 	
 	ret = inflate(&stream, Z_NO_FLUSH);
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"return value of inflate() = "<<ret;
+#endif
 	
 	switch (ret) 
 		{
@@ -720,6 +726,7 @@ QByteArray* SmfTransportManagerUtil::inflateResponse ( QByteArray &aResponse, Sm
 		case Z_DATA_ERROR:
 		case Z_MEM_ERROR:
 			{
+			qDebug()<<"Error in inflate, returning...";
 			(void)inflateEnd(&stream);
 			delete[] out;
 			aError = SmfTMGzipDataError;
@@ -736,9 +743,13 @@ QByteArray* SmfTransportManagerUtil::inflateResponse ( QByteArray &aResponse, Sm
 	
 	// If there is some unwanted data at the end of uncompressed data, chop them
 	int chopLength = uncompressedData->size() - uncomSize;
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"old size of uncompressed data = "<<uncompressedData->size();
+#endif
 	uncompressedData->chop(chopLength);
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"new size of uncompressed data = "<<uncompressedData->size();
+#endif
 	
 	return uncompressedData;
 	}
@@ -778,8 +789,10 @@ QByteArray* SmfTransportManagerUtil::deflateRequest( QByteArray &aResponse, SmfE
 	
 	// Call deflateInit2 for gzip compression initialization
 	int initError = deflateInit2(&stream, level, method, windowBits, mem_level, strategy);
+#ifdef DETAILEDDEBUGGING
 	qDebug()<<"Return value of deflateInit2() = "<<initError;
 	qDebug()<<"Error msg if any = "<<QString(zError(initError));
+#endif
 	
 	if(Z_OK != initError)
 		{

@@ -33,6 +33,8 @@
 
 class SmfPlaylistPrivate;
 
+const int SmfMusicPlaylistMaxSize = 5000;
+
 /**
  * @ingroup smf_common_group
  * The playlist class represents an instance of a playlist.

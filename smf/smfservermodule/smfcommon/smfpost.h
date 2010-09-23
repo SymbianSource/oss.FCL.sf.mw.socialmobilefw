@@ -27,8 +27,12 @@
 #include <QSharedData>
 #include <QTextDocument>
 #include <smfclientglobal.h>
+#include <smfcontact.h>
+/**
+ * forward declaration
+ */
+class SmfPostPrivate;
 
-#include "smfpost_p.h"
 const int MaxSmfPostSize=1000;
 /**
  *  Presence info of the user

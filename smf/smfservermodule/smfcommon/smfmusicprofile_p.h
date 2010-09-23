@@ -32,8 +32,8 @@ public:
 	 * Constructor
 	 */
 	SmfMusicProfilePrivate( ) { 
-		m_usage.clear(); 
-		m_interest.clear();
+		m_recent.clear(); 
+		m_favorites.clear();
 		m_events.clear();
 		m_profileId.clear();
 	}
@@ -44,8 +44,8 @@ public:
 	 */
 	SmfMusicProfilePrivate( const SmfMusicProfilePrivate &aOther ) : 
 		QSharedData ( aOther ), 
-		m_usage ( aOther.m_usage ), 
-		m_interest ( aOther.m_interest ),
+		m_recent ( aOther.m_recent ), 
+		m_favorites ( aOther.m_favorites ),
 		m_events ( aOther.m_events ),
 		m_profileId ( aOther.m_profileId ) 	{ }
 	
@@ -56,8 +56,8 @@ public:
 		{
 		}
   
-	QList<SmfTrackInfo> m_usage;	// usage tracks
-	QList<SmfTrackInfo> m_interest;	// interested tracks
+	QList<SmfTrackInfo> m_recent;	// recently heard tracks
+	QList<SmfTrackInfo> m_favorites;// favorite tracks
 	QList<SmfEvent> m_events;		// events list
 	QString m_profileId;			// profile Id
 	

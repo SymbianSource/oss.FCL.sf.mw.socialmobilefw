@@ -99,26 +99,29 @@ public:
 	 * once the post lists are available
 	 * @param user user's contact in this SP, omit for self contact
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
-     * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE 
+     * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+     * @return SmfError. SmfNoError if success, else appropriate error code 
 	 * @see postsAvailable()
 	 */
-	void posts(SmfContact* user = 0,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE);
+	SmfError posts(SmfContact* user = 0,int pageNum=SMF_FIRST_PAGE,int perPage=SMF_ITEMS_PER_PAGE);
 	
 	/**
 	 * Updates a post to own area, the success of the post can be checked with signal
 	 * updatePostFinished() signal
 	 * @param postData data to be posted
 	 * @param location location data
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void post(SmfPost& postData,SmfLocation& location) ; 
+	SmfError post(SmfPost& postData,SmfLocation& location) ; 
 	
 	/**
 	 * Updates the last post to own area with new data, the success of the post can be checked with signal
 	 * updatePostFinished() signal
 	 * @param postData edited/new data to be posted
 	 * @param location location data
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void updatePost(SmfPost& postData); 
+	SmfError updatePost(SmfPost& postData); 
 	
 	/**
 	 * Updates a post to a particular Smf contact. the success of the post can be checked with signal
@@ -126,24 +129,26 @@ public:
 	 * @param postData data to be posted
 	 * @param contact contact to which the post is to be directed
 	 * @param location location data
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void postDirected(SmfPost& postData,SmfContact& contact,SmfLocation* location=0);
+	SmfError postDirected(SmfPost& postData,SmfContact& contact,SmfLocation* location=0);
 	
 	/**
 	 * Method to post a comment on a post.
 	 * @param aTarget Post on which comment has to be posted
 	 * @param aComment comment to be posted
 	 * @param aLocation location data
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void commentOnAPost( SmfPost &aTarget, SmfPost &aComment, SmfLocation *aLocation = NULL);
+	SmfError commentOnAPost( SmfPost &aTarget, SmfPost &aComment, SmfLocation *aLocation = NULL);
 	
 	/**
 	 * Posts appearance info of the user.e.g. appear offline, busy, do-not-disturb
 	 * @param appearence user appearance
 	 * @see SmfPresenceInfo
-	 * @return False on Failure/Not supported 
+	 * @return SmfError. SmfNoError if success, else appropriate error code 
 	 */
-	bool postAppearence(SmfAppearenceInfo appearence, const QString &status); 
+	SmfError postAppearence(SmfAppearenceInfo appearence, const QString &status); 
 	
 	/**
 	 * Share /a contact's post to user's friends and followers (e.g. retweet in twitter, share on facebook)
@@ -151,18 +156,28 @@ public:
 	 * @param postData data to be posted
 	 * @param contact contact to which the post belonged
 	 * @param bool whether user changed items within the post
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void sharePost(SmfPost& postData,SmfContact& contact,bool edited);
+	SmfError sharePost(SmfPost& postData,SmfContact& contact,bool edited);
 	
 	/**
 	 * Request for a custom operation.
 	 * @param operationId OperationId
 	 * @param customData Custom data to be sent
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 * Note:-Interpretation of operationId and customData is upto the concerned
 	 * plugin and client application. service provider should provide some
 	 * serializing-deserializing utilities for these custom data
 	 */
-	void customRequest(const int& operationId,QByteArray* customData);
+	SmfError customRequest(const int& operationId,QByteArray* customData);
+	
+    /**
+     * Cancels a request generated due to the call to any API which results 
+     * into http request. Might return error if no request is currently pending.
+     * Please note that there can be only one request pending at any point of time
+     * @return Appropriate SmfError value
+     */
+	SmfError cancelRequest ();
    
 public:	//From smfobserver 
 	/**

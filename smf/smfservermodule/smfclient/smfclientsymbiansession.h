@@ -70,7 +70,7 @@ public:
 	 */
 	TPtr8 sendDSMSyncRequest(SmfRequestTypeID aRequestType,	
 			QByteArray& aSerializedData,
-			SmfError aErr, TInt maxSize = 0 );
+			SmfError& aErr, TInt maxSize = 0 );
     
 	/**
 	 * Sends synchronous requests to the Smf server
@@ -116,19 +116,19 @@ private:
     TBuf8<125> iInterfaceSymbian8;
     QString iInterfaceName;
     HBufC* iIntfNameBuffer;
-    TPtr iIntfNamePtr;
     HBufC* iBuffer16;
-    TPtr iPtrToXtraInfo;
     TPtr iPtrProvider;
+	TPtr8 iPtrProvider8;
 	QByteArray iInterfaceNamebyte;
 	TBuf<100> iDSMErr;
 	HBufC8* iProviderBuf8;
-	TPtr8 iPtrProvider8;
-	HBufC8* iIntfNameBuffer8;
+    TPtr iIntfNamePtr;
 	TPtr8 iIntfNamePtr8;
+	HBufC8* iIntfNameBuffer8;
 	HBufC8* iBuffer8;
 	HBufC8* iXtraInfoBuf8;
-	TPtr8 iPtrToXtraInfo8;
+    TPtr iPtrToXtraInfo;
+    TPtr8 iPtrToXtraInfo8;
 	HBufC8* iSlot0Buffer8;
 	TPtr8 iPtr8ToSlot0;
 	TInt iMaxMessageSize;

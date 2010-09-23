@@ -52,42 +52,47 @@ SmfContactFetcher::~SmfContactFetcher()
 	/** @TODO:- Request to unload the plugin*/
 	}
 
-bool SmfContactFetcher::friends(int pageNum,int perPage)
+SmfError SmfContactFetcher::friends(int pageNum,int perPage)
 	{
 	return m_private->friends(pageNum,perPage);
 	}
 
-bool SmfContactFetcher::followers(int pageNum,int perPage)
+SmfError SmfContactFetcher::followers(int pageNum,int perPage)
 	{
 	return m_private->followers(pageNum,perPage);
 	}
 
-void  SmfContactFetcher::search(SmfContact* contact,int pageNum,int perPage) 
+SmfError  SmfContactFetcher::search(SmfContact* contact,int pageNum,int perPage) 
 	{
-	m_private->search(contact,pageNum,perPage);
+	return m_private->search(contact,pageNum,perPage);
 	}
 
-bool  SmfContactFetcher::searchNear(SmfLocation* location,SmfLocationSearchBoundary proximity,int pageNum,int perPage) 
+SmfError  SmfContactFetcher::searchNear(SmfLocation* location,SmfLocationSearchBoundary proximity,int pageNum,int perPage) 
 	{
 	return m_private->searchNear(location, proximity, pageNum, perPage);
 	}
 
-bool SmfContactFetcher::groups(int pageNum,int perPage) 
+SmfError SmfContactFetcher::groups(int pageNum,int perPage) 
 	{
 	return m_private->groups(pageNum,perPage);
 	}
 
-bool  SmfContactFetcher::searchInGroup(SmfGroup group,int pageNum,int perPage) 
+SmfError  SmfContactFetcher::searchInGroup(SmfGroup group, SmfContact *contact, int pageNum,int perPage) 
 	{
-	return m_private->searchInGroup(group,pageNum,perPage);
+	return m_private->searchInGroup(group,contact,pageNum,perPage);
 	}
 
-void SmfContactFetcher::customRequest(const int& operationId,QByteArray* customData)
+SmfError SmfContactFetcher::customRequest(const int& operationId,QByteArray* customData)
 	{
-	m_private->customRequest(operationId, customData);
+	return m_private->customRequest(operationId, customData);
 	}
 
 SmfProvider* SmfContactFetcher::getProvider() const
 	{
 	return m_baseProvider;
+	}
+
+SmfError SmfContactFetcher::cancelRequest()
+	{
+	return m_private->cancelRequest();
 	}

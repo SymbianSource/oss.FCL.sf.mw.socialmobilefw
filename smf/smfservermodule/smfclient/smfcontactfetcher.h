@@ -28,6 +28,7 @@
 
 // Forward declaration
 class SmfProvider; //base-class for service provider
+class SmfContactFetcherPrivate;//implementation 
 
 /**
  * @ingroup smf_client_group 
@@ -78,9 +79,9 @@ public:
 	 * by the user default values are used. 
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
-	 * @return true if success, else false
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	bool friends ( int pageNum = SMF_FIRST_PAGE, int perPage = SMF_ITEMS_PER_PAGE );
+	SmfError friends ( int pageNum = SMF_FIRST_PAGE, int perPage = SMF_ITEMS_PER_PAGE );
 
 	/**
 	 * Get the list of followers asynchronously. The followersListAvailable() signal
@@ -90,9 +91,9 @@ public:
 	 * If not supplied by the user default values are used.
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
-	 * @return true if success, else false
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	bool followers ( int pageNum = SMF_FIRST_PAGE, int perPage = SMF_ITEMS_PER_PAGE );
+	SmfError followers ( int pageNum = SMF_FIRST_PAGE, int perPage = SMF_ITEMS_PER_PAGE );
 
 	/**
 	 * Searches for a contact The searchContactFinished() signal
@@ -103,8 +104,9 @@ public:
 	 * set as one of its fields.
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void search ( SmfContact* contact, int pageNum = SMF_FIRST_PAGE,
+	SmfError search ( SmfContact* contact, int pageNum = SMF_FIRST_PAGE,
 					int perPage = SMF_ITEMS_PER_PAGE );
 
 	/**
@@ -117,8 +119,9 @@ public:
 	 * @param proximity The search boundary criteria
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	bool searchNear ( SmfLocation* location, 
+	SmfError searchNear ( SmfLocation* location, 
 					SmfLocationSearchBoundary proximity,
 					int pageNum = SMF_FIRST_PAGE,
 					int perPage = SMF_ITEMS_PER_PAGE);
@@ -131,8 +134,9 @@ public:
 	 * by the user default values are used.
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	bool groups ( int pageNum = SMF_FIRST_PAGE, int perPage = SMF_ITEMS_PER_PAGE );
+	SmfError groups ( int pageNum = SMF_FIRST_PAGE, int perPage = SMF_ITEMS_PER_PAGE );
 	
 	/**
 	 * Searches for Smf Contacts in an Smf group. The signal searchInGroupFinished() 
@@ -140,11 +144,13 @@ public:
 	 * can specify the page number and per page item data. If not supplied by the 
 	 * user default values are used.
 	 * @param group The group to be searched in
+	 * @contact The contact to be searched, default (NULL) is the self contact.
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
-	 * @return true if success, else false
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	bool searchInGroup ( SmfGroup group,
+	SmfError searchInGroup ( SmfGroup group,
+						SmfContact* contact = NULL,
 						int pageNum = SMF_FIRST_PAGE,
 						int perPage = SMF_ITEMS_PER_PAGE );
 	
@@ -153,11 +159,20 @@ public:
 	 * when the result is available.
 	 * @param operationId OperationId
 	 * @param customData Custom data to be sent
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 * Note:-Interpretation of operationId and customData is upto the concerned
 	 * plugin and client application. service provider should provide some
 	 * serializing-deserializing utilities for these custom data
 	 */
-	void customRequest ( const int& operationId, QByteArray* customData );
+	SmfError customRequest ( const int& operationId, QByteArray* customData );
+	
+    /**
+     * Cancels a request generated due to the call to any API which results 
+     * into http request. Might return error if no request is currently pending.
+     * Please note that there can be only one request pending at any point of time
+     * @return Appropriate SmfError value
+     */
+	SmfError cancelRequest ();
 	
 signals:
 

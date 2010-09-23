@@ -24,9 +24,14 @@
 #include <QSharedData>
 #include <QMetaType>
 
-#include "smfgroup_p.h"
 #include "smfcontact.h"
 #include "smfclientglobal.h"
+
+
+/**
+ * forward declaration
+ */
+class SmfGroupPrivate;
 
 /**
  * Max number of members per group

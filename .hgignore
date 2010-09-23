@@ -8,3 +8,6 @@ syntax: regexp
 ^bin/.*$
 ^tmp
 ^.*\bld.inf
+^.svn
+^.cproject
+^.project

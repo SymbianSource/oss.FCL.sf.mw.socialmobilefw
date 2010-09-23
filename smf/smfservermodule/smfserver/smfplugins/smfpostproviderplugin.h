@@ -52,6 +52,7 @@ public:
 	 * @return Max characters that can be posted without truncation
 	 */
 	virtual qint32 maxCharsInPost( ) const = 0;
+	
 	/**
 	 * Method that returns maximum no of items that can be returned 
 	 * in a single query to getPosts. Negative value means feature 
@@ -78,13 +79,14 @@ public:
 	/**
 	 * Method to get the latest posts
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aUser The user's contact in this SP, omit for self contact
-	 * @param aPageNum The page to be extracted
-	 * @param aItemsPerPage Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aUser [in] The user's contact in this SP, omit for self contact
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError retrieve( SmfPluginRequestData &aRequest,
-			const SmfContact *aUser=0,
+			const SmfContact *aUser = NULL,
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 
@@ -92,9 +94,10 @@ public:
 	/**
 	 * Method to update a post to own area.
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aPostData The post data to be posted
-	 * @param aLocation The location
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aPostData [in] The post data to be posted
+	 * @param aLocation [in] The location
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError post( SmfPluginRequestData &aRequest,
 			const SmfPost &aPostData, 
@@ -103,8 +106,9 @@ public:
 	/**
 	 * Method to update the last post to own area with new data
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aPostData The edited/new data to be posted
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aPostData [in] The edited/new data to be posted
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError updatePost( SmfPluginRequestData &aRequest,
 			const SmfPost &aPostData ) = 0;
@@ -112,10 +116,11 @@ public:
 	/**
 	 * Method to update a post to a particular contact
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aPostData The post data to be posted
-	 * @param aContact The contact where the data has to be posted
-	 * @param aLocation The location
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aPostData [in] The post data to be posted
+	 * @param aContact [in] The contact where the data has to be posted
+	 * @param aLocation [in] The location
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError postDirected( SmfPluginRequestData &aRequest,
 			const SmfPost &aPostData, 
@@ -126,9 +131,11 @@ public:
 	/**
 	 * Method to post a comment on a post.
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aTarget Post on which comment has to be posted
-	 * @param aComment comment to be posted
-	 * @param aLocation location data
+	 * @param aTarget [in] Post on which comment has to be posted
+	 * @param aComment [in] comment to be posted
+	 * @param aLocation [in] location data
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError commentOnAPost(SmfPluginRequestData &aRequest,
 			const SmfPost &aTarget,
@@ -138,9 +145,10 @@ public:
 	/**
 	 * Method to update the presence information of the user
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aAppearence The appearence information
-	 * @param aStatus The status string
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aAppearence [in] The appearence information
+	 * @param aStatus [in] The status string
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError postAppearence( SmfPluginRequestData &aRequest,  
 			const SmfPresenceInfo &aAppearence,
@@ -150,24 +158,26 @@ public:
 	 * Share a contact's post to user's friends and followers
 	 * (e.g. retweet in twitter, share on facebook)
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aPostData data to be posted
-	 * @param aContact contact to which the post belonged
-	 * @param aEdited whether user changed items within the post
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aPostData [in] data to be posted
+	 * @param aContact [in] contact to which the post belonged
+	 * @param aEdited [in] whether user changed items within the post
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError sharePost( SmfPluginRequestData &aRequest, 
 			const SmfPost &aPostData, 
 			const SmfContact &aContact, 
-			const bool &aEdited) = 0;
+			const bool &aEdited ) = 0;
 	
 	/**
 	 * Customised method for SmfPostProviderPlugin interface
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aOperation The operation type (should be known between 
+	 * @param aOperation [in] The operation type (should be known between 
 	 * the client interface and the plugin)
-	 * @param aData The data required to form the request (The type 
+	 * @param aData [in] The data required to form the request (The type 
 	 * of data should be known between client and the plugin)
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError customRequest( SmfPluginRequestData &aRequest, 
 			const int &aOperation, QByteArray *aData ) = 0;

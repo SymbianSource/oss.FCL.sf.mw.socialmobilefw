@@ -139,7 +139,7 @@ private:
 
 
 	/**
-	 * Method to create a web query to do music event search or event post operation 
+	 * Method to create a web query to do event search or event post operation 
 	 * @param aPlugin The instance of the loaded plugin that performs the 
 	 * contact fetch operation.
 	 * @param aOperation The type of operation to be performed
@@ -147,7 +147,7 @@ private:
 	 * @param aReqData [out] The request data created by the plugin
 	 * @return SmfPluginError
 	 */
-	SmfPluginError createMusicEventsRequest ( QObject *aPlugin, 
+	SmfPluginError createEventsFetcherRequest ( QObject *aPlugin, 
 			const SmfRequestTypeID &aOperation, 
 			QByteArray &aInputData,
 			SmfPluginRequestData &aReqData );

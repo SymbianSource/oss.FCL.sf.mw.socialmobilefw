@@ -53,8 +53,9 @@ SmfMusicServicePrivate::~SmfMusicServicePrivate()
 		}
 	}
 
-void SmfMusicServicePrivate::userinfo()
+SmfError SmfMusicServicePrivate::userMusicInfo()
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_musicService->getProvider();
 	m_serializedDataToServer.clear();
@@ -67,22 +68,150 @@ void SmfMusicServicePrivate::userinfo()
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName, 
 			SmfMusicGetUserInfo, maxalloc);
+	return err;
 	}
 
-void SmfMusicServicePrivate::searchUser(SmfLocation venue, int pageNum, int perPage)
+SmfError SmfMusicServicePrivate::searchArtist ( SmfArtists artist, int pageNum, int perPage )
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_musicService->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<venue;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<artist;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
+	
+	QString intfName(musicServiceInterface);
+	int maxalloc = SmfMusicProfileMaxSize*perPage;
+	
+	//call private impl's send method
+	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
+			SmfMusicSearchArtist, maxalloc);
+	return err;
+	}
+
+SmfError SmfMusicServicePrivate::searchAlbum ( SmfAlbum album, int pageNum, int perPage )
+	{
+	SmfError err = SmfNoError;
+	//We need to pass Opcode and SmfProvider serialized into bytearray 
+	SmfProvider* m_baseProvider = m_musicService->getProvider();
+	m_serializedDataToServer.clear();
+	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
+	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<album;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
+	
+	QString intfName(musicServiceInterface);
+	int maxalloc = SmfMusicProfileMaxSize*perPage;
+	
+	//call private impl's send method
+	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
+			SmfMusicSearchAlbum, maxalloc);
+	return err;
+	}
+
+
+SmfError SmfMusicServicePrivate::searchEvents ( SmfEvent event, int pageNum, int perPage )
+	{
+	SmfError err = SmfNoError;
+	//We need to pass Opcode and SmfProvider serialized into bytearray 
+	SmfProvider* m_baseProvider = m_musicService->getProvider();
+	m_serializedDataToServer.clear();
+	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
+	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<event;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
+	
+	QString intfName(musicServiceInterface);
+	int maxalloc = SmfMusicProfileMaxSize*perPage;
+	
+	//call private impl's send method
+	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
+			SmfMusicSearchEvent, maxalloc);
+	return err;
+	}
+
+SmfError SmfMusicServicePrivate::searchVenue ( SmfLocation location, int pageNum, int perPage )
+	{
+	SmfError err = SmfNoError;
+	//We need to pass Opcode and SmfProvider serialized into bytearray 
+	SmfProvider* m_baseProvider = m_musicService->getProvider();
+	m_serializedDataToServer.clear();
+	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
+	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<location;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
+	
+	QString intfName(musicServiceInterface);
+	int maxalloc = SmfMusicProfileMaxSize*perPage;
+	
+	//call private impl's send method
+	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
+			SmfMusicSearchVenue, maxalloc);
+	return err;
+	}
+	
+SmfError SmfMusicServicePrivate::searchUser(SmfLocation venue, int pageNum, int perPage)
+	{
+	SmfError err = SmfNoError;
+	//We need to pass Opcode and SmfProvider serialized into bytearray 
+	SmfProvider* m_baseProvider = m_musicService->getProvider();
+	m_serializedDataToServer.clear();
+	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
+	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<venue;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(musicServiceInterface);
 	int maxalloc = SmfMusicProfileMaxSize*perPage;
@@ -90,28 +219,36 @@ void SmfMusicServicePrivate::searchUser(SmfLocation venue, int pageNum, int perP
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 	SmfMusicSearchUser, maxalloc);
+	return err;
 	}
 
-void SmfMusicServicePrivate::customRequest ( const int& operationId, QByteArray* customData )
+SmfError SmfMusicServicePrivate::customRequest ( const int& operationId, QByteArray* customData )
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_musicService->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<operationId;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<operationId;
 	if(customData)
 		{
-		write<<m_argFlag;
-		write<<*customData;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*customData;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
+	
+	write<<dataToPlugins;
 	
 	QString intfName(musicServiceInterface);
 	//ToDo:- How much size to allocate for custo data? keeping SmfMusicProfileMaxSize for now
@@ -120,18 +257,26 @@ void SmfMusicServicePrivate::customRequest ( const int& operationId, QByteArray*
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicServiceCustomRequest, maxAlloc);
+	return err;
 	}
 
-void SmfMusicServicePrivate::postCurrentPlaying(SmfTrackInfo track) 
+SmfError SmfMusicServicePrivate::postCurrentPlaying(SmfTrackInfo track) 
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_musicService->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*(m_baseProvider);
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<track;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<track;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(musicServiceInterface);
 	//TODO:-revisit all the maxalloc
@@ -140,20 +285,28 @@ void SmfMusicServicePrivate::postCurrentPlaying(SmfTrackInfo track)
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicPostCurrentPlaying, maxalloc);
+	return err;
 	}
 
-void SmfMusicServicePrivate::postRating(SmfTrackInfo track, SmfMusicRating rate) 
+SmfError SmfMusicServicePrivate::postRating(SmfTrackInfo track, SmfMusicRating rate) 
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_musicService->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*(m_baseProvider);
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<track;
-	write<<m_argFlag;
-	write<<rate;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<track;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<rate;
+	
+	write<<dataToPlugins;
 
 	QString intfName(musicServiceInterface);
 	//TODO:-revisit all the maxalloc
@@ -162,20 +315,28 @@ void SmfMusicServicePrivate::postRating(SmfTrackInfo track, SmfMusicRating rate)
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 	SmfMusicPostRating, maxalloc);
+	return err;
 	}
 
-void SmfMusicServicePrivate::postComments(SmfTrackInfo track, SmfComment comment) 
+SmfError SmfMusicServicePrivate::postComments(SmfTrackInfo track, SmfComment comment) 
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_musicService->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*(m_baseProvider);
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<track;
-	write<<m_argFlag;
-	write<<comment;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<track;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<comment;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(musicServiceInterface);
 	//TODO:-revisit all the maxalloc
@@ -184,6 +345,22 @@ void SmfMusicServicePrivate::postComments(SmfTrackInfo track, SmfComment comment
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicPostComment, maxalloc);
+	return err;
+	}
+
+
+SmfError SmfMusicServicePrivate::cancelRequest()
+	{
+	qDebug()<<"Inside SmfMusicServicePrivate::cancelRequest()";
+	QByteArray notused;
+	QByteArray retData = m_SmfClientPrivate->sendSyncRequest(notused,SmfCancelRequest,1000, notused);
+	
+	//De-serialize it into SmfError
+	QDataStream reader(&retData,QIODevice::ReadOnly);
+	int val;
+	reader>>val;
+	SmfError error = (SmfError) val;
+	return error;
 	}
 
 void SmfMusicServicePrivate::resultsAvailable(QByteArray result, SmfRequestTypeID opcode, SmfError error)
@@ -201,7 +378,54 @@ void SmfMusicServicePrivate::resultsAvailable(QByteArray result, SmfRequestTypeI
 			SmfMusicProfile* m_profile = new SmfMusicProfile;
 			reader>>*m_profile;
 
-			emit m_musicService->userInfoAvailable(m_profile,error);
+			emit m_musicService->userMusicInfoAvailable(m_profile,error);
+			break;
+			}
+			
+		case SmfMusicSearchArtist:
+			{
+			SmfArtistsList *m_List = new SmfArtistsList;
+			reader>>*m_List;
+			
+			//ToDo :- not incorporating paging now
+			SmfResultPage page;
+
+			emit m_musicService->searchArtistInfoAvailable(m_List, error, page);
+			break;
+			}
+			
+		case SmfMusicSearchAlbum:
+			{
+			SmfAlbumList *m_List = new SmfAlbumList;
+			reader>>*m_List;
+			
+			//ToDo :- not incorporating paging now
+			SmfResultPage page;
+
+			emit m_musicService->searchAlbumInfoAvailable(m_List, error, page);
+			break;
+			}
+			
+		case SmfMusicSearchEvent:
+			{
+			SmfEventList *m_List = new SmfEventList;
+			reader>>*m_List;
+			
+			//ToDo :- not incorporating paging now
+			SmfResultPage page;
+
+			emit m_musicService->searchEventsInfoAvailable(m_List, error, page);
+			break;
+			}
+		case SmfMusicSearchVenue:
+			{
+			SmfLocationList *m_List = new SmfLocationList;
+			reader>>*m_List;
+			
+			//ToDo :- not incorporating paging now
+			SmfResultPage page;
+
+			emit m_musicService->searchVenueInfoAvailable(m_List, error, page);
 			break;
 			}
 				
@@ -213,7 +437,7 @@ void SmfMusicServicePrivate::resultsAvailable(QByteArray result, SmfRequestTypeI
 			//ToDo :- not incorporating paging now
 			SmfResultPage page;
 
-			emit m_musicService->searchInfoAvailable(m_profileList, error, page);
+			emit m_musicService->searchUserInfoAvailable(m_profileList, error, page);
 			break;
 			}
 			
@@ -265,133 +489,250 @@ SmfMusicSearchPrivate::~SmfMusicSearchPrivate()
 		}
 	}
 
-void SmfMusicSearchPrivate::recommendations(SmfTrackInfo track, int pageNum, int perPage)
+SmfError SmfMusicSearchPrivate::recommendations(SmfTrackInfo track, int pageNum, int perPage)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray
 	m_serializedDataToServer.clear();
 	SmfProvider* m_baseProvider = m_musicSearch->getProvider();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<track;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<track;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 		
 	QString intfName(musicSearchInterface);
 	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
+	int maxalloc = SmfMusicTracksMaxSize*perPage;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicGetRecommendations, maxalloc);
+	return err;
 	}
 
-void SmfMusicSearchPrivate::tracks(SmfTrackInfo track, int pageNum, int perPage)
+SmfError SmfMusicSearchPrivate::tracksSimilar ( SmfTrackInfo track, int pageNum, int perPage )
 	{
-	//We need to pass Opcode and SmfProvider serialized into bytearray 
-	SmfProvider* m_baseProvider = m_musicSearch->getProvider();
+	SmfError err = SmfNoError;
+	//We need to pass Opcode and SmfProvider serialized into bytearray
 	m_serializedDataToServer.clear();
+	SmfProvider* m_baseProvider = m_musicSearch->getProvider();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<track;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<track;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(musicSearchInterface);
 	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
+	int maxalloc = SmfMusicTracksMaxSize*perPage;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
-			SmfMusicGetTracks, maxalloc);
+			SmfMusicGetTracksSimilar, maxalloc);
+	return err;
 	}
 
-void SmfMusicSearchPrivate::trackInfo(SmfMusicFingerPrint signature, int pageNum, int perPage)
+SmfError SmfMusicSearchPrivate::tracksOfAlbum ( SmfAlbum album, int pageNum, int perPage )
 	{
+	SmfError err = SmfNoError;
+	//We need to pass Opcode and SmfProvider serialized into bytearray
+	m_serializedDataToServer.clear();
+	SmfProvider* m_baseProvider = m_musicSearch->getProvider();
+	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
+	write<<*m_baseProvider;
+
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<album;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
+		
+	QString intfName(musicSearchInterface);
+	//TODO:-revisit all the maxalloc
+	int maxalloc = SmfMusicTracksMaxSize*perPage;
+	
+	//call private impl's send method
+	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
+			SmfMusicGetTracksOfAlbum, maxalloc);
+	return err;
+	}
+
+SmfError SmfMusicSearchPrivate::tracksOfArtist ( SmfArtists artists, int pageNum, int perPage )
+	{
+	SmfError err = SmfNoError;
+	//We need to pass Opcode and SmfProvider serialized into bytearray
+	m_serializedDataToServer.clear();
+	SmfProvider* m_baseProvider = m_musicSearch->getProvider();
+	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
+	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<artists;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
+		
+	QString intfName(musicSearchInterface);
+	//TODO:-revisit all the maxalloc
+	int maxalloc = SmfMusicTracksMaxSize*perPage;
+	
+	//call private impl's send method
+	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
+			SmfMusicGetTracksOfArtist, maxalloc);
+	return err;
+	}
+
+SmfError SmfMusicSearchPrivate::trackInfo(SmfMusicFingerPrint signature, int pageNum, int perPage)
+	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_musicSearch->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<signature;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<signature;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(musicSearchInterface);
 	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
+	int maxalloc = SmfMusicTracksMaxSize*perPage;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName, 
 			SmfMusicGetTrackInfo, maxalloc);
+	return err;
 	}
 
-void SmfMusicSearchPrivate::stores(SmfTrackInfo track, int pageNum, int perPage)
+SmfError SmfMusicSearchPrivate::stores(SmfTrackInfo track, int pageNum, int perPage)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_musicSearch->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*(m_baseProvider);
+
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<track;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<track;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(musicSearchInterface);
 	/** @TODO:-revisit all the maxalloc */
-	int maxalloc = 1000;
+	int maxalloc = 1000*perPage;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicGetStores, maxalloc);
+	return err;
 	}
 
-void SmfMusicSearchPrivate::customRequest ( const int& operationId, QByteArray* customData )
+SmfError SmfMusicSearchPrivate::customRequest ( const int& operationId, QByteArray* customData )
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_musicSearch->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
-	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<operationId;
+
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<operationId;
 	if(customData)
 		{
-		write<<m_argFlag;
-		write<<*customData;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*customData;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
+	
+	write<<dataToPlugins;
 	
 	QString intfName(musicSearchInterface);
 	/** @TODO:-revisit all the maxalloc */
-	int maxalloc = 1000;
+	int maxalloc = 10000;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicSearchCustomRequest, maxalloc);
+	return err;
 	}
 
+SmfError SmfMusicSearchPrivate::cancelRequest()
+	{
+	qDebug()<<"Inside SmfMusicSearchPrivate::cancelRequest()";
+	QByteArray notused;
+	QByteArray retData = m_SmfClientPrivate->sendSyncRequest(notused,SmfCancelRequest,1000, notused);
+	
+	//De-serialize it into SmfError
+	QDataStream reader(&retData,QIODevice::ReadOnly);
+	int val;
+	reader>>val;
+	SmfError error = (SmfError) val;
+	return error;
+	}
 
 
 void SmfMusicSearchPrivate::resultsAvailable(QByteArray result, SmfRequestTypeID opcode, SmfError error)
@@ -405,7 +746,9 @@ void SmfMusicSearchPrivate::resultsAvailable(QByteArray result, SmfRequestTypeID
 	switch(opcode)
 		{
 		case SmfMusicGetRecommendations:
-		case SmfMusicGetTracks:
+		case SmfMusicGetTracksSimilar:
+		case SmfMusicGetTracksOfAlbum:
+		case SmfMusicGetTracksOfArtist:
 		case SmfMusicGetTrackInfo:
 				{
 				SmfTrackInfoList* m_trackInfoList = new SmfTrackInfoList;
@@ -470,51 +813,104 @@ SmfPlaylistServicePrivate::~SmfPlaylistServicePrivate()
 		}	
 	}
 
-void SmfPlaylistServicePrivate::playlists(int pageNum, int perPage)
+SmfError SmfPlaylistServicePrivate::playlists(int pageNum, int perPage)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_playlstSrvc->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*(m_baseProvider);
+
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+		
+	write<<dataToPlugins;
 	
 	QString intfName(playlistServiceInterface);
 	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
+	int maxalloc = SmfMusicPlaylistMaxSize*perPage;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicGetPlaylists, maxalloc);
+	return err;
 	}
 
-void SmfPlaylistServicePrivate::playlistsOf(SmfMusicProfile *user, int pageNum, int perPage)
+SmfError SmfPlaylistServicePrivate::playlistsOf(SmfContact *user, int pageNum, int perPage)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_playlstSrvc->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*(m_baseProvider);
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	if(user)
 		{
 		m_argFlag = 1;
-		write<<m_argFlag;
-		write<<*user;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*user;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+		
+	write<<dataToPlugins;
+		
+	QString intfName(playlistServiceInterface);
+	//TODO:-revisit all the maxalloc
+	int maxalloc = SmfMusicPlaylistMaxSize*perPage;
+	
+	//call private impl's send method
+	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
+			SmfMusicGetPlaylistsOfUser, maxalloc);
+	return err;
+	}
+
+SmfError SmfPlaylistServicePrivate::addToPlaylist(SmfPlaylist plst, SmfTrackInfoList *tracks)
+	{
+	SmfError err = SmfNoError;
+	//We need to pass Opcode and SmfProvider serialized into bytearray 
+	SmfProvider* m_baseProvider = m_playlstSrvc->getProvider();
+	m_serializedDataToServer.clear();
+	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
+	write<<*(m_baseProvider);
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<plst;
+	if(tracks)
+		{
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*tracks;
+		}
+	else
+		{
+		m_argFlag = 0;
+		streamToPlugin<<m_argFlag;
+		}
+		
+	write<<dataToPlugins;
 		
 	QString intfName(playlistServiceInterface);
 	//TODO:-revisit all the maxalloc
@@ -522,88 +918,88 @@ void SmfPlaylistServicePrivate::playlistsOf(SmfMusicProfile *user, int pageNum, 
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
-			SmfMusicGetPlaylistsOfUser, maxalloc);
-	}
-
-int SmfPlaylistServicePrivate::addToPlaylist(SmfPlaylist plst, SmfTrackInfoList *tracks)
-	{
-	//We need to pass Opcode and SmfProvider serialized into bytearray 
-	SmfProvider* m_baseProvider = m_playlstSrvc->getProvider();
-	m_serializedDataToServer.clear();
-	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
-	write<<*(m_baseProvider);
-	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<plst;
-	if(tracks)
-		{
-		write<<m_argFlag;
-		write<<*tracks;
-		}
-	else
-		{
-		m_argFlag = 0;
-		write<<m_argFlag;
-		}
-		
-	QString intfName(playlistServiceInterface);
-	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
-	
-	//call private impl's send method
-	return m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicAddToPlaylist, maxalloc);
+	return err;
 	}
 
-int SmfPlaylistServicePrivate::postCurrentPlayingPlaylist(SmfPlaylist plst)
+SmfError SmfPlaylistServicePrivate::postCurrentPlayingPlaylist(SmfPlaylist plst)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_playlstSrvc->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*(m_baseProvider);
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<plst;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<plst;
+		
+	write<<dataToPlugins;
 	
 	QString intfName(playlistServiceInterface);
 	//TODO:-revisit all the maxalloc
 	int maxalloc = 1000;
 	
 	//call private impl's send method
-	return m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
+	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicPostCurrentPlayingPlaylist, maxalloc);
+	return err;
 	}
 
-void SmfPlaylistServicePrivate::customRequest ( const int& operationId, QByteArray* customData )
+SmfError SmfPlaylistServicePrivate::customRequest ( const int& operationId, QByteArray* customData )
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_playlstSrvc->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
-	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<operationId;
+
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<operationId;
 	if(customData)
 		{
-		write<<m_argFlag;
-		write<<*customData;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*customData;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
+	
+	write<<dataToPlugins;
 	
 	QString intfName(playlistServiceInterface);
 	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
+	int maxalloc = 10000;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicPlaylistCustomRequest, maxalloc);
+	return err;
+	}
+
+SmfError SmfPlaylistServicePrivate::cancelRequest()
+	{
+	qDebug()<<"Inside SmfPlaylistServicePrivate::cancelRequest()";
+	QByteArray notused;
+	QByteArray retData = m_SmfClientPrivate->sendSyncRequest(notused,SmfCancelRequest,1000, notused);
+	
+	//De-serialize it into SmfError
+	QDataStream reader(&retData,QIODevice::ReadOnly);
+	int val;
+	reader>>val;
+	SmfError error = (SmfError) val;
+	return error;
 	}
 
 void SmfPlaylistServicePrivate::resultsAvailable(QByteArray result, SmfRequestTypeID opcode, SmfError error)
@@ -654,182 +1050,6 @@ void SmfPlaylistServicePrivate::resultsAvailable(QByteArray result, SmfRequestTy
 //SmfPlaylistServicePrivate end
 
 
-//SmfMusicEventsPrivate start
-SmfMusicEventsPrivate::SmfMusicEventsPrivate(SmfMusicEvents *aMusicEvent)
-		:m_musicEvent(aMusicEvent)
-	{
-#ifdef Q_OS_SYMBIAN
-	//private impl for symbian
-	m_SmfClientPrivate = CSmfClientSymbian::NewL(this);
-#else
-	//TODO:- Use private impl for other platforms or else Qt impl
-#endif
-	}
-
-SmfMusicEventsPrivate::~SmfMusicEventsPrivate()
-	{
-	if(m_SmfClientPrivate)
-		{
-		delete m_SmfClientPrivate;
-		m_SmfClientPrivate = NULL;
-		}
-	}
-
-void SmfMusicEventsPrivate::events(SmfLocation venue, int pageNum, int perPage)
-	{
-	//We need to pass Opcode and SmfProvider serialized into bytearray 
-	SmfProvider* m_baseProvider = m_musicEvent->getProvider();
-	m_serializedDataToServer.clear();
-	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
-	write<<*(m_baseProvider);
-	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<venue;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
-		
-	QString intfName(musicEventServiceInterface);
-	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
-	
-	//call private impl's send method
-	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
-			SmfMusicGetEventsOnLoc, maxalloc);
-	}
-
-void SmfMusicEventsPrivate::venues(SmfLocation location, int pageNum, int perPage)
-	{
-	//We need to pass Opcode and SmfProvider serialized into bytearray 
-	SmfProvider* m_baseProvider = m_musicEvent->getProvider();
-	m_serializedDataToServer.clear();
-	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
-	write<<*(m_baseProvider);
-	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<location;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
-		
-	QString intfName(musicEventServiceInterface);
-	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
-	
-	//call private impl's send method
-	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
-			SmfMusicGetVenueOnLoc, maxalloc);
-	}
-
-void SmfMusicEventsPrivate::postEvents(SmfEventList events)
-	{
-	//We need to pass Opcode and SmfProvider serialized into bytearray 
-	SmfProvider* m_baseProvider = m_musicEvent->getProvider();
-	m_serializedDataToServer.clear();
-	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
-	write<<*(m_baseProvider);
-	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<events;
-	
-	QString intfName(musicEventServiceInterface);
-	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
-	
-	//call private impl's send method
-	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
-			SmfMusicPostEvents, maxalloc);
-	}
-
-void SmfMusicEventsPrivate::customRequest ( const int& operationId, QByteArray* customData )
-	{
-	//We need to pass Opcode and SmfProvider serialized into bytearray 
-	SmfProvider* m_baseProvider = m_musicEvent->getProvider();
-	m_serializedDataToServer.clear();
-	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
-	write<<*m_baseProvider;
-	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<operationId;
-	
-	if(customData)
-		{
-		write<<m_argFlag;
-		write<<*customData;
-		}
-	else
-		{
-		m_argFlag = 0;
-		write<<m_argFlag;
-		}
-	
-	QString intfName(musicEventServiceInterface);
-	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
-	
-	//call private impl's send method
-	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
-			SmfMusicEventsCustomRequest, maxalloc);
-	}
-
-void SmfMusicEventsPrivate::resultsAvailable(QByteArray result,SmfRequestTypeID opcode,SmfError error)
-	{
-	//note:- "result" is serialized and we need to de-serialize it as per opcode
-	//Order of serialization Error value followed by data
-	
-	QDataStream reader(&result,QIODevice::ReadOnly);
-	
-	//Now de-serialize it based on opcode
-	switch(opcode)
-		{
-		case SmfMusicGetEventsOnLoc:
-			{
-			SmfEventList* m_events = new SmfEventList;
-			reader>>*(m_events);
-			
-			// ToDo :-
-			SmfResultPage page;
-			
-			m_musicEvent->eventsAvailable(m_events,error,page);
-			break;
-			}
-			
-		case SmfMusicGetVenueOnLoc:
-			{
-			SmfLocationList* m_venues = new SmfLocationList;
-			reader>>*(m_venues);
-			
-			//ToDo :-
-			SmfResultPage page;
-			
-			m_musicEvent->venuesAvailable(m_venues,error,page);
-			break;
-			}
-			
-		case SmfMusicPostEvents:
-			m_musicEvent->eventsUpdated(error);
-			break;
-			
-		case SmfMusicEventsCustomRequest:
-   			{
-   			int operationId;
-   			QByteArray *data = new QByteArray;
-   			reader>>operationId;
-   			reader>>*data;
-   			qDebug()<<"operationId = "<<operationId;
-   			qDebug()<<"data size = "<<data->size();
-   			emit m_musicEvent->customDataAvailable(operationId, data);
-   			break;
-   			}
-   			
-		default:
-			Q_ASSERT_X(1,"SmfMusicEventsPrivate::resultsAvailable","unknown opcode");
-		}
-	}
-//SmfMusicEventsPrivate end
-
 
 //SmfLyricsServicePrivate start
 SmfLyricsServicePrivate::SmfLyricsServicePrivate(SmfLyricsService *aLyricsSrvc)
@@ -852,85 +1072,122 @@ SmfLyricsServicePrivate::~SmfLyricsServicePrivate()
 		}
 	}
 
-void SmfLyricsServicePrivate::lyrics(SmfTrackInfo track, int pageNum, int perPage)
+SmfError SmfLyricsServicePrivate::lyrics(SmfTrackInfo track, int pageNum, int perPage)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_lyricsSrvc->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*(m_baseProvider);
+
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<track;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<track;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 		
 	QString intfName(lyricsServiceInterface);
 	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
+	int maxalloc = SmfMusicLyricsMaxSize*perPage;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicGetLyrics, maxalloc);
+	return err;
 	}
 
-void SmfLyricsServicePrivate::subtitles(SmfTrackInfo track, SmfSubtitleSearchFilter filter, 
+SmfError SmfLyricsServicePrivate::subtitles(SmfTrackInfo track, SmfSubtitleSearchFilter filter, 
 		int pageNum, int perPage)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_lyricsSrvc->getProvider();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*(m_baseProvider);
+
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<track;
-	write<<m_argFlag;
-	write<<filter;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<track;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<filter;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 		
 	QString intfName(lyricsServiceInterface);
 	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
+	int maxalloc = SmfMusicLyricsMaxSize*perPage;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicGetSubtitle, maxalloc);
+	return err;
 	}
 
-void SmfLyricsServicePrivate::customRequest ( const int& operationId, QByteArray* customData )
+SmfError SmfLyricsServicePrivate::customRequest ( const int& operationId, QByteArray* customData )
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_lyricsSrvc->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
-	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<operationId;
+
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<operationId;
 	if(customData)
 		{
-		write<<m_argFlag;
-		write<<*customData;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*customData;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
+	
+	write<<dataToPlugins;
 	
 	QString intfName(lyricsServiceInterface);
 	//TODO:-revisit all the maxalloc
-	int maxalloc = 1000;
+	int maxalloc = 10000;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfMusicLyricsCustomRequest, maxalloc);
+	return err;
+	}
+
+SmfError SmfLyricsServicePrivate::cancelRequest()
+	{
+	qDebug()<<"Inside SmfLyricsServicePrivate::cancelRequest()";
+	QByteArray notused;
+	QByteArray retData = m_SmfClientPrivate->sendSyncRequest(notused,SmfCancelRequest,1000, notused);
+	
+	//De-serialize it into SmfError
+	QDataStream reader(&retData,QIODevice::ReadOnly);
+	int val;
+	reader>>val;
+	SmfError error = (SmfError) val;
+	return error;
 	}
 
 void SmfLyricsServicePrivate::resultsAvailable(QByteArray result, SmfRequestTypeID opcode, SmfError error)

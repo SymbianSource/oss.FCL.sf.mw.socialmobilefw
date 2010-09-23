@@ -74,6 +74,12 @@ public:
 	QByteArray subtitle( ) const;
 	
 	/**
+	 * Method to get the Url to the subtitle
+	 * @return the subtitle url
+	 */
+	QUrl subtitleUrl() const;
+	
+	/**
 	 * Method to get the language
 	 * @return The language
 	 */
@@ -108,6 +114,13 @@ public:
 	 * @param aSubtitle The subtitle content
 	 */
 	void setSubtitle( const QByteArray &aSubtitle );
+	
+	/**
+	 * Method to set the subtitle url
+	 * @param aSubtitleUrl The subtitle url
+	 */
+	 
+	void setSubtitleUrl( const QUrl &aSubtitleUrl);
 	
 	/**
 	 * Method to set the language

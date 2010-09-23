@@ -30,6 +30,8 @@ public:
 	 */
 	SmfMusicFingerPrintPrivate( )
 		{
+		m_id.clear();
+		m_fingerPrintData.clear();
 		}
 	
 	/**
@@ -38,7 +40,8 @@ public:
 	 */
 	SmfMusicFingerPrintPrivate( const SmfMusicFingerPrintPrivate &aOther ) : 
 		QSharedData ( aOther ), 
-		m_fingerPrintData ( aOther.m_fingerPrintData )	{ }
+		m_fingerPrintData ( aOther.m_fingerPrintData ),
+		m_id (aOther.m_id) { }
 	
 	/**
 	 * Destructor
@@ -48,6 +51,7 @@ public:
 		}
   
 	QByteArray m_fingerPrintData;	// Finger print data
+	QString m_id;		// Finger print id by the service provider
 	
 };
 

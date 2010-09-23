@@ -72,7 +72,7 @@ symbian: {
 
   # do not freeze api-> no libs produced. Comment when freezing!
   # run "abld freeze winscw" to create def files
-  symbian:MMP_RULES += "EXPORTUNFROZEN"
+  #symbian:MMP_RULES += "EXPORTUNFROZEN"
 
 
   # add dll to the sis

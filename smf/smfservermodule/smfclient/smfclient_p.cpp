@@ -21,8 +21,6 @@
 
 SmfClientPrivate::SmfClientPrivate(SmfClient* client):m_client(client)
 	{
-	qDebug()<<"Inside SmfClientPrivate::SmfClientPrivate()";
-	
 #ifdef Q_OS_SYMBIAN
 	//private impl for symbian
 	m_SmfClientPrivate = CSmfClientSymbian::NewL(this);

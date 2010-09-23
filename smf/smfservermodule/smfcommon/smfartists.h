@@ -66,16 +66,28 @@ public:
 	
 	/**
 	 * Method to get the image of the artists
-	 * @return The image of te artists
+	 * @return The image of the artists if available, always small size is fetched
 	 */
 	QImage image( ) const;
 	
 	/**
 	 * Method to get the url of the artists
-	 * @return The url of the artists
+	 * @return The url of the artists, NULL if not present
 	 */
 	QUrl url( ) const;
+
+	/**
+	 * Method to get the tags applied for artist(s) 
+	 * @return list of tags, NULL if not supported
+	 */
+	QStringList tags( ) const;
 	
+	/**
+	 * Service specific Id for this artist(s), e.g. could be musicbrainz id for this artist 
+	 * @return service specific id of the artists, NULL if not supported
+	 */
+	QString id( ) const;
+
 	/**
 	 * Method to set the artists names
 	 * @param aList The list of artists names
@@ -93,6 +105,18 @@ public:
 	 * @param aUrl The url of the artists
 	 */
 	void setUrl( const QUrl &aUrl );
+	
+	/**
+	 * Method to set tags of the artists
+	 * @param aTags tags for the artists
+	 */
+	void setTags( const QStringList &aTags );
+
+	/**
+	 * Method to set the service specific ID of the artists
+	 * @param aId The id of the artists
+	 */
+	void setId( const QString &aId );
 		
 private:
 	QSharedDataPointer<SmfArtistsPrivate> d;
@@ -125,6 +149,8 @@ SMFCOMMON_EXPORT QDataStream &operator<<( QDataStream &aDataStream,
  */
 SMFCOMMON_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfArtists &aArtists);
+
+typedef QList<SmfArtists> SmfArtistsList;
 
 // Make the class SmfArtists known to QMetaType, so that as to register it.
 Q_DECLARE_METATYPE(SmfArtists)

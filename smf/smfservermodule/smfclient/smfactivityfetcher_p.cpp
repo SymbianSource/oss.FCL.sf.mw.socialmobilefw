@@ -48,19 +48,25 @@ SmfActivityFetcherPrivate::~SmfActivityFetcherPrivate()
 		}
 	}
 
-void SmfActivityFetcherPrivate::selfActivities(int pageNum, int perPage)
+SmfError SmfActivityFetcherPrivate::selfActivities(int pageNum, int perPage)
 	{
+	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_activityFetcher->getProvider();
 	//serialize start
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	//SmfProvider
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 	//serialize end
 	
 	QString intfName(activityFetcherInterface);
@@ -69,34 +75,43 @@ void SmfActivityFetcherPrivate::selfActivities(int pageNum, int perPage)
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfActivitySelfActivity, max);
+	return err;
 	}
 
-void SmfActivityFetcherPrivate::friendsActivities(const SmfContact & aFriend, int pageNum, int perPage)
+SmfError SmfActivityFetcherPrivate::friendsActivities(const SmfContact & aFriend, int pageNum, int perPage)
 	{
+	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_activityFetcher->getProvider();
 	//serialize start
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	//SmfProvider
 	write<<*m_baseProvider;
-	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<aFriend;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
 	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<aFriend;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
+		
 	QString intfName(activityFetcherInterface);
 	int max = MaxSmfActivityEntrySize*perPage;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfActivityFriendsActivities, max);
+	return err;
 	}
 
-void SmfActivityFetcherPrivate::filtered(QList<SmfActivityObjectType> filters, int pageNum, int perPage)
+SmfError SmfActivityFetcherPrivate::filtered(QList<SmfActivityObjectType> filters, int pageNum, int perPage)
 	{
+	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_activityFetcher->getProvider();
 	
 	//serialize start
@@ -104,13 +119,18 @@ void SmfActivityFetcherPrivate::filtered(QList<SmfActivityObjectType> filters, i
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	//SmfProvider
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<filters;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<filters;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(activityFetcherInterface);
 	int max = MaxSmfActivityEntrySize*perPage;
@@ -118,28 +138,36 @@ void SmfActivityFetcherPrivate::filtered(QList<SmfActivityObjectType> filters, i
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfActivityFiltered, max);
+	return err;
 	}
 
-void SmfActivityFetcherPrivate::customRequest ( const int& operationId, QByteArray* customData )
+SmfError SmfActivityFetcherPrivate::customRequest ( const int& operationId, QByteArray* customData )
 	{
+	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_activityFetcher->getProvider();
 	
 	//serialize start
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	m_argFlag = 1;
-	write<<operationId;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<operationId;
 	if(customData)
 		{
-		write<<m_argFlag;
-		write<<*customData;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*customData;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
+	
+	write<<dataToPlugins;
 	
 	QString intfName(activityFetcherInterface);
 //ToDo:- How much size to allocate for custom data? keeping MaxSmfActivityEntrySize for now
@@ -148,7 +176,23 @@ void SmfActivityFetcherPrivate::customRequest ( const int& operationId, QByteArr
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfActivityCustomRequest, maxAllocation);
+	return err;
 	}
+
+SmfError SmfActivityFetcherPrivate::cancelRequest()
+	{
+	qDebug()<<"Inside SmfActivityFetcherPrivate::cancelRequest()";
+	QByteArray notused;
+	QByteArray retData = m_SmfClientPrivate->sendSyncRequest(notused,SmfCancelRequest,1000, notused);
+	
+	//De-serialize it into SmfError
+	QDataStream reader(&retData,QIODevice::ReadOnly);
+	int val;
+	reader>>val;
+	SmfError error = (SmfError) val;
+	return error;
+	}
+
 
 void SmfActivityFetcherPrivate::resultsAvailable(QByteArray result,SmfRequestTypeID opcode, SmfError error)
 	{

@@ -33,6 +33,11 @@
 
 class SmfTrackInfoPrivate;
 
+/*
+ * Implementation constants
+ */
+const int SmfMusicTracksMaxSize = 2000;
+
 /**
  * @ingroup smf_common_group
  * The track info class represents information about a music track

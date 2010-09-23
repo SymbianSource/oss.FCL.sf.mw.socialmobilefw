@@ -30,15 +30,16 @@
 #include <smftrackinfo.h>
 #include <smflocation.h>
 #include <smfprovider.h>
+#include <smfcontact.h>
 
 class SmfMusicServicePrivate;
 class SmfMusicSearchPrivate;
 class SmfLyricsServicePrivate;
 class SmfPlaylistServicePrivate;
-class SmfMusicEventsPrivate;
 class SmfMusicFingerPrint;
 class SmfMusicRating;
 class SmfComment;
+class SmfContact;
 
 using namespace QtMobility;
 
@@ -46,6 +47,11 @@ using namespace QtMobility;
 /**
  * @ingroup smf_client_group
  * Basic music service ("org.symbian.smf.client.music.service")
+ * This is the music profile information of a user in this service. Also provides searching
+ * on music meta information like albums artists etc. For searching for actual music/tracks
+ * use ("org.symbian.smf.client.music.search") interface from this service provider
+ * For usual contact information (like address, nickname, friends etc) please 
+ * use ("org.symbian.smf.client.contact.fetcher") interface from this service provider 
  */
 class SMFCLIENT_EXPORT SmfMusicService : public QObject
 	{
@@ -65,57 +71,166 @@ public:
 
 public slots:
 	/**
-	 * Gets self profile information asynchronously.
-	 * userInfoAvailable() signal is emitted with SmfMusicProfile when the info is arrived
+	 * Gets self profile information (e.g. music likings, feavorites etc) asynchronously.
+	 * userMusicInfoAvailable() signal is emitted with SmfMusicProfile when the info is arrived
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void userinfo ( );
+	SmfError userMusicInfo ( );
+
+	/**
+	 * Asynchronously searches information about artists in this service. All information 
+	 * in SmfArtists is not required, however more available the better 
+	 * searchArtistInfoAvailable() signal is emitted when the info is arrived.
+	 * @param artist The search criteria
+	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfError, SmfNoError if success, else appropriate error value
+	 */
+	SmfError searchArtist ( SmfArtists artist, int pageNum = SMF_FIRST_PAGE,
+						int perPage = SMF_ITEMS_PER_PAGE );
+
+	/**
+	 * Asynchronously searches information about albums in this service. All information 
+	 * in SmfAlbum is not required, however more available the better 
+	 * searchAlbumInfoAvailable() signal is emitted when the info is arrived.
+	 * @param album The search criteria
+	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfError, SmfNoError if success, else appropriate error value
+	 */
+	SmfError searchAlbum ( SmfAlbum album, int pageNum = SMF_FIRST_PAGE,
+						int perPage = SMF_ITEMS_PER_PAGE );
+	
+	/**
+	 * Asynchronously searches information about events in this service. All information 
+	 * in SmfEvents is not required, however more available the better 
+	 * searchEventsInfoAvailable() signal is emitted when the info is arrived.
+	 * @param event The search criteria
+	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfError, SmfNoError if success, else appropriate error value
+	 */
+	SmfError searchEvents ( SmfEvent event, int pageNum = SMF_FIRST_PAGE,
+						int perPage = SMF_ITEMS_PER_PAGE );
+	
+	/**
+	 * Asynchronously searches information about venue in this service. All information 
+	 * in SmfVenue is not required, however more available the better 
+	 * searchVenueInfoAvailable() signal is emitted when the info is arrived.
+	 * @param location The search criteria
+	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfError, SmfNoError if success, else appropriate error value
+	 */
+	SmfError searchVenue ( SmfLocation location, int pageNum = SMF_FIRST_PAGE,
+						int perPage = SMF_ITEMS_PER_PAGE );
 
 	/**
 	 * Asynchronously searches information about other service users for a particular venue
-	 * searchInfoAvailable() signal is emitted with SmfMusicProfileList when the info is arrived.
+	 * searchUserInfoAvailable() signal is emitted with SmfMusicProfileList when the info is arrived.
 	 * When the list is big user can specify the page number and per page item data.
 	 * If not supplied by the user default values are used.
+	 * @param location The search criteria
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfError, SmfNoError if success, else appropriate error value
 	 */
-	void searchUser ( SmfLocation venue, int pageNum = SMF_FIRST_PAGE,
+	SmfError searchUser ( SmfLocation venue, int pageNum = SMF_FIRST_PAGE,
 						int perPage = SMF_ITEMS_PER_PAGE);
 	
+	/**
+	 * Posts currently playing track.
+	 * Success can be checked by checking the signal postFinished()
+	 * @param track Track to post
+	 * @return SmfError, SmfNoError if success, else appropriate error value
+	 */
+	SmfError postCurrentPlaying ( SmfTrackInfo track);
+	
+	/**
+	 * Rate a music via this API 
+	 * Success can be checked by checking the signal postFinished()
+	 * @param track Track on which rating should be posted
+	 * @param rate Rating value
+	 * @return SmfError, SmfNoError if success, else appropriate error value 
+	 */
+	SmfError postRating ( SmfTrackInfo track, SmfMusicRating rate);
+
+	/**
+	 * Comment on a track via this API 
+	 * Success can be checked by checking the signal postFinished()
+	 * @param track Track on which comment should be posted
+	 * @param comment The comemnt to be posted
+	 * @return SmfError, SmfNoError if success, else appropriate error value  
+	 */
+	SmfError postComments ( SmfTrackInfo track, SmfComment comment);
+
 	/**
 	 * Request for a custom operation. The signal customDataAvailable() is emitted 
 	 * when the result is available.
 	 * @param operationId OperationId
 	 * @param customData Custom data to be sent
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 * Note:-Interpretation of operationId and customData is upto the concerned
 	 * plugin and client application. service provider should provide some
 	 * serializing-deserializing utilities for these custom data
 	 */
-	void customRequest ( const int& operationId, QByteArray* customData );
+	SmfError customRequest ( const int& operationId, QByteArray* customData );
 	
-public slots:
-	/**
-	 * Posts currently playing track.
-	 * Success can be checked by checking the signal postFinished()
-	 * @param track Track to post
-	 */
-	void postCurrentPlaying ( SmfTrackInfo track);
+    /**
+     * Cancels a request generated due to the call to any API which results 
+     * into http request. Might return error if no request is currently pending.
+     * Please note that there can be only one request pending at any point of time
+     * @return Appropriate SmfError value
+     */
+	SmfError cancelRequest ();
 	
-	void postRating ( SmfTrackInfo track, SmfMusicRating rate);
 	
-	void postComments ( SmfTrackInfo track, SmfComment comment);
-
 signals:
 	/**
 	 * Notification on arrival of the self profile as result of userinfo().
 	 * @param profile The self profile
+	 * @param error SmfNoError if success, else appropriate error value
 	 */
-	void userInfoAvailable ( SmfMusicProfile* profile, SmfError error );
+	void userMusicInfoAvailable ( SmfMusicProfile* profile, SmfError error );
 	
 	/**
 	 * Notification on arrival of search info
 	 * @param profileList List of music profiles
+	 * @param error SmfNoError if success, else appropriate error value
 	 */
-	void searchInfoAvailable ( SmfMusicProfileList* profileList, 
+	void searchUserInfoAvailable ( SmfMusicProfileList* profileList, 
+			SmfError error, SmfResultPage resultPage );
+	
+	/**
+	 * Notification on arrival of search info
+	 * @param artists List of artists
+	 * @param error SmfNoError if success, else appropriate error value
+	 */
+	void searchArtistInfoAvailable (QList<SmfArtists>* artists, 
+			SmfError error, SmfResultPage resultPage );
+	
+	/**
+	 * Notification on arrival of search info
+	 * @param albumList List of albums
+	 * @param error SmfNoError if success, else appropriate error value
+	 */
+	void searchAlbumInfoAvailable ( QList<SmfAlbum>* albumList, 
+			SmfError error, SmfResultPage resultPage );
+
+	/**
+	 * Notification on arrival of search info
+	 * @param eventList List of events
+	 * @param error SmfNoError if success, else appropriate error value
+	 */
+	void searchEventsInfoAvailable ( SmfEventList* eventList, 
+			SmfError error, SmfResultPage resultPage );
+	
+	/**
+	 * Notification on arrival of search info
+	 * @param venueList List of venues
+	 * @param error SmfNoError if success, else appropriate error value
+	 */
+	void searchVenueInfoAvailable ( SmfLocationList* venueList, 
 			SmfError error, SmfResultPage resultPage );
 	
 	/**
@@ -127,7 +242,7 @@ signals:
 	
 	/**
 	 * Signals availability of the result of the posting a track or a comment or a rating
-	 * @param error Error if any
+	 * @param error SmfNoError if success, else appropriate error value
 	 */
 	void postfinished ( SmfError error );
 	
@@ -177,8 +292,9 @@ public:
 	 * @param track The track for which similar recommendations need to be fetched.
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfNoError if success, else appropriate error value
 	 */
-	void recommendations ( SmfTrackInfo track, int pageNum = SMF_FIRST_PAGE,
+	SmfError recommendations ( SmfTrackInfo track, int pageNum = SMF_FIRST_PAGE,
 			int perPage = SMF_ITEMS_PER_PAGE);
 	
 	/**
@@ -190,8 +306,37 @@ public:
 	 * @param track The search criteria, similar tracks are searched
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfNoError if success, else appropriate error value
 	 */
-	void tracks ( SmfTrackInfo track, int pageNum = SMF_FIRST_PAGE,
+	SmfError tracksSimilar ( SmfTrackInfo track, int pageNum = SMF_FIRST_PAGE,
+			int perPage = SMF_ITEMS_PER_PAGE);
+
+	/**
+	 * Searches for tracks for a given album asynchronously.
+	 * The signal trackSearchAvailable() is emitted with SmfTrackInfoList
+	 * once its arrived.
+	 * When the list is big user can specify the page number and per page item data.
+	 * If not supplied by the user default values are used.
+	 * @param album The album containing the id
+	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfNoError if success, else appropriate error value
+	 */
+	SmfError tracksOfAlbum ( SmfAlbum album, int pageNum = SMF_FIRST_PAGE,
+			int perPage = SMF_ITEMS_PER_PAGE);
+	
+	/**
+	 * Searches for tracks for a given artist(s) asynchronously.
+	 * The signal trackSearchAvailable() is emitted with SmfTrackInfoList
+	 * once its arrived.
+	 * When the list is big user can specify the page number and per page item data.
+	 * If not supplied by the user default values are used.
+	 * @param artists The artists list
+	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
+	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfNoError if success, else appropriate error value
+	 */
+	SmfError tracksOfArtist ( SmfArtists artists, int pageNum = SMF_FIRST_PAGE,
 			int perPage = SMF_ITEMS_PER_PAGE);
 	
 	/**
@@ -201,8 +346,9 @@ public:
 	 * @param signature The search criteria,signature to be searched for
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfNoError if success, else appropriate error value
 	 */
-	void trackInfo ( SmfMusicFingerPrint signature, int pageNum = SMF_FIRST_PAGE,
+	SmfError trackInfo ( SmfMusicFingerPrint signature, int pageNum = SMF_FIRST_PAGE,
 			int perPage = SMF_ITEMS_PER_PAGE);
 	
 	/**
@@ -211,8 +357,9 @@ public:
 	 * @param track The search criteria for stores
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfNoError if success, else appropriate error value
 	 */
-	void stores ( SmfTrackInfo track, int pageNum = SMF_FIRST_PAGE, 
+	SmfError stores ( SmfTrackInfo track, int pageNum = SMF_FIRST_PAGE, 
 			int perPage = SMF_ITEMS_PER_PAGE);
 	
 	/**
@@ -220,17 +367,27 @@ public:
 	 * when the result is available.
 	 * @param operationId OperationId
 	 * @param customData Custom data to be sent
+	 * @return SmfNoError if success, else appropriate error value
 	 * Note:-Interpretation of operationId and customData is upto the concerned
 	 * plugin and client application. service provider should provide some
 	 * serializing-deserializing utilities for these custom data
 	 */
-	void customRequest ( const int& operationId, QByteArray* customData );
+	SmfError customRequest ( const int& operationId, QByteArray* customData );
+	
+    /**
+     * Cancels a request generated due to the call to any API which results 
+     * into http request. Might return error if no request is currently pending.
+     * Please note that there can be only one request pending at any point of time
+     * @return Appropriate SmfError value
+     */
+	SmfError cancelRequest ();
 	
 signals:
 	/**
-	 * Emitted when the search result for a track is available.
+	 * Emitted when the search results for tracks (for album, artist, etc) are available.
 	 * Note if number of tacks in the search is large, then it can download the list page by page.
-	 * In that case this signal is emitted multiple times.
+	 * @param result list of tracks
+	 * @param error SmfNoError if success, else appropriate error value
 	 * @param resultPage Page number info
 	 */
 	void trackSearchAvailable ( SmfTrackInfoList* result, 
@@ -239,7 +396,8 @@ signals:
 	/**
 	 *  Emitted when the search result for a store is available.
 	 *  Note if number of tacks in the search is large, then it can download the list page by page.
-	 *  In that case this signal is emitted multiple times.
+	 *  @param result List of stores
+	 *  @param error SmfNoError if success, else appropriate error value
 	 *  @param resultPage Page number info
 	 */
 	void storeSearchAvailable ( SmfProviderList* result, 
@@ -309,8 +467,9 @@ public:
 	 * If not supplied by the user default values are used.
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfNoError if success, else appropriate error value
 	 */
-	void playlists ( int pageNum = SMF_FIRST_PAGE,
+	SmfError playlists ( int pageNum = SMF_FIRST_PAGE,
 			int perPage = SMF_ITEMS_PER_PAGE);
 	
 	/**
@@ -322,8 +481,9 @@ public:
 	 * @param user User for which to get the playlists
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfNoError if success, else appropriate error value
 	 */
-	void playlistsOf ( SmfMusicProfile* user, int pageNum = SMF_FIRST_PAGE,
+	SmfError playlistsOf ( SmfContact* user, int pageNum = SMF_FIRST_PAGE,
 			int perPage = SMF_ITEMS_PER_PAGE);
 	
 public slots:
@@ -332,40 +492,53 @@ public slots:
 	 * playlistUpdated() can be checked for success value
 	 * @param plst The playlist to be added in
 	 * @param tracks The list of tracks to uploaded
+	 * @return SmfNoError if success, else appropriate error value
 	 */
-	int addToPlaylist ( SmfPlaylist plst, SmfTrackInfoList* tracks );
+	SmfError addToPlaylist ( SmfPlaylist plst, SmfTrackInfoList* tracks );
 	
 	/**
 	 * Upload currently playing playlist . Signal
 	 * playlistUpdated() can be checked for success value
 	 * @param plst The playlist to be uploaded
+	 * @return SmfNoError if success, else appropriate error value
 	 */
-	int postCurrentPlayingPlaylist ( SmfPlaylist plst );
+	SmfError postCurrentPlayingPlaylist ( SmfPlaylist plst );
 	
 	/**
 	 * Request for a custom operation. The signal customDataAvailable() is emitted 
 	 * when the result is available.
 	 * @param operationId OperationId
 	 * @param customData Custom data to be sent
+	 * @return SmfNoError if success, else appropriate error value
 	 * Note:-Interpretation of operationId and customData is upto the concerned
 	 * plugin and client application. service provider should provide some
 	 * serializing-deserializing utilities for these custom data
 	 */
-	void customRequest ( const int& operationId, QByteArray* customData );
+	SmfError customRequest ( const int& operationId, QByteArray* customData );
+	
+    /**
+     * Cancels a request generated due to the call to any API which results 
+     * into http request. Might return error if no request is currently pending.
+     * Please note that there can be only one request pending at any point of time
+     * @return Appropriate SmfError value
+     */
+	SmfError cancelRequest ();
 		
 signals:
 	/**
 	 * Notification of availability of list of playlists requested.
 	 * Note if number of list is large, then it can download the list page by page.
-	 * In that case this signal is emitted multiple times.
+	 * @param plst List of playlists
+	 * @param error, SmfNoError if success, else appropriate error value
 	 * @param resultPage Page number info
 	 */
-	void playlistsListAvailable ( SmfPlaylistList*, 
+	void playlistsListAvailable ( SmfPlaylistList* plst, 
 			SmfError error, SmfResultPage resultPage );
 	/**
 	 * Signals remote updation of playlist with success value
+	 * @param error, SmfNoError if success, else appropriate error value
 	 */
-	void playlistUpdated ( SmfError success );
+	void playlistUpdated ( SmfError error );
 	
 	/**
 	 * Signals availability of the result of the customRequest
@@ -389,114 +562,6 @@ private:
 
 SMF_SERVICE_NAME(SmfPlaylistService, "org.symbian.smf.client.music.playlist\0.2")
 
-
-/**
- * provides service ("org.symbian.smf.client.music.events")
- */
-class SMFCLIENT_EXPORT SmfMusicEvents : public QObject
-	{
-	Q_OBJECT
-	
-public:
-	/**
-	 * Constructs SmfMusicEvents with base provider info
-	 * Seeing as this is a plug-in implementation, these will realistically
-	 *  be generated by SMF factory of some kind
-	 */
-	SmfMusicEvents ( SmfProvider* baseProvider = 0 );
-	
-	/**
-	 * Destructor
-	 */
-	~SmfMusicEvents ( );
-	
-public:
-	/**
-	 * Gets list of events in a particular venue asynchronously.
-	 * eventsAvailable() signal is emitted with SmfEventsList once its arrived.
-	 * When the list is big user can specify the page number and per page item data.
-	 * If not supplied by the user default values are used.
-	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
-	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
-	 */
-	void events ( SmfLocation venue, int pageNum = SMF_FIRST_PAGE,
-			int perPage = SMF_ITEMS_PER_PAGE);
-	
-	/**
-	 * Gets list of venues of a particular location asynchronously.
-	 * venuesAvailable() signal is emitted with SmfLocationList once its arrived.
-	 * When the list is big user can specify the page number and per page item data.
-	 * If not supplied by the user default values are used.
-	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
-	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
-	 */
-	void venues ( SmfLocation location, int pageNum = SMF_FIRST_PAGE,
-			int perPage = SMF_ITEMS_PER_PAGE);
-	
-public slots:
-	/**
-	 * Updates events. Might not be supported by all service provider.
-	 * eventsUpdated() signal can be checked for success value.
-	 * @param SmfEventsList List of events to be posted
-	 */
-	void postEvents ( SmfEventList events );
-	
-	/**
-	 * Request for a custom operation. The signal customDataAvailable() is emitted 
-	 * when the result is available.
-	 * @param operationId OperationId
-	 * @param customData Custom data to be sent
-	 * Note:-Interpretation of operationId and customData is upto the concerned
-	 * plugin and client application. service provider should provide some
-	 * serializing-deserializing utilities for these custom data
-	 */
-	void customRequest ( const int& operationId, QByteArray* customData );
-	
-signals:
-	/**
-	 * Notification on arrival of event lists
-	 * Note if number of list is large, then it can download the list page by page.
-	 * In that case this signal is emitted multiple times.
-	 * @param resultPage Page number info
-	 */
-	void eventsAvailable ( SmfEventList* list, 
-			SmfError error, SmfResultPage resultPage );
-	
-	/**
-	 * Notification on arrival of venues lists
-	 * Note if number of list is large, then it can download the list page by page.
-	 * In that case this signal is emitted multiple times.
-	 * @param resultPage Page number info
-	 */
-	void venuesAvailable ( SmfLocationList* list, 
-			SmfError error, SmfResultPage resultPage );
-	
-	/**
-	 * Notification of the success of request to post an event
-	 */
-	void eventsUpdated ( SmfError success );
-	
-	/**
-	 * Signals availability of the result of the customRequest
-	 * @param operationId The ID to be shared between clients and the plugin
-	 * @param customData data
-	 */
-	void customDataAvailable( const int& operationId, QByteArray* customData );
-	
-private:
-	/**
-	 * Gets the base provider info
-	 */
-	SmfProvider* getProvider() const;
-	
-private:
-	SmfProvider* m_baseProvider;
-	SmfMusicEventsPrivate* m_private;
-	friend class SmfMusicEventsPrivate;
-	
-	};
-
-SMF_SERVICE_NAME(SmfMusicEvents, "org.symbian.smf.client.music.events\0.2")
 
 
 /**
@@ -524,8 +589,9 @@ public:
 	 * @param track Track for which lyrics needs to be fetched.
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfNoError if success, else appropriate error value
 	 */
-	void lyrics ( SmfTrackInfo track, int pageNum = SMF_FIRST_PAGE,
+	SmfError lyrics ( SmfTrackInfo track, int pageNum = SMF_FIRST_PAGE,
 			int perPage = SMF_ITEMS_PER_PAGE);
 	
 	/**
@@ -536,8 +602,9 @@ public:
 	 * @param filter Subtitle search filter
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfNoError if success, else appropriate error value
 	 */
-	void subtitles ( SmfTrackInfo track, SmfSubtitleSearchFilter filter,
+	SmfError subtitles ( SmfTrackInfo track, SmfSubtitleSearchFilter filter,
 			int pageNum = SMF_FIRST_PAGE, int perPage = SMF_ITEMS_PER_PAGE);
 	
 	/**
@@ -545,17 +612,27 @@ public:
 	 * when the result is available.
 	 * @param operationId OperationId
 	 * @param customData Custom data to be sent
+	 * @return SmfNoError if success, else appropriate error value
 	 * Note:-Interpretation of operationId and customData is upto the concerned
 	 * plugin and client application. service provider should provide some
 	 * serializing-deserializing utilities for these custom data
 	 */
-	void customRequest ( const int& operationId, QByteArray* customData );
+	SmfError customRequest ( const int& operationId, QByteArray* customData );
+	
+    /**
+     * Cancels a request generated due to the call to any API which results 
+     * into http request. Might return error if no request is currently pending.
+     * Please note that there can be only one request pending at any point of time
+     * @return Appropriate SmfError value
+     */
+	SmfError cancelRequest ();
 
 signals:
 	/**
 	 * Notification on arrival of lyrics
 	 * Note if the list is large, then it can download the list page by page.
-	 * In that case this signal is emitted multiple times.
+	 * @param list List of lyrics
+	 * @param error SmfNoError if success, else appropriate error value
 	 * @param resultPage Page number info
 	 */
 	void lyricsAvailable ( SmfLyricsList* list, 
@@ -564,7 +641,8 @@ signals:
 	/**
 	 * Notification on arrival of subtitle based on filter.
 	 * Note if the list is large, then it can download the list page by page.
-	 * In that case this signal is emitted multiple times.
+	 * @param list List of subtitles
+	 * @param error SmfNoError if success, else appropriate error value
 	 * @param resultPage Page number info
 	 */
 	void subtitleAvailable ( SmfSubtitleList* list, 
@@ -578,6 +656,7 @@ signals:
 	void customDataAvailable( const int& operationId, QByteArray* customData );
 	
 private:
+	
 	/**
 	 * Gets the base provider info
 	 */

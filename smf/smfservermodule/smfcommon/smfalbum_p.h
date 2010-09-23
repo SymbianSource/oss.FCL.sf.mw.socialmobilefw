@@ -20,7 +20,9 @@
 #ifndef SMFALBUM_P_H_
 #define SMFALBUM_P_H_
 
+#include <smfalbum.h>
 #include <smfartists.h>
+#include <smflocation.h>
 #include <QStringList>
 #include <QSharedData>
 
@@ -31,9 +33,12 @@ public:
 	 * Constructor
 	 */
 	SmfAlbumPrivate( ) { 
-		m_name.clear(); 
+		m_name.clear();
+		m_imageUrl.clear();
+		m_itemCount = 0;
+		m_type = SmfAlbumUnspecified;
 		m_albumId.clear();
-		
+		m_secondaryId.clear();
 	}
 	
 	/**
@@ -43,9 +48,13 @@ public:
 	SmfAlbumPrivate( const SmfAlbumPrivate &aOther ) : 
 		QSharedData ( aOther ), 
 		m_name ( aOther.m_name ), 
-		m_image ( aOther.m_image ),
+		m_imageUrl ( aOther.m_imageUrl ),
 		m_artists ( aOther.m_artists ),
-		m_albumId ( aOther.m_albumId ) 	{ }
+		m_location ( aOther.m_location ),
+		m_itemCount ( aOther.m_itemCount ),
+		m_type ( aOther.m_type ),
+		m_albumId ( aOther.m_albumId ),
+		m_secondaryId ( aOther.m_secondaryId ) { }
 	
 	/**
 	 * Destructor
@@ -54,10 +63,15 @@ public:
 		{
 		}
   
-	QString		m_name;		// album name
-	QImage 		m_image;	// album image
+	QString	m_name;			// album name
+	QUrl m_imageUrl;		// album's image url
 	SmfArtists m_artists;	// album's artists
-	QString 	m_albumId;	// album Id
+	SmfLocation m_location;	// album's location
+	int m_itemCount;		// count of items in the album
+	SmfAlbumMediaType m_type;// type of media in the album
+	QString m_albumId;		// album Id
+	QString m_secondaryId;	// the secondary id of the album, e.g.- 
+							//-musicbrainz id of the album for a music album
 	
 };
 

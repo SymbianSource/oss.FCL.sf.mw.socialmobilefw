@@ -20,18 +20,22 @@
 #ifndef SMFMUSICPROFILE_H_
 #define SMFMUSICPROFILE_H_
 
-#include "smftrackinfo.h"
-#include "smfevent.h"
 #include <qdatastream.h>
 #include <QSharedData>
-#include "smfclientglobal.h"
 #include <QMetaType>
 
+#include "smftrackinfo.h"
+#include "smfevent.h"
+#include "smfclientglobal.h"
+
+
 class SmfMusicProfilePrivate;
-/**
+
+/*
  * Implementation constants
  */
 const int SmfMusicProfileMaxSize = 20000;
+
 /**
  * @ingroup smf_common_group
  * The music profile class represents a user's profile in music site
@@ -62,40 +66,40 @@ public:
 	~SmfMusicProfile( );
 	
 	/**
-	 * Method to get the user's used tracks
-	 * @return The users track list
+	 * Method to get the user's most recently heard tracks
+	 * @return The users most recently heard tracks
 	 */
-	QList<SmfTrackInfo> musicUsageInfo( ) const;
+	QList<SmfTrackInfo> recentTracks( ) const;
 	
 	/**
-	 * Method to get the user's interested tracks
-	 * @return The users interested track list
+	 * Method to get the user's favorite tracks e.g. could be user.getLovedTracks for last.fm
+	 * @return The users favorite track list
 	 */
-	QList<SmfTrackInfo> interestInfo( ) const;
+	QList<SmfTrackInfo> favorites( ) const;
 	
 	/**
-	 * Method to get the user events as list of SmfEvents
-	 * @return The list of events
+	 * Method to get a list of upcoming events that this user is attending
+	 * @return The list of upcoming events
 	 */
 	QList<SmfEvent> userEvents( ) const;
 	
 	/**
-	 * Method to get the id of the music profile
+	 * Method to get the service specific id of this user
 	 * @return The ID value 
 	 */
 	QString id( ) const;
 	
 	/**
-	 * Method to set the user's used tracks
+	 * Method to set the user's recent tracks
 	 * @param aUsage The users new track list
 	 */
-	void setMusicUsageInfo( const QList<SmfTrackInfo>& aUsage );
+	void setRecentTracks( const QList<SmfTrackInfo>& aUsage );
 	
 	/**
-	 * Method to set the user's interested tracks
-	 * @param aInterest The users new interested track list
+	 * Method to set the user's favorite tracks
+	 * @param aInterest The users new favorite track list
 	 */
-	void setInterestInfo( const QList<SmfTrackInfo>& aInterest );
+	void setFavorites( const QList<SmfTrackInfo>& aInterest );
 	
 	/**
 	 * Method to set the user events as list of SmfEvents

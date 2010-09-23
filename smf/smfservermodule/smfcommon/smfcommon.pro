@@ -88,48 +88,13 @@ symbian: {
         WriteDeviceData
     TARGET.EPOCALLOWDLLDATA = 1
     LIBS += -lqjson.dll -lsmfcredmgrclient
-    
-   	BLD_INF_RULES.prj_exports += smfclientglobal.h
-	BLD_INF_RULES.prj_exports += smfglobal.h
-	BLD_INF_RULES.prj_exports += smfobserver.h
-	BLD_INF_RULES.prj_exports += smfactions.h
-	BLD_INF_RULES.prj_exports += smfactions_p.h
-	BLD_INF_RULES.prj_exports += smfalbum.h
-	BLD_INF_RULES.prj_exports += smfalbum_p.h
-	BLD_INF_RULES.prj_exports += smfartists.h
-	BLD_INF_RULES.prj_exports += smfartists_p.h
-	BLD_INF_RULES.prj_exports += smfcomment.h
-	BLD_INF_RULES.prj_exports += smfcomment_p.h
-	BLD_INF_RULES.prj_exports += smfcontact.h
-	BLD_INF_RULES.prj_exports += smfcontact_p.h
-	BLD_INF_RULES.prj_exports += smfevent.h
-	BLD_INF_RULES.prj_exports += smfevent_p.h
-	BLD_INF_RULES.prj_exports += smfgroup.h
-	BLD_INF_RULES.prj_exports += smfgroup_p.h
-	BLD_INF_RULES.prj_exports += smflocation.h
-	BLD_INF_RULES.prj_exports += smflocation_p.h
-	BLD_INF_RULES.prj_exports += smflyrics.h
-	BLD_INF_RULES.prj_exports += smflyrics_p.h
-	BLD_INF_RULES.prj_exports += smfmusicfingerprint.h
-	BLD_INF_RULES.prj_exports += smfmusicfingerprint_p.h
-	BLD_INF_RULES.prj_exports += smfmusicprofile.h
-	BLD_INF_RULES.prj_exports += smfmusicprofile_p.h
-	BLD_INF_RULES.prj_exports += smfmusicrating.h
-	BLD_INF_RULES.prj_exports += smfmusicrating_p.h
-	BLD_INF_RULES.prj_exports += smfpicture.h
-	BLD_INF_RULES.prj_exports += smfpicture_p.h
-	BLD_INF_RULES.prj_exports += smfpicturealbum.h
-	BLD_INF_RULES.prj_exports += smfpicturealbum_p.h
-	BLD_INF_RULES.prj_exports += smfplaylist.h
-	BLD_INF_RULES.prj_exports += smfplaylist_p.h
-	BLD_INF_RULES.prj_exports += smfpluginutil.h
-	BLD_INF_RULES.prj_exports += smfpost.h
-	BLD_INF_RULES.prj_exports += smfpost_p.h
-	BLD_INF_RULES.prj_exports += smfprovider.h
-	BLD_INF_RULES.prj_exports += smfsubtitle.h
-	BLD_INF_RULES.prj_exports += smfsubtitle_p.h
-	BLD_INF_RULES.prj_exports += smftrackinfo.h
-	BLD_INF_RULES.prj_exports += smftrackinfo_p.h
-	BLD_INF_RULES.prj_exports += smfurl.h
-	BLD_INF_RULES.prj_exports += smfurl_p.h
+}
+
+symbian: {
+  #export public header to \epocroot\epoc32\include to be able to use them
+  headers.files = $$PUBLIC_HEADERS
+  headers.path = $$PWD
+  for(header, headers.files) {
+    {BLD_INF_RULES.prj_exports += "$$header"}
+  }
 }

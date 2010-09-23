@@ -174,6 +174,7 @@ class DataStoreManager : public QObject
 									const QString &statusText,
 									const Int64 timeStamp	
 									);
+
   
         
         /**delete a row in the contact table */
@@ -188,7 +189,7 @@ class DataStoreManager : public QObject
         
         /*------------------Operation on Relation Table-------------------*/ 
         /**insert a row in relation table and return relationId */
-        const int addRelationToTable(const int aContactId, int aRelationId = ENewRelation);
+        int addRelationToTable(const int aContactId, int aRelationId = ENewRelation);
         
         /**delete a relation table*/
         SmfError deleteRelationFromTable(const int aRelationId);
@@ -206,10 +207,10 @@ class DataStoreManager : public QObject
         int searchRelationId(const int aContactId);
         
         /**search for a reation contact having highest index value*/
-        const int findMaxIndexValue(const int aRelationId );
+        int findMaxIndexValue(const int aRelationId );
         
         /**search for a reationId highest value*/
-        const int findMaxRelationId();
+        int findMaxRelationId();
         
         /**On deletion of a contact it decrease index of all contacts 
          * having index greater than it in that relation.

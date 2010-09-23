@@ -45,10 +45,11 @@ SmfGallery::~SmfGallery()
  * @param user the user whose albums are requested 
  * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
  * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfGallery::albums(QStringList names, SmfContact* user, int pageNum, int perPage)
+SmfError SmfGallery::albums(QStringList names, SmfContact* user, int pageNum, int perPage)
 	{
-	m_private->albums(names,user, pageNum, perPage);	
+	return m_private->albums(names,user, pageNum, perPage);	
 	}
 
 /**
@@ -59,41 +60,45 @@ void SmfGallery::albums(QStringList names, SmfContact* user, int pageNum, int pe
  * @param albums album(s) whose pictures are being requested
  * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
  * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfGallery::pictures(SmfPictureAlbumList &albums, int pageNum, int perPage)
+SmfError SmfGallery::pictures(SmfPictureAlbumList &albums, int pageNum, int perPage)
 	{
-	m_private->pictures( albums, pageNum, perPage);
+	return m_private->pictures( albums, pageNum, perPage);
 	}
 
 
 /**
  * Returns a user title/caption for the picture
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfGallery::description ( SmfPicture& picture )
+SmfError SmfGallery::description ( SmfPicture& picture )
 	{
-	m_private->description(picture);
+	return m_private->description(picture);
 	}
 
 /**
  * Upload an image.Implemented as slot to connect to UI controls more easily
  * uploadFinished() signal is emitted with the success value of the upload
  * @param image the image to be uploaded
- * @param album the optional destination album name 
+ * @param album the optional destination album name
+ * @return SmfError. SmfNoError if success, else appropriate error code 
  */
-void SmfGallery::upload(SmfPicture* image, SmfPictureAlbum* album)
+SmfError SmfGallery::upload(SmfPicture* image, SmfPictureAlbum* album)
 	{
-	m_private->upload(image,album);
+	return m_private->upload(image,album);
 	}
 
 /**
  * Upload an list image.Implemented as slot to connect to UI controls more easily
  * uploadFinished() signal is emitted with the success value of the upload
  * @param images the list image to be uploaded
- * @param album the optional destination album name 
+ * @param album the optional destination album name
+ * @return SmfError. SmfNoError if success, else appropriate error code 
  */
-void SmfGallery::upload(SmfPictureList* images, SmfPictureAlbum* album) 
+SmfError SmfGallery::upload(SmfPictureList* images, SmfPictureAlbum* album) 
 	{
-	m_private->upload(images,album);
+	return m_private->upload(images,album);
 	}
 
 /**
@@ -101,23 +106,25 @@ void SmfGallery::upload(SmfPictureList* images, SmfPictureAlbum* album)
  * with success of the post once comment is posted.
  * @param image Image to comment on
  * @param comment Comment to post
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfGallery::postComment(SmfPicture image, SmfComment comment) 
+SmfError SmfGallery::postComment(SmfPicture image, SmfComment comment) 
 	{
-	m_private->postComment(image,comment);
+	return m_private->postComment(image,comment);
 	}
    
 /**
  * Request for a custom operation.
  * @param operationId OperationId
  * @param customData Custom data to be sent
+ * @return SmfError. SmfNoError if success, else appropriate error code
  * Note:-Interpretation of operationId and customData is upto the concerned
  * plugin and client application. service provider should provide some
  * serializing-deserializing utilities for these custom data
  */
-void SmfGallery::customRequest(const int& operationId,QByteArray* customData)
+SmfError SmfGallery::customRequest(const int& operationId,QByteArray* customData)
 	{
-	m_private->customRequest(operationId, customData);
+	return m_private->customRequest(operationId, customData);
 	}
 
 /**
@@ -126,4 +133,9 @@ void SmfGallery::customRequest(const int& operationId,QByteArray* customData)
 SmfProvider* SmfGallery::getProvider() const
 	{
 	return m_baseProvider;
+	}
+
+SmfError SmfGallery::cancelRequest()
+	{
+	return m_private->cancelRequest();
 	}

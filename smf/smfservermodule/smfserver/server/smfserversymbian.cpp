@@ -21,6 +21,7 @@
 #include <QDebug>
 #include <smfrelationmgr.h>
 
+#include "smfpluginmanager.h"
 #include "smfserversymbian_p.h"
 
 
@@ -136,7 +137,6 @@ SmfServerSymbianSession::SmfServerSymbianSession(SmfServerSymbian* aServer):
 			iIntfNameSymbian(NULL,0) ,iXtraDataPtr8(NULL,0),
 			iPtrToDataForClient(NULL,0) ,iPtr8DataForDSM(NULL,0),iPtr8DataFromDSM(NULL,0)  
 	{
-	qDebug()<<"Inside SmfServerSymbianSession::SmfServerSymbianSession()";
 	iServer->iSessionCount++;
 	}
 
@@ -206,7 +206,6 @@ void SmfServerSymbianSession::ServiceL(const RMessage2& aMessage)
 void SmfServerSymbianSession::HandleClientMessageL(const RMessage2& aMessage)
 	{
 	qDebug()<<"Inside SmfServerSymbianSession::HandleClientMessageL() = "<<aMessage.Function();
-	iLastRequest = aMessage.Function();
 	
 	/**Note:- Only ESmfGetService needs to be taken care separately as it doesn't involve createrequest for PM
 	 *See SmfRequestTypeID for list of opcodes
@@ -219,24 +218,29 @@ void SmfServerSymbianSession::HandleClientMessageL(const RMessage2& aMessage)
 	 *TODO:- to be changed after GetServices returns SmfProvider+pluginID 
 	 * 
 	 */
-	if( (SmfGetService == iLastRequest) 			||
-		(SmfPostGetMaxCharsInPost == iLastRequest)	||
-		(SmfPostGetMaxItems == iLastRequest)		||
-		(SmfPostGetSupportedFormats == iLastRequest)||
-		(SmfPostGetAppearanceSupport == iLastRequest) )
+	if( (SmfGetService == aMessage.Function()) 			||
+		(SmfPostGetMaxCharsInPost == aMessage.Function())	||
+		(SmfPostGetMaxItems == aMessage.Function())		||
+		(SmfPostGetSupportedFormats == aMessage.Function())||
+		(SmfPostGetAppearanceSupport == aMessage.Function()))
 			
 		{
 		HandleSyncServiceL(aMessage);
 		}
-	else if(iLastRequest == SmfRelationCreate ||
-			iLastRequest == SmfRelationAssociate || 
-			iLastRequest == SmfRelationSearchById ||
-			iLastRequest == SmfRelationSearchByContact ||
-			iLastRequest == SmfRelationCount ||
-			iLastRequest == SmfRelationGet ||
-			iLastRequest == SmfRelationGetAll ||
-			iLastRequest == SmfRelationGetAllRelations ||
-			iLastRequest == SmfRelationDeleteRelation
+	else if (SmfCancelRequest == aMessage.Function())
+		{
+		HandleCancelRequest(aMessage);
+		}
+	else if(aMessage.Function() == SmfRelationCreate ||
+			aMessage.Function() == SmfRelationAssociate || 
+			aMessage.Function() == SmfRelationSearchById ||
+			aMessage.Function() == SmfRelationSearchByContact ||
+			aMessage.Function() == SmfRelationCount ||
+			aMessage.Function() == SmfRelationGet ||
+			aMessage.Function() == SmfRelationGetAll ||
+			aMessage.Function() == SmfRelationGetAllRelations ||
+			aMessage.Function() == SmfRelationDeleteRelation ||
+			aMessage.Function() == SmfRelationRemove
 			)
 		{
 		HandleDSMServiceL(aMessage);
@@ -247,9 +251,23 @@ void SmfServerSymbianSession::HandleClientMessageL(const RMessage2& aMessage)
 		}
 	}
 
+void SmfServerSymbianSession::HandleCancelRequest(const RMessage2 & aMessage)
+	{
+	SmfError err = SmfNoError;
+	// iLastRequest contains the last operations opcode, cwhich is to be cancelled.
+	bool ret = SmfPluginManager::getInstance(iServer->wrapper())->cancelRequest(iLastRequest);
+	
+	iErrBuf.Zero();
+	iErrBuf.AppendNum(err);
+	iMessage.Write(2,iErrBuf);
+	aMessage.Complete(iLastRequest);
+	
+	}
+
 void SmfServerSymbianSession::HandleDSMServiceL(const RMessage2 & aMessage)
 	{
 	qDebug()<<"Inside SmfServerSymbianSession::HandleDSMServiceL()";
+	iLastRequest = aMessage.Function();
 	//TODO:-If DSM takes care of deserialization and formation of User and social 
 	//profile from the params then switch case can be removed
 	if(iData8ForDSM)
@@ -269,7 +287,7 @@ void SmfServerSymbianSession::HandleDSMServiceL(const RMessage2 & aMessage)
 			break;
 		case SmfRelationAssociate:
 			{
-			int maxAlloc = 100;
+			int maxAlloc = 1000;
 			iData8ForDSM = HBufC8::New(maxAlloc);
 			iPtr8DataForDSM.Set(iData8ForDSM->Des());
 			TInt readerr0 = aMessage.Read(0,iPtr8DataForDSM); 
@@ -355,6 +373,8 @@ void SmfServerSymbianSession::HandleDSMServiceL(const RMessage2 & aMessage)
 				delete iData8FromDSM;
 				iData8FromDSM = NULL;
 				}
+			int siz = qtdataFromDSM.size();
+			qDebug()<<"Size of Data to be sent back thru DSM Create : "<<siz;
 			iData8FromDSM = HBufC8::NewL(qtdataFromDSM.size());
 			iPtr8DataFromDSM.Set(iData8FromDSM->Des());
 			iPtr8DataFromDSM.Copy(reinterpret_cast<const TText8*>(qtdataFromDSM.constData()),qtdataFromDSM.length());
@@ -368,12 +388,15 @@ void SmfServerSymbianSession::HandleDSMServiceL(const RMessage2 & aMessage)
 		iDSMErr.AppendNum(errInt);
 		TInt writeErr = aMessage.Write(2,iDSMErr);
 		}
+	aMessage.Complete(iLastRequest);
 	}
 
 
 void SmfServerSymbianSession::HandleSyncServiceL(const RMessage2 & aMessage)
 	{
 	qDebug()<<"Inside SmfServerSymbianSession::HandleSyncServiceL()";
+	
+	iLastRequest = aMessage.Function();
 	
 	// Following is the data format sent by client
 	// 1. SmfProvider +PageInfo flag+ aPageNum + aPerPage (if pageinfoflag is set) + XtraInfo flag(size of xtra data) Serialized 
@@ -536,6 +559,7 @@ void SmfServerSymbianSession::HandleGetService(const RMessage2 & aMessage, const
 void SmfServerSymbianSession::HandleCommonServiceL(const RMessage2& aMessage)
 	{
 	qDebug()<<"Inside SmfServerSymbianSession::HandleCommonServiceL() = "<<aMessage.Function();
+	iLastRequest = aMessage.Function();
 	/**
 	 * Note:- client sends message in the following format,-
 	 * Slot 0:- SmfProvider* serialized+Page info flag+page number+per page (if page info flag)+xtra info flag
@@ -552,6 +576,7 @@ void SmfServerSymbianSession::HandleCommonServiceL(const RMessage2& aMessage)
 		}
 	iProviderBuf8 = HBufC8::NewL(providerSize);
 	iProviderSymbian8.Set(iProviderBuf8->Des());
+	qDebug()<<"data info (0) size = "<<iProviderSymbian8.Size();
 	
 	//read it into iProviderSymbian8
 	aMessage.ReadL(0,iProviderSymbian8);
@@ -578,7 +603,7 @@ void SmfServerSymbianSession::HandleCommonServiceL(const RMessage2& aMessage)
 
 	//read it into iIntfNameSymbian8
 	aMessage.ReadL(1,iIntfNameSymbian8);
-	qDebug()<<"iIntfNameSymbian8.Size = "<<iIntfNameSymbian8.Size();
+	qDebug()<<"iIntfNameSymbian8 (1) .Size = "<<iIntfNameSymbian8.Size();
 
 	QByteArray bytearray(reinterpret_cast<const char*>(iIntfNameSymbian8.Ptr()),iIntfNameSymbian8.Length()) ;
 	QDataStream intfNameStream(&bytearray,QIODevice::ReadOnly);
@@ -608,7 +633,16 @@ void SmfServerSymbianSession::HandleCommonServiceL(const RMessage2& aMessage)
 		//request PM to get the data
 		SmfRequestTypeID opcode = (SmfRequestTypeID)iLastRequest;
 		
-		iServer->wrapper()->sendToPluginManager(id,pluginID,iInterfaceID,opcode,XtraBufQt);
+		SmfError err = iServer->wrapper()->sendToPluginManager(id,pluginID,iInterfaceID,opcode,XtraBufQt);
+		if(SmfNoError != err)
+			{
+			iErrBuf.Zero();
+			iErrBuf.AppendNum(err);
+			iMessage.Write(2,iErrBuf);
+			
+			//signal completion for the last request
+			iMessage.Complete(err);
+			}
 		}
 	else
 		{
@@ -616,5 +650,8 @@ void SmfServerSymbianSession::HandleCommonServiceL(const RMessage2& aMessage)
 		iErrBuf.Zero();
 		iErrBuf.AppendNum(err);
 		iMessage.Write(2,iErrBuf);
+		
+		//signal completion for the last request
+		iMessage.Complete(err);
 		}
 	}

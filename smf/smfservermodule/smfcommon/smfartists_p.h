@@ -34,6 +34,8 @@ public:
 	SmfArtistsPrivate( ) { 
 		m_names.clear(); 
 		m_url.clear();
+		m_tags.clear();
+		m_id.clear();
 	}
 	
 	/**
@@ -44,7 +46,9 @@ public:
 		QSharedData ( aOther ), 
 		m_names ( aOther.m_names ), 
 		m_image ( aOther.m_image ),
-		m_url ( aOther.m_url ) 	{ }
+		m_url ( aOther.m_url ),
+		m_tags ( aOther.m_tags ),
+		m_id ( aOther.m_id ) { }
 	
 	/**
 	 * Destructor
@@ -56,6 +60,8 @@ public:
 	QStringList	m_names;	// artist names
 	QImage 		m_image;	// image
 	QUrl 		m_url;		// url
+	QStringList m_tags;		// tags
+	QString		m_id;		// id
 };
 
 

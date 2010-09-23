@@ -44,16 +44,15 @@ CSmfClientSymbian* CSmfClientSymbian::NewLC(smfObserver* aObserver )
     }
 
 CSmfClientSymbian::CSmfClientSymbian(smfObserver* aObserver)
-		: iObserver(aObserver),
-		  CActive( EPriorityStandard ),
-		  iDataPtr(NULL, 0, 0)
+		: CActive( EPriorityStandard ),
+		iObserver(aObserver),
+		iDataPtr(NULL, 0, 0)
 	{
 	CActiveScheduler::Add(this);
 	}
 
 void CSmfClientSymbian::ConstructL()
     {
-	qDebug()<<"Inside CSmfClientSymbian::ConstructL()";
     User::LeaveIfError(iSession.connectToServer());
     }
 
@@ -125,8 +124,6 @@ QByteArray CSmfClientSymbian::sendRequest(QString aInterfaceName,
 				 TInt aMaxAllocation,
 				 QByteArray& aSerializedData)
 	{
-	qDebug()<<"Inside CSmfClientSymbian::sendRequest() for intf = "<<aInterfaceName;
-	
 	//Gets data synchronously from the server
     TPtr8 symbianBuf(iSession.sendSyncRequest(aInterfaceName,requestType, aMaxAllocation, aSerializedData));
     //convert this into bytearray
@@ -178,10 +175,14 @@ TInt CSmfClientSymbian::sendRequest( QByteArray& aSerializedData, QString aInter
 
 
 RSmfClientSymbianSession::RSmfClientSymbianSession()
-		:iDataPtr8(NULL, 0, 0),iDataPtr16(NULL,0),
-		 iIntfNamePtr(NULL,0),iIntfNamePtr8(NULL,0),
-		 iPtrProvider(NULL,0),iPtrProvider8(NULL,0),
-		 iPtrToXtraInfo8(NULL,0),iPtrToXtraInfo(NULL, 0),
+		:iDataPtr8(NULL, 0, 0),
+		 iDataPtr16(NULL,0),
+		 iPtrProvider(NULL,0),
+		 iPtrProvider8(NULL,0),
+		 iIntfNamePtr(NULL,0),
+		 iIntfNamePtr8(NULL,0),
+		 iPtrToXtraInfo(NULL, 0),
+		 iPtrToXtraInfo8(NULL,0),
 		 iPtr8ToSlot0(NULL,0)
     {
     // No implementation required
@@ -189,8 +190,6 @@ RSmfClientSymbianSession::RSmfClientSymbianSession()
 
 TInt RSmfClientSymbianSession::connectToServer()
     {
-	qDebug()<<"Inside RSmfClientSymbianSession::connectToServer()";
-	
     TInt error = ::StartServerL();
     qDebug()<<"StartServerL = "<<error;
 
@@ -207,8 +206,6 @@ TInt RSmfClientSymbianSession::connectToServer()
 TPtr8 RSmfClientSymbianSession::sendSyncRequest(QByteArray& aSerializedData, 
 		QString aInterfaceName, SmfRequestTypeID aRequestType, TInt maxSize)
 	{
-	qDebug()<<"Inside RSmfClientSymbianSession::sendSyncRequest() for plugins";
-	qDebug()<<"iInterfaceName = "<<aInterfaceName;
 	iLastRequest = aRequestType;
 	/**
 	 * The message body consists of.- 
@@ -229,7 +226,6 @@ TPtr8 RSmfClientSymbianSession::sendSyncRequest(QByteArray& aSerializedData,
 	//convert the QByteArray into TPtr
 	TPtrC8 ptrSlot0(reinterpret_cast<const TText8*>(aSerializedData.constData()),aSerializedData.length());
 	qDebug()<<"ptrSlot0 size = "<<ptrSlot0.Size();
-
 	
 	iInterfaceNamebyte.clear();
 	//Pass serialized QString for interface name
@@ -263,11 +259,9 @@ TPtr8 RSmfClientSymbianSession::sendSyncRequest(QByteArray& aSerializedData,
     args.Set(2, &iDataPtr8);
     qDebug()<<"After setting 0,1,2 slots";
 
-    TInt err(KErrBadHandle);
     qDebug()<<"Before handle";
     if (Handle()) 
     	{
-        err = KErrNone;
         qDebug()<<"Before sendreceive";
         //synchronous request
         TInt sendErr = SendReceive(aRequestType, args);
@@ -310,7 +304,7 @@ TPtr8 RSmfClientSymbianSession::sendSyncRequest(QString aInterfaceName,
 	iIntfNameBuffer8 = HBufC8::NewL(iInterfaceNamebyte.size());
 	iIntfNamePtr8.Set(iIntfNameBuffer8->Des());
 	iIntfNamePtr8.Copy(reinterpret_cast<TUint8*>(iInterfaceNamebyte.data()),iInterfaceNamebyte.length());
-    qDebug()<<"iIntfNamePtr8 size = "<<iIntfNamePtr8.Size();
+    qDebug()<<"iIntfNamePtr8 (1) size = "<<iIntfNamePtr8.Size();
 	
 	if(iBuffer8)
 		{
@@ -320,7 +314,6 @@ TPtr8 RSmfClientSymbianSession::sendSyncRequest(QString aInterfaceName,
 	qDebug()<<"Allocated for output = "<<maxSize;
     iBuffer8 = HBufC8::NewL(maxSize);
     iDataPtr8.Set(iBuffer8->Des());
-    qDebug()<<"After iDataPtr8.Set";
     
 	if(iProviderBuf8)
 		{
@@ -340,11 +333,9 @@ TPtr8 RSmfClientSymbianSession::sendSyncRequest(QString aInterfaceName,
     args.Set(1, &iIntfNamePtr8);
     args.Set(2, &iDataPtr8);
         
-    TInt err(KErrBadHandle);
     qDebug()<<"Before handle";
     if (Handle()) 
     	{
-        err = KErrNone;
         qDebug()<<"Before sendreceive";
         TInt sendErr = SendReceive(aRequestType, args);
         if(sendErr)
@@ -357,7 +348,7 @@ TPtr8 RSmfClientSymbianSession::sendSyncRequest(QString aInterfaceName,
  * Sends sync DSM request to the Smf server
  */
 TPtr8 RSmfClientSymbianSession::sendDSMSyncRequest(SmfRequestTypeID aRequestType,
-		QByteArray& aSerializedData, SmfError aErr, TInt maxSize)
+		QByteArray& aSerializedData, SmfError& aErr, TInt maxSize)
 	{
 	/**
 	 * Slot 0:- Data to be passed to DSM
@@ -373,6 +364,7 @@ TPtr8 RSmfClientSymbianSession::sendDSMSyncRequest(SmfRequestTypeID aRequestType
 		}
 	iSlot0Buffer8 = HBufC8::NewL(aSerializedData.size());
 	iPtr8ToSlot0.Set(iSlot0Buffer8->Des());
+	iPtr8ToSlot0.Copy(reinterpret_cast<const TText8*>(aSerializedData.constData()),aSerializedData.length());
 	
 	if(iBuffer8)
 		{
@@ -430,7 +422,7 @@ void RSmfClientSymbianSession::sendAsyncRequest(QByteArray& aSerializedData,
 
 	//convert the QByteArray into TPtr
     TPtrC8 ptrSlot0(reinterpret_cast<const TText8*>(aSerializedData.constData()),aSerializedData.length());
-    qDebug()<<"ptrSlot0 size = "<<ptrSlot0.Size();
+    qDebug()<<"ptrSlot0 size = "<<iPtrProvider8.Size();
     
 	//Convert the interface name into TPtr
     //Pass serialized QString for interface name
@@ -446,7 +438,7 @@ void RSmfClientSymbianSession::sendAsyncRequest(QByteArray& aSerializedData,
 	iIntfNameBuffer8 = HBufC8::NewL(iInterfaceNamebyte.size());
 	iIntfNamePtr8.Set(iIntfNameBuffer8->Des());
 	iIntfNamePtr8.Copy(reinterpret_cast<const TText8*>(iInterfaceNamebyte.constData()),iInterfaceNamebyte.length());
-	qDebug()<<"After iIntfNamePtr8.Copy";
+	qDebug()<<"ptrSlot1 size = "<<iIntfNamePtr8.Size();
 	
 	if(iBuffer8)
 		{
@@ -457,7 +449,6 @@ void RSmfClientSymbianSession::sendAsyncRequest(QByteArray& aSerializedData,
     iDataPtr8.Set(iBuffer8->Des());
     qDebug()<<"After iDataPtr.Set";
     
-    
     TIpcArgs args;
     
     //filling the slots
@@ -466,13 +457,12 @@ void RSmfClientSymbianSession::sendAsyncRequest(QByteArray& aSerializedData,
     args.Set(2, &iDataPtr8);
     qDebug()<<"After setting 0,1,2 slots";
     
-    TInt err(KErrBadHandle);
     qDebug()<<"Before Handle()";
     if (Handle()) 
     	{
-        err = KErrNone;
         qDebug()<<"Before sendreceive";
         SendReceive(aRequestType, args, aStatus);
+        qDebug()<<"After sendreceive";
         }
 	}
 
@@ -490,6 +480,7 @@ static TInt CreateServerProcessL()
     RProcess server;
 
     result = server.Create( KSmfServerFilename, KNullDesC, serverUid );
+    qDebug()<<"server.Create() = "<<result;
     if ( result != KErrNone )
         {
         return  result;
@@ -513,7 +504,6 @@ static TInt StartServerL()
     TFullName name;
 
     result = findSmfServer.Next( name );
-    
     if ( result == KErrNone )
         {
         // Server already running

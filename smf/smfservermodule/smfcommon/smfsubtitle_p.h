@@ -22,6 +22,7 @@
 
 #include <QDateTime>
 #include <QSharedData>
+#include <QUrl>
 
 class SmfSubtitlePrivate : public QSharedData
 {
@@ -34,6 +35,7 @@ public:
 		m_frameRate = 0;
 		m_duration = 0;
 		m_subtitleId.clear();
+		m_subtitleUrl.clear();
 	}
 	
 	/**
@@ -47,7 +49,8 @@ public:
 		m_frameRate ( aOther.m_frameRate ),
 		m_duration ( aOther.m_duration ),
 		m_releaseYr ( aOther.m_releaseYr ),
-		m_subtitleId ( aOther.m_subtitleId ) 	{ }
+		m_subtitleId ( aOther.m_subtitleId ),
+		m_subtitleUrl (aOther.m_subtitleUrl){ }
 	
 	/**
 	 * Destructor
@@ -62,6 +65,7 @@ public:
 	double m_duration;		// duration
 	QDateTime m_releaseYr;	// release year
 	QString m_subtitleId;	// subtitle id
+	QUrl m_subtitleUrl;  	// subtitle Url
 	
 };
 

@@ -22,6 +22,7 @@
 #include <QTextStream>
 
 #include "smfcontact.h"
+#include "smfcontact_p.h"
 
 /**
  * Constructor with default argument

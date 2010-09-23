@@ -25,6 +25,7 @@
  */
 SmfLyrics::SmfLyrics( )
 	{
+	d = new SmfLyricsPrivate;
 	}
 
 /**

@@ -25,6 +25,8 @@
 #include <QList>
 #include <smfmusicfingerprint.h>
 #include <smftrackinfo.h>
+#include <smfalbum.h>
+#include <smfartists.h>
 
 /**
  * @ingroup smf_plugin_group
@@ -47,11 +49,12 @@ public:
 	/**
 	 * Method to get recommended tracks
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aTrack The track for which similar recommendations 
+	 * @param aTrack [in] The track for which similar recommendations 
 	 * need to be fetched.
-	 * @param aPageNum The page to be extracted
-	 * @param aItemsPerPage Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError recommendations( SmfPluginRequestData &aRequest,
 			const SmfTrackInfo &aTrack,
@@ -59,27 +62,57 @@ public:
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
 	/**
-	 * Method to get similar tracks
+	 * Method to search for tracks similar to a given track
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aTrack The track for which similar tracks 
+	 * @param aTrack [in] The track for which similar tracks 
 	 * need to be fetched.
-	 * @param aPageNum The page to be extracted
-	 * @param aItemsPerPage Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
-	virtual SmfPluginError tracks( SmfPluginRequestData &aRequest,
+	virtual SmfPluginError tracksSimilar( SmfPluginRequestData &aRequest,
 			const SmfTrackInfo &aTrack,
+			const int aPageNum = SMF_FIRST_PAGE, 
+			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
+	
+	/**
+	 * Method to search for tracks of a given album
+	 * @param aRequest [out] The request data to be sent to network
+	 * @param aAlbum [in] The album whose tracks need to be fetched.
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
+	 */
+	virtual SmfPluginError tracksOfAlbum( SmfPluginRequestData &aRequest,
+			const SmfAlbum &aAlbum,
+			const int aPageNum = SMF_FIRST_PAGE, 
+			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
+	
+	/**
+	 * Method to search for tracks of the given artist(s)
+	 * @param aRequest [out] The request data to be sent to network
+	 * @param aArtist [in] The artist(s) whose tracks need to be fetched.
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
+	 */
+	virtual SmfPluginError tracksOfArtist( SmfPluginRequestData &aRequest,
+			const SmfArtists &aArtist,
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
 	/**
 	 * Method to get tracks having a similar finger print
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aSignature The finger print to be searched for need to be 
-	 * fetched.
-	 * @param aPageNum The page to be extracted
-	 * @param aItemsPerPage Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aSignature [in] The finger print to be searched for need  
+	 * to be fetched.
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError trackInfo( SmfPluginRequestData &aRequest,
 			const SmfMusicFingerPrint &aSignature,
@@ -89,10 +122,11 @@ public:
 	/**
 	 * Method to search information about where to buy this song from
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aTrack The track for which stores need to be searched
-	 * @param aPageNum The page to be extracted
-	 * @param aItemsPerPage Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aTrack [in] The track for which stores need to be searched
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError stores( SmfPluginRequestData &aRequest,
 			const SmfTrackInfo &aTrack,
@@ -102,11 +136,12 @@ public:
 	/**
 	 * Customised method for SmfMusicSearchPlugin interface
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aOperation The operation type (should be known between 
+	 * @param aOperation [in] The operation type (should be known between 
 	 * the client interface and the plugin)
-	 * @param aData The data required to form the request (The type 
+	 * @param aData [in] The data required to form the request (The type 
 	 * of data should be known between client and the plugin)
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError customRequest( SmfPluginRequestData &aRequest, 
 			const int &aOperation, QByteArray *aData ) = 0;

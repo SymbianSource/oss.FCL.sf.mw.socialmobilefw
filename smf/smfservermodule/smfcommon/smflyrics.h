@@ -28,6 +28,8 @@
 
 class SmfLyricsPrivate;
 
+const int SmfMusicLyricsMaxSize = 5000;
+
 /**
  * @ingroup smf_common_group
  * The lyrics class represents an instance of a music track's lyrics

@@ -57,32 +57,39 @@ SmfGalleryPrivate::~SmfGalleryPrivate()
  * @param user the user whose albums are requested 
  * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
  * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfGalleryPrivate::albums(QStringList names, SmfContact* user, int pageNum, int perPage)
+SmfError SmfGalleryPrivate::albums(QStringList names, SmfContact* user, int pageNum, int perPage)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_gallery->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<names;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<names;
 	if(user)
 		{
-		write<<m_argFlag;
-		write<<*user;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*user;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(galleryInterface);
 	int maxalloc = MaxSmfPictureAlbumSize*perPage;
@@ -90,6 +97,7 @@ void SmfGalleryPrivate::albums(QStringList names, SmfContact* user, int pageNum,
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfPictureGetAlbums, maxalloc);
+	return err;
 	}
 
 
@@ -101,21 +109,29 @@ void SmfGalleryPrivate::albums(QStringList names, SmfContact* user, int pageNum,
  * @param albums album(s) whose pictures are being requested
  * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
  * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfGalleryPrivate::pictures(SmfPictureAlbumList &albums,int pageNum,int perPage)
+SmfError SmfGalleryPrivate::pictures(SmfPictureAlbumList &albums,int pageNum,int perPage)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_gallery->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<albums;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<albums;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
+	
+	write<<dataToPlugins;
 		
 	QString intfName(galleryInterface);
 	int maxalloc = MaxSmfPictureSize*perPage;
@@ -123,22 +139,31 @@ void SmfGalleryPrivate::pictures(SmfPictureAlbumList &albums,int pageNum,int per
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 		  SmfPictureGetPictures, maxalloc);
+	return err;
 	}
 
 /**
  * Returns a user title/caption for the picture
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfGalleryPrivate::description ( SmfPicture& picture )
+SmfError SmfGalleryPrivate::description ( SmfPicture& picture )
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_gallery->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
-	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<picture;
 	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<picture;
+	
+	write<<dataToPlugins;
+		
 	QString intfName(galleryInterface);
 	// ToDo :- Setting max limit of description string as 1000
 	int maxalloc = 1000;
@@ -146,89 +171,107 @@ void SmfGalleryPrivate::description ( SmfPicture& picture )
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 		  SmfPictureDescription, maxalloc);
+	return err;
 	}
 
 /**
  * Upload an image.Implemented as slot to connect to UI controls more easily
  * uploadFinished() signal is emitted with the success value of the upload
  * @param image the image to be uploaded
- * @param album the optional destination album name 
+ * @param album the optional destination album name
+ * @return SmfError. SmfNoError if success, else appropriate error code 
  */
-void SmfGalleryPrivate::upload(SmfPicture* image, SmfPictureAlbum* album)
+SmfError SmfGalleryPrivate::upload(SmfPicture* image, SmfPictureAlbum* album)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_gallery->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	if(image)
 		{
 		m_argFlag = 1;
-		write<<m_argFlag;
-		write<<*image;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*image;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
 
 	if(album)
 		{
 		m_argFlag = 1;
-		write<<m_argFlag;
-		write<<*album;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*album;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
 	
+	write<<dataToPlugins;
+		
 	QString intfName(galleryInterface);
 	int maxalloc = 100; // ToDo:- limit set as 100
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 		  SmfPictureUpload, maxalloc);
+	return err;
 	}
 
 /**
  * Upload an list image.Implemented as slot to connect to UI controls more easily
  * uploadFinished() signal is emitted with the success value of the upload
  * @param images the list image to be uploaded
- * @param album the optional destination album name 
+ * @param album the optional destination album name
+ * @return SmfError. SmfNoError if success, else appropriate error code 
  */
-void SmfGalleryPrivate::upload(SmfPictureList* images, SmfPictureAlbum* album)
+SmfError SmfGalleryPrivate::upload(SmfPictureList* images, SmfPictureAlbum* album)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray
 	m_serializedDataToServer.clear();
 	SmfProvider* m_baseProvider = m_gallery->getProvider();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	if(images)
 		{
 		m_argFlag = 1;
-		write<<m_argFlag;
-		write<<*images;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*images;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
 
 	if(album)
 		{
 		m_argFlag = 1;
-		write<<m_argFlag;
-		write<<*album;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*album;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
+	
+	write<<dataToPlugins;
 		
 	QString intfName(galleryInterface);
 	int maxalloc = 1000; // ToDo:- limit set as 1000
@@ -236,6 +279,7 @@ void SmfGalleryPrivate::upload(SmfPictureList* images, SmfPictureAlbum* album)
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfPictureMultiUpload, maxalloc);
+	return err;
 	}
 
 /**
@@ -243,56 +287,73 @@ void SmfGalleryPrivate::upload(SmfPictureList* images, SmfPictureAlbum* album)
  * with success of the post once comment is posted.
  * @param image Image to comment on
  * @param comment Comment to post
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfGalleryPrivate::postComment(SmfPicture image, SmfComment comment)
+SmfError SmfGalleryPrivate::postComment(SmfPicture image, SmfComment comment)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_gallery->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<image;
-	write<<m_argFlag;
-	write<<comment;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<image;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<comment;
+	
+	write<<dataToPlugins;
 		
 	QString intfName(galleryInterface);
 	int maxalloc = 100; // ToDo:- limit set as 100
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfPicturePostComment, maxalloc);
+	return err;
 	}
 
 /**
  * Request for a custom operation.
  * @param operationId OperationId
  * @param customData Custom data to be sent
+ * @return SmfError. SmfNoError if success, else appropriate error code
  * Note:-Interpretation of operationId and customData is upto the concerned
  * plugin and client application. service provider should provide some
  * serializing-deserializing utilities for these custom data
  */
-void SmfGalleryPrivate::customRequest ( const int& operationId, QByteArray* customData )
+SmfError SmfGalleryPrivate::customRequest ( const int& operationId, QByteArray* customData )
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_gallery->getProvider();
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+	
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<operationId;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<operationId;
 	if(customData)
 		{
-		write<<m_argFlag;
-		write<<*customData;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*customData;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
-
+	
+	write<<dataToPlugins;
+	
 	QString intfName(galleryInterface);
 	//ToDo:- How much size to allocate for custo data? keeping MaxSmfPictureSize for now
 	int maxAlloc = MaxSmfPictureSize;
@@ -300,6 +361,21 @@ void SmfGalleryPrivate::customRequest ( const int& operationId, QByteArray* cust
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfPictureCustomRequest, maxAlloc);
+	return err;
+	}
+
+SmfError SmfGalleryPrivate::cancelRequest()
+	{
+	qDebug()<<"Inside SmfGalleryPrivate::cancelRequest()";
+	QByteArray notused;
+	QByteArray retData = m_SmfClientPrivate->sendSyncRequest(notused,SmfCancelRequest,1000, notused);
+	
+	//De-serialize it into SmfError
+	QDataStream reader(&retData,QIODevice::ReadOnly);
+	int val;
+	reader>>val;
+	SmfError error = (SmfError) val;
+	return error;
 	}
 
 

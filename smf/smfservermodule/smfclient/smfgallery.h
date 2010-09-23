@@ -71,8 +71,9 @@ public slots:
 	 * @param user the user whose albums are requested 
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void albums ( QStringList names, SmfContact* user, 
+	SmfError albums ( QStringList names, SmfContact* user, 
 					int pageNum = SMF_FIRST_PAGE,
 					int perPage = SMF_ITEMS_PER_PAGE );
 		
@@ -84,15 +85,17 @@ public slots:
 	 * @param albums album(s) whose pictures are being requested
 	 * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
 	 * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void pictures ( SmfPictureAlbumList &albums, 
+	SmfError pictures ( SmfPictureAlbumList &albums, 
 					int pageNum = SMF_FIRST_PAGE,
 					int perPage = SMF_ITEMS_PER_PAGE );
 
 	/**
 	 * Returns a user title/caption for the picture
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void description ( SmfPicture& picture );
+	SmfError description ( SmfPicture& picture );
 	
 public slots:
 	/**
@@ -100,34 +103,46 @@ public slots:
 	 * uploadFinished() signal is emitted with the success value of the upload
 	 * @param image the image to be uploaded
 	 * @param album the optional destination album name 
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void upload ( SmfPicture* image, SmfPictureAlbum* album = NULL );
+	SmfError upload ( SmfPicture* image, SmfPictureAlbum* album = NULL );
 
 	/**
 	 * Upload an list image.Implemented as slot to connect to UI controls more easily
 	 * uploadFinished() signal is emitted with the success value of the upload
 	 * @param images the list image to be uploaded
-	 * @param album the optional destination album name 
+	 * @param album the optional destination album name
+	 * @return SmfError. SmfNoError if success, else appropriate error code 
 	 */
-	void upload ( SmfPictureList* images, SmfPictureAlbum* album = NULL );
+	SmfError upload ( SmfPictureList* images, SmfPictureAlbum* album = NULL );
 
 	/**
 	 * Posts a comment for an image. uploadFinished() signal is emitted
 	 * with success of the post once comment is posted.
 	 * @param image Image to comment on
 	 * @param comment Comment to post
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void postComment ( SmfPicture image, SmfComment comment );
+	SmfError postComment ( SmfPicture image, SmfComment comment );
 	
 	/**
 	 * Request for a custom operation.
 	 * @param operationId OperationId
 	 * @param customData Custom data to be sent
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 * Note:-Interpretation of operationId and customData is upto the concerned
 	 * plugin and client application. service provider should provide some
 	 * serializing-deserializing utilities for these custom data
 	 */
-	void customRequest ( const int& operationId, QByteArray* customData );
+	SmfError customRequest ( const int& operationId, QByteArray* customData );
+	
+    /**
+     * Cancels a request generated due to the call to any API which results 
+     * into http request. Might return error if no request is currently pending.
+     * Please note that there can be only one request pending at any point of time
+     * @return Appropriate SmfError value
+     */
+	SmfError cancelRequest ();
 	
 signals:
 	/**

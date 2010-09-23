@@ -27,9 +27,12 @@
 #include <QVariant>
 
 #include "smfclientglobal.h"
-#include "smfcontact_p.h"
+
 
 using namespace QtMobility;
+
+/* forward declaration*/
+class SmfContactPrivate;
 
 /**
  * Max size for one SmfContact

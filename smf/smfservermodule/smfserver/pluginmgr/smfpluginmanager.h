@@ -149,12 +149,12 @@ public:
 	
 	/**
 	 * Method to cancel the service request
-	 * @param aPluginId The plugin whose current operation is to be cancelled.
+	 * @param aSessionID The session to be cancelled.
 	 * If the plugin is not loaded currently, this method just returns true.
 	 * @return Returns true if the plugin operation could be cancelled 
 	 * else returns false.
 	 */
-	bool cancelRequest ( const QString& aPluginId );
+	bool cancelRequest ( const quint32& aSessionID );
 	
 	/**
 	 * Method to get the list of the SmfProvider for all the plugins that implement 

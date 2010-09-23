@@ -44,8 +44,8 @@ SmfMusicProfile::SmfMusicProfile( const SmfMusicProfile &aOther )
  */
 SmfMusicProfile& SmfMusicProfile::operator=( const SmfMusicProfile &aOther )
 	{
-	d->m_usage = aOther.d->m_usage;
-	d->m_interest = aOther.d->m_interest;
+	d->m_recent = aOther.d->m_recent;
+	d->m_favorites = aOther.d->m_favorites;
 	d->m_events = aOther.d->m_events;
 	d->m_profileId = aOther.d->m_profileId;
 	return *this;
@@ -59,26 +59,26 @@ SmfMusicProfile::~SmfMusicProfile( )
 	}
 
 /**
- * Method to get the user's used tracks
- * @return The users track list
+ * Method to get the user's most recently heard tracks
+ * @return The users most recently heard tracks
  */
-QList<SmfTrackInfo> SmfMusicProfile::musicUsageInfo( ) const
+QList<SmfTrackInfo> SmfMusicProfile::recentTracks( ) const
 	{
-	return d->m_usage;
+	return d->m_recent;
 	}
 
 /**
- * Method to get the user's interested tracks
- * @return The users interested track list
+ * Method to get the user's favorite tracks e.g. could be user.getLovedTracks for last.fm
+ * @return The users favorite track list
  */
-QList<SmfTrackInfo> SmfMusicProfile::interestInfo( ) const
+QList<SmfTrackInfo> SmfMusicProfile::favorites( ) const
 	{
-	return d->m_interest;
+	return d->m_favorites;
 	}
 
 /**
- * Method to get the user events as list of SmfEvents
- * @return The list of events
+ * Method to get a list of upcoming events that this user is attending
+ * @return The list of upcoming events
  */
 QList<SmfEvent> SmfMusicProfile::userEvents( ) const
 	{
@@ -95,21 +95,21 @@ QString SmfMusicProfile::id( ) const
 	}
 
 /**
- * Method to set the user's used tracks
+ * Method to set the user's recent tracks
  * @param aUsage The users new track list
  */
-void SmfMusicProfile::setMusicUsageInfo( const QList<SmfTrackInfo>& aUsage )
+void SmfMusicProfile::setRecentTracks( const QList<SmfTrackInfo>& aUsage )
 	{
-	d->m_usage = aUsage;
+	d->m_recent = aUsage;
 	}
 
 /**
- * Method to set the user's interested tracks
- * @param aInterest The users new interested track list
+ * Method to set the user's favorite tracks
+ * @param aInterest The users new favorite track list
  */
-void SmfMusicProfile::setInterestInfo( const QList<SmfTrackInfo>& aInterest )
+void SmfMusicProfile::setFavorites( const QList<SmfTrackInfo>& aInterest )
 	{
-	d->m_interest = aInterest;
+	d->m_favorites = aInterest;
 	}
 
 /**
@@ -141,11 +141,11 @@ void SmfMusicProfile::setId( const QString &aId )
  QDataStream &operator<<( QDataStream &aDataStream, 
 		const SmfMusicProfile &aProfile )
 	{
-	// Serialize d->m_usage
-	aDataStream<<aProfile.d->m_usage;
+	// Serialize d->m_recent
+	aDataStream<<aProfile.d->m_recent;
 	
-	// Serialize d->m_interest
-	aDataStream<<aProfile.d->m_interest;
+	// Serialize d->m_favorites
+	aDataStream<<aProfile.d->m_favorites;
 	
 	// Serialize d->m_events
 	aDataStream<<aProfile.d->m_events;
@@ -166,11 +166,11 @@ void SmfMusicProfile::setId( const QString &aId )
  QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfMusicProfile &aProfile)
 	{
-	// Deserialize d->m_usage
-	aDataStream>>aProfile.d->m_usage;
+	// Deserialize d->m_recent
+	aDataStream>>aProfile.d->m_recent;
 	
-	// Deserialize d->m_interest
-	aDataStream>>aProfile.d->m_interest;
+	// Deserialize d->m_favorites
+	aDataStream>>aProfile.d->m_favorites;
 	
 	// Deserialize d->m_events
 	aDataStream>>aProfile.d->m_events;

@@ -50,6 +50,7 @@ SmfSubtitle& SmfSubtitle::operator=( const SmfSubtitle &aOther )
 	d->m_duration = aOther.d->m_duration;
 	d->m_releaseYr = aOther.d->m_releaseYr;
 	d->m_subtitleId = aOther.d->m_subtitleId;
+	d->m_subtitleUrl = aOther.d->m_subtitleUrl;
 	return *this;
 	}
 
@@ -69,6 +70,15 @@ QByteArray SmfSubtitle::subtitle( ) const
 	return d->m_subtitle;
 	}
 
+/**
+ * Method to get the Url to the subtitle
+ * @return the subtitle url
+ */
+QUrl SmfSubtitle::subtitleUrl() const
+	{
+	return d->m_subtitleUrl;
+	}
+	
 /**
  * Method to get the language
  * @return The language
@@ -121,6 +131,15 @@ QString SmfSubtitle::id( ) const
 void SmfSubtitle::setSubtitle( const QByteArray &aSubtitle )
 	{
 	d->m_subtitle = aSubtitle;
+	}
+
+/**
+ * Method to set the subtitle as a bytearray
+ * @param aSubtitle The subtitle content
+ */
+void SmfSubtitle::setSubtitleUrl( const QUrl &aSubtitleUrl)
+	{
+	 d->m_subtitleUrl = aSubtitleUrl;
 	}
 
 /**
@@ -182,6 +201,9 @@ void SmfSubtitle::setId( const QString &aId )
 	// Serialize m_subtitle
 	aDataStream<<aSubtitle.d->m_subtitle;
 	
+	// Serialize m_subtitleUrl
+	aDataStream<<aSubtitle.d->m_subtitleUrl;
+	
 	// Serialize m_language
 	aDataStream<<aSubtitle.d->m_language;
 	
@@ -212,6 +234,9 @@ QDataStream &operator>>( QDataStream &aDataStream,
 	{
 	// Deserialize m_subtitle
 	aDataStream>>aSubtitle.d->m_subtitle;
+	
+	// Deserialize m_subtitleUrl
+	aDataStream>>aSubtitle.d->m_subtitleUrl;
 	
 	// Deserialize m_language
 	aDataStream>>aSubtitle.d->m_language;

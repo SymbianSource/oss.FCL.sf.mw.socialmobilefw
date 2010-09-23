@@ -53,19 +53,22 @@ public:
 public slots:
 	/**
 	 * Emits signal resultsAvailable() when list of activities for the user is available 
+	 * @return SmfError. SmfNoError if success, else appropriate error code 
 	 */
-	void selfActivities(int pageNum = SMF_FIRST_PAGE,int perPage = SMF_ITEMS_PER_PAGE);
+	SmfError selfActivities(int pageNum = SMF_FIRST_PAGE,int perPage = SMF_ITEMS_PER_PAGE);
 
 	/**
 	 * Emits signal resultsAvailable() when list of activities for other contact  is available 
+	 * @return SmfError. SmfNoError if success, else appropriate error code 
 	 */
-	void friendsActivities(const SmfContact& aFriend, int pageNum = SMF_FIRST_PAGE,
+	SmfError friendsActivities(const SmfContact& aFriend, int pageNum = SMF_FIRST_PAGE,
 			int perPage = SMF_ITEMS_PER_PAGE);
 	
 	/**
 	 * returns only those activities (self) which are from @arg filters
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 */
-	void filtered(QList<SmfActivityObjectType> filters, int pageNum = SMF_FIRST_PAGE,
+	SmfError filtered(QList<SmfActivityObjectType> filters, int pageNum = SMF_FIRST_PAGE,
 			int perPage = SMF_ITEMS_PER_PAGE);
 	
 	/**
@@ -73,11 +76,20 @@ public slots:
 	 * when the result is available.
 	 * @param operationId OperationId
 	 * @param customData Custom data to be sent
+	 * @return SmfError. SmfNoError if success, else appropriate error code
 	 * Note:-Interpretation of operationId and customData is upto the concerned
 	 * plugin and client application. service provider should provide some
 	 * serializing-deserializing utilities for these custom data
 	 */
-	void customRequest ( const int& operationId, QByteArray* customData );
+	SmfError customRequest ( const int& operationId, QByteArray* customData );
+	
+    /**
+     * Cancels a request generated due to the call to any API which results 
+     * into http request. Might return error if no request is currently pending.
+     * Please note that there can be only one request pending at any point of time
+     * @return Appropriate SmfError value
+     */
+	SmfError cancelRequest ();
 
 signals:
 	/**

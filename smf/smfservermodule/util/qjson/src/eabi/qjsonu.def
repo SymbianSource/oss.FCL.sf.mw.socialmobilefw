@@ -45,16 +45,14 @@ EXPORTS
 	_ZNK5QJson18SerializerRunnable10metaObjectEv @ 44 NONAME
 	_ZNK5QJson6Parser11errorStringEv @ 45 NONAME
 	_ZNK5QJson6Parser9errorLineEv @ 46 NONAME
-	_ZTIN2yy11json_parserE @ 47 NONAME
-	_ZTIN5QJson14ParserRunnableE @ 48 NONAME
-	_ZTIN5QJson18SerializerRunnableE @ 49 NONAME
-	_ZTVN2yy11json_parserE @ 50 NONAME
-	_ZTVN5QJson14ParserRunnableE @ 51 NONAME
-	_ZTVN5QJson18SerializerRunnableE @ 52 NONAME
-	_ZThn8_N5QJson14ParserRunnable3runEv @ 53 NONAME
-	_ZThn8_N5QJson14ParserRunnableD0Ev @ 54 NONAME
-	_ZThn8_N5QJson14ParserRunnableD1Ev @ 55 NONAME
-	_ZThn8_N5QJson18SerializerRunnable3runEv @ 56 NONAME
-	_ZThn8_N5QJson18SerializerRunnableD0Ev @ 57 NONAME
-	_ZThn8_N5QJson18SerializerRunnableD1Ev @ 58 NONAME
+	_ZTIN5QJson14ParserRunnableE @ 47 NONAME
+	_ZTIN5QJson18SerializerRunnableE @ 48 NONAME
+	_ZTVN5QJson14ParserRunnableE @ 49 NONAME
+	_ZTVN5QJson18SerializerRunnableE @ 50 NONAME
+	_ZThn8_N5QJson14ParserRunnable3runEv @ 51 NONAME
+	_ZThn8_N5QJson14ParserRunnableD0Ev @ 52 NONAME
+	_ZThn8_N5QJson14ParserRunnableD1Ev @ 53 NONAME
+	_ZThn8_N5QJson18SerializerRunnable3runEv @ 54 NONAME
+	_ZThn8_N5QJson18SerializerRunnableD0Ev @ 55 NONAME
+	_ZThn8_N5QJson18SerializerRunnableD1Ev @ 56 NONAME
 

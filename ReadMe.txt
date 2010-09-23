@@ -3,7 +3,7 @@ Content:
 This is pre-beta version of Social Mobile Framework code. Folder organization is as follows - 
                 Doxyfile - Doxygen configuration file 
 
-                \doc - contains zipped doxygen genrated documentation
+                \doc - contains smfhelp.chm file, refer this for interface information
 
                 \example - contains sample plugins, auth application and client test application
                                     \example\AuthApp
@@ -69,8 +69,10 @@ Pre-build steps:
 the necessary credentials in plain text. Sample smfclientapp uses facebook plugins, place a file 
 named "FaceBookKeys.txt" under "C:/Data/" - which is at "\epoc32\winscw\c\data". This file should
 contain keys in the following order:  API key, API secret, session key, session secret.. all separated by \n
-If you want to know how to generate these, please see http://wiki.developers.facebook.com/index.php/Authorization_and_Authentication_for_Desktop_Applications
+If you want to know how to generate these, please see 
+http://wiki.developers.facebook.com/index.php/Authorization_and_Authentication_for_Desktop_Applications
 We are integrating plugins with CredentialMgr, so these painful steps won't be required once it is up.
+
 
 
 Building Steps :  - 
@@ -89,3 +91,81 @@ Running Sample Application
 provided the keys in step 2 in pre-build steps] and pictures from Flickr
 4. The results might not show properly on UI due to problems in S^3 SDK for Webkit. However textual result can be viewed
 at the generated log file - \epoc32\winscw\c\data\SmfLogs.txt
+
+
+
+Public Header files
+==============================================================================
+Following section lists the public header files for application developers and plugin developers. Please
+refer to section "SMF Interfaces and Usage" in smfhelp.chm kept in doc folder for details of the classes. 
+
+
+SmfClient Header Files
+==============================================================================
+These are exported to \epoc32\include from \smf\smfservermodule\smfclient
+	smfclient.h
+	smfcontactfetcher.h
+	smfpostprovider.h
+	smfgallery.h
+	smfrelationmgr.h
+	smfmusic.h
+	smfactivityfetcher.h
+	smfeventsfetcher.h
+
+
+
+SmfPlugin Header Files
+==============================================================================
+These are exported to \epoc32\include from \smf\smfservermodule\smfserver\smfplugins
+	smfpluginbase.h
+	smfproviderbase.h
+	smfactivityfetcherplugin.h
+	smfcontactfetcherplugin.h
+	smfeventsfetcherplugin.h
+	smfpostproviderplugin.h
+	smflyricsserviceplugin.h
+	smfmusicsearchplugin.h
+	smfmusicserviceplugin.h
+	smfplaylistserviceplugin.h
+	smfgalleryplugin.h
+
+
+
+SmfCommon Header Files
+==============================================================================
+These are exported to \epoc32\include from \smf\smfservermodule\smfcommon
+	smfactions.h
+	smfalbum.h
+	smfartists.h
+	smfcomment.h
+	smfcontact.h
+	smfevent.h
+	smfgroup.h
+	smflocation.h
+	smflyrics.h
+	smfmusicfingerprint.h
+	smfmusicprofile.h
+	smfmusicrating.h
+	smfpicture.h
+	smfpicturealbum.h
+	smfplaylist.h
+	smfpluginutil.h
+	smfpost.h
+	smfprovider.h
+	smfsubtitle.h
+	smftrackinfo.h
+	smfurl.h
+	smfclientglobal.h
+	smfglobal.h
+	smfobserver.h
+	
+	
+
+SmfCredentialManager Header Files
+==============================================================================
+These are exported to \epoc32\include from \smf\smfcredentialmgr\smfcredmgrclient	
+	smfcredmgrclient.h
+	smfcredmgrclientdatastruct.h
+	smfcredmgrclientglobal.h
+	smfutils.h
+	smfcredmgrcommon.h

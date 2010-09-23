@@ -110,7 +110,7 @@ public:
 	 * @param interfaceID Interface name
 	 * @param dataForPlugin Data to be sent for this request
 	 */
-	void sendToPluginManager ( int requestID, SmfPluginID pluginID, 
+	SmfError sendToPluginManager ( int requestID, SmfPluginID pluginID, 
 			SmfInterfaceID interfaceID, SmfRequestTypeID requestTypeID,
 			QByteArray dataForPlugin = QByteArray() );
 	

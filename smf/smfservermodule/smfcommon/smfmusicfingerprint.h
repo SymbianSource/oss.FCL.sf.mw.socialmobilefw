@@ -22,8 +22,9 @@
 
 #include <QDataStream>
 #include <QSharedData>
-#include "smfclientglobal.h"
 #include <QMetaType>
+
+#include "smfclientglobal.h"
 
 class SmfMusicFingerPrintPrivate;
 
@@ -63,10 +64,22 @@ public:
 	QByteArray musicFingerPrint ( ) const;
 	
 	/**
+	 * Method to get the service specific id of this fingerprint data
+	 * @return The ID value 
+	 */
+	QString id( ) const;
+	
+	/**
 	 * Method to set the music finger print data
 	 * @param aFp The music finger print data
 	 */
 	void setMusicFingerPrint ( const QByteArray &aFp);
+	
+	/**
+	 * Method to set the service specific id of this fingerprint data
+	 * @param aId The ID value 
+	 */
+	void setId( const QString &aId );
 	
 private:
 	QSharedDataPointer<SmfMusicFingerPrintPrivate> d;

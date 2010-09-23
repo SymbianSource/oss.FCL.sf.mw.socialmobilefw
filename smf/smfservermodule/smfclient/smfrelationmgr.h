@@ -28,7 +28,7 @@
 class SmfRelationMgrPrivate;
 
 // implementaion constants
-const int maxSmfRelationIdSize = 500;
+const int maxSmfRelationIdSize = 1000;
 const int maxSmfRelationItemSize = 1000;
 const int maxRelationItems = 1000;
 
@@ -37,12 +37,13 @@ const int maxRelationItems = 1000;
 typedef QString SmfRelationId;
 
 /**
+ * @ingroup smf_client_group
  * One record of a contact in a relation. Index specifies their position in the relationship.
  */
 class SMFCLIENT_EXPORT SmfRelationItem : public SmfContact
 	{
 public:
-	SmfRelationItem(SmfProvider* provider=0);
+	SmfRelationItem();
 	
 public:
 	SmfProvider getProvider() const;
@@ -134,7 +135,7 @@ public slots:
 	SmfRelationId create(SmfProvider *provider=NULL, SmfContact *contact=NULL);
 
 	/** assign contact to a relation */
-	SmfError associate( SmfRelationId& relation,
+	SmfError associate( SmfRelationId& phoneId,
 						const SmfContact* contact,
 						SmfProvider* provider);
 

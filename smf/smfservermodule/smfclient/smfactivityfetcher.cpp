@@ -35,27 +35,32 @@ SmfActivityFetcher::~SmfActivityFetcher()
 	{
 	}
 
-void SmfActivityFetcher::selfActivities(int pageNum, int perPage)
+SmfError SmfActivityFetcher::selfActivities(int pageNum, int perPage)
 	{
-	m_private->selfActivities(pageNum,perPage);
+	return m_private->selfActivities(pageNum,perPage);
 	}
 
-void SmfActivityFetcher::friendsActivities(const SmfContact & aFriend, int pageNum, int perPage)
+SmfError SmfActivityFetcher::friendsActivities(const SmfContact & aFriend, int pageNum, int perPage)
 	{
-	m_private->friendsActivities(aFriend,pageNum,perPage);
+	return m_private->friendsActivities(aFriend,pageNum,perPage);
 	}
 
-void SmfActivityFetcher::filtered(QList<SmfActivityObjectType> filters, int pageNum, int perPage)
+SmfError SmfActivityFetcher::filtered(QList<SmfActivityObjectType> filters, int pageNum, int perPage)
 	{
-	m_private->filtered(filters,pageNum,perPage);
+	return m_private->filtered(filters,pageNum,perPage);
 	}
 
-void SmfActivityFetcher::customRequest(const int& operationId,QByteArray* customData)
+SmfError SmfActivityFetcher::customRequest(const int& operationId,QByteArray* customData)
 	{
-	m_private->customRequest(operationId, customData);
+	return m_private->customRequest(operationId, customData);
 	}
 
 SmfProvider* SmfActivityFetcher::getProvider() const
 	{
 	return m_baseProvider;
+	}
+
+SmfError SmfActivityFetcher::cancelRequest()
+	{
+	return m_private->cancelRequest();
 	}

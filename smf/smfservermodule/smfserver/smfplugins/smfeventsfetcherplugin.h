@@ -13,68 +13,93 @@
  * Manasij Roy, Nalina Hariharan
  * 
  * Description:
- * Interface specification for music track lyrics
+ * Interface specification for events
+ * Note: This class has dependencies on QtMobility project
  *
  */
 
 
-#ifndef SMFLYRICSSERVICEPLUGIN_H_
-#define SMFLYRICSSERVICEPLUGIN_H_
+#ifndef SMFEVENTSFETCHERPLUGIN_H_
+#define SMFEVENTSFETCHERPLUGIN_H_
 
 #include <smfpluginbase.h>
-#include <smftrackinfo.h>
-#include <QString>
-#include <smfsubtitle.h>
-#include <smflyrics.h>
+#include <smfevent.h>
+#include <smflocation.h>
+#include <smfcontact.h>
+
+using namespace QtMobility;
 
 /**
  * @ingroup smf_plugin_group
- * Interface specification for music track lyrics
+ * Interface specification for events
  *
  * All of the functionality described here should be implemented by a service
  * specific plug-in.
+ * 
+ * Note: This class has dependencies on QtMobility project
  */
-class SmfLyricsServicePlugin : public SmfPluginBase
+class SmfEventsFetcherPlugin : public SmfPluginBase
 	{
 public:
 	
 	/**
 	 * Destructor
 	 */
-	virtual ~SmfLyricsServicePlugin( ) {}
+	virtual ~SmfEventsFetcherPlugin( ) {}
 	
 	/**
-	 * Method to get the lyrics
+	 * Method to get the events on the specified location
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aTrack [in] The track whose lyrics need to be fetched
+	 * @param aLocation [in] Location of the event
 	 * @param aPageNum [in] The page to be extracted
 	 * @param aItemsPerPage [in] Number of items per page
 	 * @return Appropriate value of the enum SmfPluginError.
 	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
-	virtual SmfPluginError lyrics( SmfPluginRequestData &aRequest, 
-			const SmfTrackInfo &aTrack,
+	virtual SmfPluginError events( SmfPluginRequestData &aRequest,
+			const SmfLocation &aLocation,
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
 	/**
-	 * Method to get the subtitle
+	 * Method to get the venues on the specified location
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aTrack [in] The track whose subtitle need to be fetched
-	 * @param aFilter [in] The subtitle search filter if any
+	 * @param aLocation [in] Location of the venue
 	 * @param aPageNum [in] The page to be extracted
 	 * @param aItemsPerPage [in] Number of items per page
 	 * @return Appropriate value of the enum SmfPluginError.
 	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
-	virtual SmfPluginError subtitles( SmfPluginRequestData &aRequest, 
-			const SmfTrackInfo &aTrack,
-			const SmfSubtitleSearchFilter &aFilter = SubtitleAll,
+	virtual SmfPluginError venues( SmfPluginRequestData &aRequest,
+			const SmfLocation &aLocation,
 			const int aPageNum = SMF_FIRST_PAGE, 
 			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
 	/**
-	 * Customised method for SmfLyricsServicePlugin interface
+	 * Method to get the list of attendees for an event
+	 * @param aRequest [out] The request data to be sent to network
+	 * @param aEvent [in] The event for which attendees should be fetched
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
+	 */
+	virtual SmfPluginError attendees( SmfPluginRequestData &aRequest,
+			const SmfEvent &aEvent, 
+			const int aPageNum = SMF_FIRST_PAGE,
+			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
+	/**
+	 * Method to post event(s)
+	 * @param aRequest [out] The request data to be sent to network
+	 * @param aEventList [in] The list of events to be posted
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
+	 */
+	virtual SmfPluginError postEvents( SmfPluginRequestData &aRequest,
+			const QList<SmfEvent> &aEventList ) = 0;
+	
+	/**
+	 * Customised method for SmfEventsFetcherPlugin interface
 	 * @param aRequest [out] The request data to be sent to network
 	 * @param aOperation [in] The operation type (should be known between 
 	 * the client interface and the plugin)
@@ -88,6 +113,6 @@ public:
 	
 	};
 
-Q_DECLARE_INTERFACE( SmfLyricsServicePlugin, "org.symbian.smf.plugin.music.lyrics/v0.2" );
+Q_DECLARE_INTERFACE( SmfEventsFetcherPlugin, "org.symbian.smf.plugin.events.fetcher/v0.2" );
 
-#endif /* SMFLYRICSSERVICEPLUGIN_H_ */
+#endif /* SMFEVENTSFETCHERPLUGIN_H_ */

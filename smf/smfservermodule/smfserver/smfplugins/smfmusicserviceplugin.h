@@ -49,18 +49,80 @@ public:
 	/**
 	 * Method to get self profile information
 	 * @param aRequest [out] The request data to be sent to network
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
-	virtual SmfPluginError userInfo( SmfPluginRequestData &aRequest ) = 0;
+	virtual SmfPluginError userMusicInfo( SmfPluginRequestData &aRequest ) = 0;
+	
+	/**
+	 * Method to search information about artists. All information 
+	 * in SmfArtists is not required, however more available the better
+	 * @param aRequest [out] The request data to be sent to network
+	 * @param aArtist The artist which is the search criteria
+	 * @param aPageNum The page to be extracted
+	 * @param aItemsPerPage Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
+	 */
+	virtual SmfPluginError searchArtist( SmfPluginRequestData &aRequest,
+			const SmfArtists &aArtist,
+			const int aPageNum = SMF_FIRST_PAGE, 
+			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
+	
+	/**
+	 * Method to search information about album. All information 
+	 * in SmfAlbum is not required, however more available the better
+	 * @param aRequest [out] The request data to be sent to network
+	 * @param aAlbum [in] The album which is the search criteria
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
+	 */
+	virtual SmfPluginError searchAlbum( SmfPluginRequestData &aRequest,
+			const SmfAlbum &aAlbum,
+			const int aPageNum = SMF_FIRST_PAGE, 
+			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
+	
+	/**
+	 * Method to search information about events. All information 
+	 * in SmfEvent is not required, however more available the better
+	 * @param aRequest [out] The request data to be sent to network
+	 * @param aEvent [in] The event which is the search criteria
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
+	 */
+	virtual SmfPluginError searchEvents( SmfPluginRequestData &aRequest,
+			const SmfEvent &aEvent,
+			const int aPageNum = SMF_FIRST_PAGE, 
+			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
+	
+	/**
+	 * Method to search information about venue. All information 
+	 * in SmfLocation is not required, however more available the better
+	 * @param aRequest [out] The request data to be sent to network
+	 * @param aVenue [in] The venue which is the search criteria
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
+	 */
+	virtual SmfPluginError searchVenue( SmfPluginRequestData &aRequest,
+			const SmfLocation &aVenue,
+			const int aPageNum = SMF_FIRST_PAGE, 
+			const int aItemsPerPage = SMF_ITEMS_PER_PAGE ) = 0;
 	
 	/**
 	 * Method to search information about other service users for a 
 	 * particular place
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aPlace The place which is the search criteria
-	 * @param aPageNum The page to be extracted
-	 * @param aItemsPerPage Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aPlace [in] The place which is the search criteria
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError searchUser( SmfPluginRequestData &aRequest,
 			const SmfLocation &aPlace,
@@ -70,8 +132,9 @@ public:
 	/**
 	 * Method to post the currently playing track
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aTrack The current playing track, that should be posted
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aTrack [in] The current playing track, that should be posted
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError postCurrentPlaying( 
 			SmfPluginRequestData &aRequest,
@@ -80,9 +143,10 @@ public:
 	/**
 	 * Method to post the rating on a track
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aTrack The track on which rating should be posted
-	 * @param aRating The rating values
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aTrack [in] The track on which rating should be posted
+	 * @param aRating [in] The rating values
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError postRating( 
 			SmfPluginRequestData &aRequest, 
@@ -92,9 +156,10 @@ public:
 	/**
 	 * Method to post comment on a track
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aTrack The track on which comment should be posted
-	 * @param aComment The comment content
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aTrack [in] The track on which comment should be posted
+	 * @param aComment [in] The comment content
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError postComments( 
 			SmfPluginRequestData &aRequest, 
@@ -104,11 +169,12 @@ public:
 	/**
 	 * Customised method for SmfMusicServicePlugin interface
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aOperation The operation type (should be known between 
+	 * @param aOperation [in] The operation type (should be known between 
 	 * the client interface and the plugin)
-	 * @param aData The data required to form the request (The type 
+	 * @param aData [in] The data required to form the request (The type 
 	 * of data should be known between client and the plugin)
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError customRequest( SmfPluginRequestData &aRequest, 
 			const int &aOperation, QByteArray *aData ) = 0;

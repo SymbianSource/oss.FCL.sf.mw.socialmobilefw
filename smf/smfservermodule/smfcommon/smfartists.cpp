@@ -47,6 +47,8 @@ SmfArtists& SmfArtists::operator=( const SmfArtists &aOther )
 	d->m_names = aOther.d->m_names;
 	d->m_image = aOther.d->m_image;
 	d->m_url = aOther.d->m_url;
+	d->m_tags = aOther.d->m_tags;
+	d->m_id = aOther.d->m_id;
 	return *this;
 	}
 
@@ -85,6 +87,24 @@ QUrl SmfArtists::url( ) const
 	}
 
 /**
+ * Method to get the tags applied for artist(s) 
+ * @return list of tags, NULL if not supported
+ */
+QStringList SmfArtists::tags( ) const
+	{
+	return d->m_tags;
+	}
+
+/**
+ * Service specific Id for this artist(s), e.g. could be musicbrainz id for this artist 
+ * @return service specific id of the artists, NULL if not supported
+ */
+QString SmfArtists::id( ) const
+	{
+	return d->m_id;
+	}
+
+/**
  * Method to set the artists names
  * @param aList The list of artists names
  */
@@ -110,7 +130,25 @@ void SmfArtists::setUrl( const QUrl &aUrl )
 	{
 	d->m_url = aUrl;
 	}
-	
+
+/**
+ * Method to set tags of the artists
+ * @param aTags tags for the artists
+ */
+void SmfArtists::setTags( const QStringList &aTags )
+	{
+	d->m_tags = aTags;
+	}
+
+/**
+ * Method to set the service specific ID of the artists
+ * @param aId The id of the artists
+ */
+void SmfArtists::setId( const QString &aId )
+	{
+	d->m_id = aId;
+	}
+
 /**
  * Method for Externalization. Writes the SmfArtists object to 
  * the stream and returns a reference to the stream.
@@ -129,6 +167,12 @@ void SmfArtists::setUrl( const QUrl &aUrl )
 	
 	// Serialize d->m_url
 	aDataStream<<aArtists.d->m_url;
+	
+	// Serialize d->m_tags
+	aDataStream<<aArtists.d->m_tags;
+	
+	// Serialize d->m_id
+	aDataStream<<aArtists.d->m_id;
 	
 	return aDataStream;
 	}
@@ -151,6 +195,12 @@ void SmfArtists::setUrl( const QUrl &aUrl )
 	
 	// Deserialize d->m_url
 	aDataStream>>aArtists.d->m_url;
+	
+	// Deserialize d->m_tags
+	aDataStream>>aArtists.d->m_tags;
+	
+	// Deserialize d->m_id
+	aDataStream>>aArtists.d->m_id;
 	
 	return aDataStream;
 	}

@@ -16,6 +16,7 @@
  * Private Implementation of Relation Manager
  * 
  */
+#include <qdebug.h>
 
 #include "smfrelationmgr.h"
 #include "smfrelationmgr_p.h"
@@ -237,7 +238,7 @@ uint SmfRelationMgrPrivate::count(SmfRelationId relation)
 	m_dataFromDSM = m_SmfClientPrivate->sendDSMSyncRequest(SmfRelationCount,m_dataForDSM,err,maxAlloc);
 	if(err == SmfNoError)
 		{
-		QDataStream readStream(&m_dataForDSM,QIODevice::ReadOnly);
+		QDataStream readStream(&m_dataFromDSM,QIODevice::ReadOnly);
 		readStream>>count;
 		}
 	else

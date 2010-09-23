@@ -81,12 +81,13 @@ bool SmfPostProvider::supportsAppearence () const
  * once the post lists are available
  * @param user user's contact in this SP, omit for self contact
  * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
- * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE 
+ * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE
+ * @return SmfError. SmfNoError if success, else appropriate error code 
  * @see postsAvailable()
  */
-void SmfPostProvider::posts(SmfContact* user ,int pageNum,int perPage)
+SmfError SmfPostProvider::posts(SmfContact* user ,int pageNum,int perPage)
 	{ 
-	m_private->posts(user,pageNum,perPage);
+	return m_private->posts(user,pageNum,perPage);
 	}
 
 /**
@@ -94,10 +95,11 @@ void SmfPostProvider::posts(SmfContact* user ,int pageNum,int perPage)
  * updatePostFinished() signal
  * @param postData data to be posted
  * @param location location data
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfPostProvider::post(SmfPost& postData,SmfLocation& location) 
+SmfError SmfPostProvider::post(SmfPost& postData,SmfLocation& location) 
 	{
-	m_private->post(postData,location);
+	return m_private->post(postData,location);
 	} 
 
 /**
@@ -105,10 +107,11 @@ void SmfPostProvider::post(SmfPost& postData,SmfLocation& location)
  * updatePostFinished() signal
  * @param postData edited/new data to be posted
  * @param location location data
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfPostProvider::updatePost(SmfPost& postData)
+SmfError SmfPostProvider::updatePost(SmfPost& postData)
 	{ 
-	m_private->updatePost(postData);
+	return m_private->updatePost(postData);
 	} 
 
 /**
@@ -117,10 +120,11 @@ void SmfPostProvider::updatePost(SmfPost& postData)
  * @param postData data to be posted
  * @param contact contact to which the post is to be directed
  * @param location location data
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfPostProvider::postDirected(SmfPost& postData,SmfContact& contact,SmfLocation* location)
+SmfError SmfPostProvider::postDirected(SmfPost& postData,SmfContact& contact,SmfLocation* location)
 	{ 
-	m_private->postDirected(postData,contact,location);
+	return m_private->postDirected(postData,contact,location);
 	}
 
 /**
@@ -128,20 +132,21 @@ void SmfPostProvider::postDirected(SmfPost& postData,SmfContact& contact,SmfLoca
  * @param aTarget Post on which comment has to be posted
  * @param aComment comment to be posted
  * @param aLocation location data
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfPostProvider::commentOnAPost( SmfPost &aTarget, SmfPost &aComment, 
+SmfError SmfPostProvider::commentOnAPost( SmfPost &aTarget, SmfPost &aComment, 
 		SmfLocation *aLocation)
 	{
-	m_private->commentOnAPost(aTarget,aComment,aLocation);
+	return m_private->commentOnAPost(aTarget,aComment,aLocation);
 	}
 
 /**
  * Posts appearance info of the user.e.g. appear offline, busy, do-not-disturb
  * @param appearence user appearance
  * @see SmfPresenceInfo
- * @return False on Failure/Not supported 
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-bool SmfPostProvider::postAppearence(SmfAppearenceInfo appearence, const QString &status)
+SmfError SmfPostProvider::postAppearence(SmfAppearenceInfo appearence, const QString &status)
 	{ 
 	return m_private->postAppearence(appearence, status);
 	} 
@@ -152,15 +157,16 @@ bool SmfPostProvider::postAppearence(SmfAppearenceInfo appearence, const QString
  * @param postData data to be posted
  * @param contact contact to which the post belonged
  * @param bool whether user changed items within the post
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfPostProvider::sharePost(SmfPost& postData,SmfContact& contact,bool edited)
+SmfError SmfPostProvider::sharePost(SmfPost& postData,SmfContact& contact,bool edited)
 	{
-	m_private->sharePost(postData,contact,edited);
+	return m_private->sharePost(postData,contact,edited);
 	}
 
-void SmfPostProvider::customRequest(const int& operationId,QByteArray* customData)
+SmfError SmfPostProvider::customRequest(const int& operationId,QByteArray* customData)
 	{
-	m_private->customRequest(operationId, customData);
+	return m_private->customRequest(operationId, customData);
 	}
 
 /**
@@ -171,3 +177,7 @@ SmfProvider* SmfPostProvider::getProvider() const
 	return m_baseProvider;
 	}
 
+SmfError SmfPostProvider::cancelRequest()
+	{
+	return m_private->cancelRequest();	
+	}

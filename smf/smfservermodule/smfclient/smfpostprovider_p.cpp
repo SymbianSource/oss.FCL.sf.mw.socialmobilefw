@@ -166,10 +166,12 @@ bool SmfPostProviderPrivate::supportsAppearence ()
  * @param user user's contact in this SP, omit for self contact
  * @param pageNum Page number to download, SMF_FIRST_PAGE denotes fresh query.
  * @param perPage Item per page, default is SMF_ITEMS_PER_PAGE 
+ * @return SmfError. SmfNoError if success, else appropriate error code
  * @see postsAvailable()
  */
-void SmfPostProviderPrivate::posts(SmfContact* user ,int pageNum,int perPage)
+SmfError SmfPostProviderPrivate::posts(SmfContact* user ,int pageNum,int perPage)
 	{
+	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider+SmfContact (when user is not NULL) serialized into bytearray 
 	SmfProvider* m_baseProvider = m_postProvider->getProvider();
 	
@@ -177,29 +179,37 @@ void SmfPostProviderPrivate::posts(SmfContact* user ,int pageNum,int perPage)
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+
 	m_argFlag = 1;
 	if(user)
 		{
-		write<<m_argFlag;
-		write<<*user;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*user;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<pageNum;
-	write<<m_argFlag;
-	write<<perPage;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<pageNum;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<perPage;
 	
+	write<<dataToPlugins;
+
 	QString intfName(postProviderInterface);
 	int maxAllocation = MaxSmfPostSize*perPage;
 	
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfContactRetrievePosts, maxAllocation);
+	
+	return err;
 	}
 	
 /**
@@ -207,9 +217,11 @@ void SmfPostProviderPrivate::posts(SmfContact* user ,int pageNum,int perPage)
  * updatePostFinished() signal
  * @param postData data to be posted
  * @param location location data
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfPostProviderPrivate::post(SmfPost& postData,SmfLocation& location) 
+SmfError SmfPostProviderPrivate::post(SmfPost& postData,SmfLocation& location) 
 	{
+	SmfError err = SmfNoError;
 	m_serializedDataToServer.clear();
 	SmfProvider* m_baseProvider = m_postProvider->getProvider();
 	
@@ -218,11 +230,17 @@ void SmfPostProviderPrivate::post(SmfPost& postData,SmfLocation& location)
 	
 	//SmfProvider
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<postData;
-	write<<m_argFlag;
-	write<<location;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<postData;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<location;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(postProviderInterface);
 	
@@ -230,6 +248,7 @@ void SmfPostProviderPrivate::post(SmfPost& postData,SmfLocation& location)
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfContactPost, 10);
+	return err;
 	}
 
 /**
@@ -237,9 +256,11 @@ void SmfPostProviderPrivate::post(SmfPost& postData,SmfLocation& location)
  * updatePostFinished() signal
  * @param postData edited/new data to be posted
  * @param location location data
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfPostProviderPrivate::updatePost(SmfPost& postData)
+SmfError SmfPostProviderPrivate::updatePost(SmfPost& postData)
 	{
+	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_postProvider->getProvider();
 	
 	//serialize start
@@ -247,15 +268,22 @@ void SmfPostProviderPrivate::updatePost(SmfPost& postData)
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	//SmfProvider
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<postData;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<postData;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(postProviderInterface);
 	//we are not mentioning the max size, as we'll receive only bool
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfContactUpdatePost, 10);
+	return err;
 	}
 
 /**
@@ -264,9 +292,11 @@ void SmfPostProviderPrivate::updatePost(SmfPost& postData)
  * @param postData data to be posted
  * @param contact contact to which the post is to be directed
  * @param location location data
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfPostProviderPrivate::postDirected(SmfPost& postData,SmfContact& contact,SmfLocation* location)
+SmfError SmfPostProviderPrivate::postDirected(SmfPost& postData,SmfContact& contact,SmfLocation* location)
 	{
+	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_postProvider->getProvider();
 	
 	//serialize start
@@ -275,27 +305,34 @@ void SmfPostProviderPrivate::postDirected(SmfPost& postData,SmfContact& contact,
 	
 	//SmfProvider
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<postData;
-	write<<m_argFlag;
-	write<<contact;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<postData;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<contact;
 	if(location)
 		{
-		write<<m_argFlag;
-		write<<*location;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*location;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
+	
+	write<<dataToPlugins;
 	
 	QString intfName(postProviderInterface);
 	//we are not mentioning the max size, as we'll receive only bool
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfContactPostDirected, 10);
+	return err;
 	}
 
 /**
@@ -303,10 +340,12 @@ void SmfPostProviderPrivate::postDirected(SmfPost& postData,SmfContact& contact,
  * @param aTarget Post on which comment has to be posted
  * @param aComment comment to be posted
  * @param aLocation location data
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfPostProviderPrivate::commentOnAPost( SmfPost &aTarget, SmfPost &aComment, 
+SmfError SmfPostProviderPrivate::commentOnAPost( SmfPost &aTarget, SmfPost &aComment, 
 		SmfLocation *aLocation)
 	{
+	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_postProvider->getProvider();
 	
 	//serialize start
@@ -315,39 +354,46 @@ void SmfPostProviderPrivate::commentOnAPost( SmfPost &aTarget, SmfPost &aComment
 	
 	//SmfProvider
 	write<<*m_baseProvider;
-	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<aTarget;
-	write<<m_argFlag;
-	write<<aComment;
 	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+
+	m_argFlag = 1;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<aTarget;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<aComment;
 	if(aLocation)
 		{
-		write<<m_argFlag;
-		write<<*aLocation;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*aLocation;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
+	
+	write<<dataToPlugins;
 	
 	QString intfName(postProviderInterface);
 	//we are not mentioning the max size, as we'll receive only bool
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfContactCommentOnAPost, 10);
+	return err;
 	}
 
 /**
  * Posts appearance info of the user.e.g. appear offline, busy, do-not-disturb
  * @param appearence user appearance
  * @see SmfPresenceInfo
- * @return False on Failure/Not supported 
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-bool SmfPostProviderPrivate::postAppearence(SmfAppearenceInfo appearence,
+SmfError SmfPostProviderPrivate::postAppearence(SmfAppearenceInfo appearence,
 		const QString &status)
 	{
+	SmfError err = SmfNoError;
 	//TODO:-How to return "supported" value? should it be synchronous?
 	//Currently doing it asynchronously with the assumption of always supported
 	//TODO:- implement some signal completion API
@@ -357,19 +403,24 @@ bool SmfPostProviderPrivate::postAppearence(SmfAppearenceInfo appearence,
 	//serialize start
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<appearence;
-	write<<m_argFlag;
-	write<<status;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<appearence;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<status;
+	
+	write<<dataToPlugins;
 		
 	QString intfName(postProviderInterface);
 	//we are not mentioning the max size, as we'll receive only bool
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfContactPostAppearence, 10);
-	
-	return true;
+	return err;
 	}
 
 /**
@@ -378,28 +429,37 @@ bool SmfPostProviderPrivate::postAppearence(SmfAppearenceInfo appearence,
  * @param postData data to be posted
  * @param contact contact to which the post belonged
  * @param bool whether user changed items within the post
+ * @return SmfError. SmfNoError if success, else appropriate error code
  */
-void SmfPostProviderPrivate::sharePost(SmfPost& postData,SmfContact& contact,bool edited)
+SmfError SmfPostProviderPrivate::sharePost(SmfPost& postData,SmfContact& contact,bool edited)
 	{
+	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_postProvider->getProvider();
 	
 	//serialize start
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
+
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<postData;
-	write<<m_argFlag;
-	write<<contact;
-	write<<m_argFlag;
-	write<<edited;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<postData;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<contact;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<edited;
+	
+	write<<dataToPlugins;
 	
 	QString intfName(postProviderInterface);
 	//we are not mentioning the max size, as we'll receive only bool
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfContactSharePost, 10);
+	return err;
 	}
 
 /**
@@ -407,31 +467,38 @@ void SmfPostProviderPrivate::sharePost(SmfPost& postData,SmfContact& contact,boo
  * when the result is available.
  * @param operationId OperationId
  * @param customData Custom data to be sent
+ * @return SmfError. SmfNoError if success, else appropriate error code
  * Note:-Interpretation of operationId and customData is upto the concerned
  * plugin and client application. service provider should provide some
  * serializing-deserializing utilities for these custom data
  */
-void SmfPostProviderPrivate::customRequest ( const int& operationId, QByteArray* customData )
+SmfError SmfPostProviderPrivate::customRequest ( const int& operationId, QByteArray* customData )
 	{
+	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_postProvider->getProvider();
 	
 	//serialize start
 	m_serializedDataToServer.clear();
 	QDataStream write(&m_serializedDataToServer,QIODevice::WriteOnly);
 	write<<*m_baseProvider;
+	
+	QByteArray dataToPlugins;
+	QDataStream streamToPlugin(&dataToPlugins, QIODevice::WriteOnly);
 	m_argFlag = 1;
-	write<<m_argFlag;
-	write<<operationId;
+	streamToPlugin<<m_argFlag;
+	streamToPlugin<<operationId;
 	if(customData)
 		{
-		write<<m_argFlag;
-		write<<*customData;
+		streamToPlugin<<m_argFlag;
+		streamToPlugin<<*customData;
 		}
 	else
 		{
 		m_argFlag = 0;
-		write<<m_argFlag;
+		streamToPlugin<<m_argFlag;
 		}
+	
+	write<<dataToPlugins;
 	
 	QString intfName(postProviderInterface);
 	//ToDo:- How much size to allocate for custo data? keeping MaxSmfPostSize for now
@@ -440,6 +507,21 @@ void SmfPostProviderPrivate::customRequest ( const int& operationId, QByteArray*
 	//call private impl's send method
 	m_SmfClientPrivate->sendRequest(m_serializedDataToServer, intfName,
 			SmfContactPostCustomRequest, maxAllocation);
+	return err;
+	}
+
+SmfError SmfPostProviderPrivate::cancelRequest()
+	{
+	qDebug()<<"Inside SmfPostProviderPrivate::cancelRequest()";
+	QByteArray notused;
+	QByteArray retData = m_SmfClientPrivate->sendSyncRequest(notused,SmfCancelRequest,1000, notused);
+	
+	//De-serialize it into SmfError
+	QDataStream reader(&retData,QIODevice::ReadOnly);
+	int val;
+	reader>>val;
+	SmfError error = (SmfError) val;
+	return error;
 	}
 
 /**

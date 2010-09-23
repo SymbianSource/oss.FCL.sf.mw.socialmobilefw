@@ -45,6 +45,7 @@ SmfMusicFingerPrint::SmfMusicFingerPrint( const SmfMusicFingerPrint &aOther )
 SmfMusicFingerPrint& SmfMusicFingerPrint::operator=( const SmfMusicFingerPrint &aOther )
 	{
 	d->m_fingerPrintData = aOther.d->m_fingerPrintData;
+	d->m_id = aOther.d->m_id;
 	return *this;
 	}
 
@@ -65,12 +66,30 @@ QByteArray SmfMusicFingerPrint::musicFingerPrint ( ) const
 	}
 
 /**
+ * Method to get the service specific id of this fingerprint data
+ * @return The ID value 
+ */
+QString SmfMusicFingerPrint::id( ) const
+	{
+	return d->m_id;
+	}	
+
+/**
  * Method to set the music finger print data
  * @param aFp The music finger print data
  */
 void SmfMusicFingerPrint::setMusicFingerPrint ( const QByteArray &aFp)
 	{
 	d->m_fingerPrintData = aFp;
+	}
+
+/**
+ * Method to set the service specific id of this fingerprint data
+ * @param aId The ID value 
+ */
+void SmfMusicFingerPrint::setId( const QString &aId )
+	{
+	d->m_id = aId;
 	}
 
 
@@ -87,6 +106,9 @@ void SmfMusicFingerPrint::setMusicFingerPrint ( const QByteArray &aFp)
 	// Serialize d->m_fingerPrintData
 	aDataStream<<aMFP.d->m_fingerPrintData;
 	
+	// Serialize d->m_id
+	aDataStream<<aMFP.d->m_id;
+	
 	return aDataStream;
 	}
 
@@ -102,6 +124,9 @@ void SmfMusicFingerPrint::setMusicFingerPrint ( const QByteArray &aFp)
 	{
 	// Deserialize d->m_fingerPrintData
 	aDataStream>>aMFP.d->m_fingerPrintData;
+	
+	// Deserialize d->m_id
+	aDataStream>>aMFP.d->m_id;
 	
 	return aDataStream;
 	}

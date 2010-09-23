@@ -46,9 +46,10 @@ public:
 	/**
 	 * Method to get the list of self activities, e.g. shown in own wall
 	 * @param aRequest [out] The request data that plugin generates (to be sent to network)
-	 * @param aPageNum[in] The page to be extracted
-	 * @param aItemsPerPage[in] Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError selfActivities( SmfPluginRequestData &aRequest,
 			const int aPageNum = SMF_FIRST_PAGE, 
@@ -58,9 +59,10 @@ public:
 	 * Method to get the list of activities for other, e.g. shown in a friends wall
 	 * @param aRequest [out] The request data plugin generated (to be sent to network)
 	 * @param aContact [in] The contact containing the URI, name or id of the user 
-	 * @param aPageNum[in] The page to be extracted
-	 * @param aItemsPerPage[in] Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @param aPageNum [in] The page to be extracted
+	 * @param aItemsPerPage [in] Number of items per page
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError friendsActivities( SmfPluginRequestData &aRequest,
 			const SmfContact &aContact,			
@@ -71,9 +73,10 @@ public:
 	 * Method to get list of self activities filtered by activity type, e.g. only photo updates in own wall
 	 * @param aRequest [out] The request data plugin generated (to be sent to network)
 	 * @param aFilters [in] The list of activity types to be included in result
-	 * @param aPageNum[in] The page to be extracted
+	 * @param aPageNum [in] The page to be extracted
 	 * @param aItemsPerPage[in] Number of items per page
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError filtered( SmfPluginRequestData &aRequest,
 			QList<SmfActivityObjectType> &aFilters,
@@ -83,11 +86,12 @@ public:
 	/**
 	 * Customised method for SmfActivityFetcherPlugin interface
 	 * @param aRequest [out] The request data to be sent to network
-	 * @param aOperation The operation type (should be known between 
+	 * @param aOperation [in] The operation type (should be known between 
 	 * the client interface and the plugin)
-	 * @param aData The data required to form the request (The type 
+	 * @param aData [in] The data required to form the request (The type 
 	 * of data should be known between client and the plugin)
-	 * @return SmfPluginError Plugin error if any, else SmfPluginErrNone
+	 * @return Appropriate value of the enum SmfPluginError.
+	 * Plugin error if any, else SmfPluginErrNone for success
 	 */
 	virtual SmfPluginError customRequest( SmfPluginRequestData &aRequest, 
 			const int &aOperation, QByteArray *aData ) = 0;

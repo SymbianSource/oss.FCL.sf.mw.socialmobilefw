@@ -92,6 +92,7 @@ enum SmfPluginRetType
 enum SmfRequestTypeID
 	{
 	SmfGetService,
+	SmfCancelRequest,
 	SmfContactGetFriends,
 	SmfContactGetFollowers,
 	SmfContactSearch,
@@ -114,17 +115,18 @@ enum SmfRequestTypeID
 	SmfMusicGetLyrics,
 	SmfMusicGetSubtitle,
 	SmfMusicLyricsCustomRequest,
-	SmfMusicGetEventsOnLoc,
-	SmfMusicGetVenueOnLoc,
-	//SmfMusicGetEventsOnVenue, - removed
-	SmfMusicPostEvents,
-	SmfMusicEventsCustomRequest,
 	SmfMusicGetRecommendations,
-	SmfMusicGetTracks,
+	SmfMusicGetTracksSimilar,
+	SmfMusicGetTracksOfAlbum,
+	SmfMusicGetTracksOfArtist,
 	SmfMusicGetTrackInfo,
 	SmfMusicGetStores,
 	SmfMusicSearchCustomRequest,
 	SmfMusicGetUserInfo,
+	SmfMusicSearchArtist,
+	SmfMusicSearchAlbum,
+	SmfMusicSearchEvent,
+	SmfMusicSearchVenue,
 	SmfMusicSearchUser,
 	SmfMusicPostCurrentPlaying,
 	SmfMusicPostRating,
@@ -146,6 +148,11 @@ enum SmfRequestTypeID
 	SmfActivityFiltered,
 	SmfActivitySelfActivity,
 	SmfActivityCustomRequest,
+	SmfEventsGetEvents,
+	SmfEventsGetVenues,
+	SmfEventsGetEventAttendees,
+	SmfEventsPostEvents,
+	SmfEventsCustomRequest,
 	SmfRelationCreate,//SmfRelationMngr start
 	SmfRelationAssociate,
 	SmfRelationRemove,
@@ -356,5 +363,6 @@ const QString playlistServiceInterface("org.symbian.smf.plugin.music.playlist\0.
 const QString musicEventServiceInterface("org.symbian.smf.plugin.music.events\0.2");
 const QString lyricsServiceInterface("org.symbian.smf.plugin.music.lyrics\0.2");
 const QString activityFetcherInterface("org.symbian.smf.plugin.activity.fetcher\0.2");
+const QString eventFetcherInterface("org.symbian.smf.plugin.events.fetcher\0.2");
 
 #endif /* SMFGLOBAL_H_ */

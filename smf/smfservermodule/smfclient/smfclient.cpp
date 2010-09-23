@@ -26,8 +26,6 @@
 
 SmfClient::SmfClient()
 	{
-	qDebug()<<"Inside SmfClient::SmfClient()";
-	
 	//Create instance of the private wrapper
 	m_private = new SmfClientPrivate(this);
 	m_providerList = NULL;
@@ -51,8 +49,6 @@ QList<SmfProvider>* SmfClient::GetServices(const QString& serviceName)
 		delete m_providerList;
 		m_providerList = NULL;
 		}
-	qDebug()<<"Before m_private->GetServices";
-	
 	//Getting the data synchronously
 	m_providerList = m_private->GetServices(serviceName);
 	qDebug()<<"After m_private->GetServices";

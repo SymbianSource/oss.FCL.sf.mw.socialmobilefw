@@ -19,6 +19,7 @@
 #include <smfmusicrating.h>
 #include <smfcomment.h>
 #include <smfmusicfingerprint.h>
+#include <smfcontact.h>
 
 #include "smfmusic.h"
 #include "smfmusic_p.h"
@@ -40,34 +41,59 @@ SmfMusicService::~SmfMusicService()
 		}
 	}
 
-void SmfMusicService::userinfo()
+SmfError SmfMusicService::userMusicInfo()
 	{
-	m_private->userinfo();
+	return m_private->userMusicInfo();
 	}
 
-void SmfMusicService::searchUser(SmfLocation venue, int pageNum, int perPage)
+SmfError SmfMusicService::searchArtist ( SmfArtists artist, int pageNum, int perPage)
 	{
-	m_private->searchUser(venue,pageNum,perPage);
+	return m_private->searchArtist(artist,pageNum,perPage);
 	}
 
-void SmfMusicService::customRequest(const int& operationId,QByteArray* customData)
+SmfError SmfMusicService::searchAlbum ( SmfAlbum album, int pageNum, int perPage)
 	{
-	m_private->customRequest(operationId, customData);
+	return m_private->searchAlbum(album,pageNum,perPage);
 	}
 
-void SmfMusicService::postCurrentPlaying(SmfTrackInfo track)
+SmfError SmfMusicService::searchEvents ( SmfEvent event, int pageNum, int perPage)
 	{
-	m_private->postCurrentPlaying(track);
+	return m_private->searchEvents(event,pageNum,perPage);
 	}
 
-void SmfMusicService::postRating(SmfTrackInfo track, SmfMusicRating rate)
+SmfError SmfMusicService::searchVenue ( SmfLocation location, int pageNum, int perPage)
 	{
-	m_private->postRating(track,rate);
+	return m_private->searchVenue(location,pageNum,perPage);
 	}
 
-void SmfMusicService::postComments(SmfTrackInfo track, SmfComment comment)
+SmfError SmfMusicService::searchUser(SmfLocation venue, int pageNum, int perPage)
 	{
-	m_private->postComments(track,comment);
+	return m_private->searchUser(venue,pageNum,perPage);
+	}
+
+SmfError SmfMusicService::customRequest(const int& operationId,QByteArray* customData)
+	{
+	return m_private->customRequest(operationId, customData);
+	}
+
+SmfError SmfMusicService::postCurrentPlaying(SmfTrackInfo track)
+	{
+	return m_private->postCurrentPlaying(track);
+	}
+
+SmfError SmfMusicService::postRating(SmfTrackInfo track, SmfMusicRating rate)
+	{
+	return m_private->postRating(track,rate);
+	}
+
+SmfError SmfMusicService::postComments(SmfTrackInfo track, SmfComment comment)
+	{
+	return m_private->postComments(track,comment);
+	}
+
+SmfError SmfMusicService::cancelRequest()
+	{
+	return m_private->cancelRequest();
 	}
 
 SmfProvider* SmfMusicService::getProvider() const
@@ -93,29 +119,44 @@ SmfMusicSearch::~SmfMusicSearch()
 		}
 	}
 
-void SmfMusicSearch::recommendations(SmfTrackInfo track, int pageNum, int perPage)
+SmfError SmfMusicSearch::recommendations(SmfTrackInfo track, int pageNum, int perPage)
 	{
-	m_private->recommendations(track,pageNum,perPage);
+	return m_private->recommendations(track,pageNum,perPage);
 	}
 
-void SmfMusicSearch::tracks(SmfTrackInfo track, int pageNum, int perPage)
+SmfError SmfMusicSearch::tracksSimilar ( SmfTrackInfo track, int pageNum, int perPage)
 	{
-	m_private->tracks(track,pageNum,perPage);
+	return m_private->tracksSimilar(track,pageNum,perPage);
 	}
 
-void SmfMusicSearch::trackInfo(SmfMusicFingerPrint signature, int pageNum, int perPage)
+SmfError SmfMusicSearch::tracksOfAlbum ( SmfAlbum album, int pageNum, int perPage )
 	{
-	m_private->trackInfo(signature,pageNum,perPage);
+	return m_private->tracksOfAlbum(album,pageNum,perPage);
 	}
 
-void SmfMusicSearch::stores(SmfTrackInfo track, int pageNum, int perPage)
+SmfError SmfMusicSearch::tracksOfArtist ( SmfArtists artists, int pageNum, int perPage )
 	{
-	m_private->stores(track,pageNum,perPage);
+	return m_private->tracksOfArtist(artists,pageNum,perPage);
 	}
 
-void SmfMusicSearch::customRequest(const int& operationId,QByteArray* customData)
+SmfError SmfMusicSearch::trackInfo(SmfMusicFingerPrint signature, int pageNum, int perPage)
 	{
-	m_private->customRequest(operationId, customData);
+	return m_private->trackInfo(signature,pageNum,perPage);
+	}
+
+SmfError SmfMusicSearch::stores(SmfTrackInfo track, int pageNum, int perPage)
+	{
+	return m_private->stores(track,pageNum,perPage);
+	}
+
+SmfError SmfMusicSearch::customRequest(const int& operationId,QByteArray* customData)
+	{
+	return m_private->customRequest(operationId, customData);
+	}
+
+SmfError SmfMusicSearch::cancelRequest()
+	{
+	return m_private->cancelRequest();
 	}
 
 SmfProvider* SmfMusicSearch::getProvider() const
@@ -141,29 +182,34 @@ SmfPlaylistService::~SmfPlaylistService()
 		}
 	}
 
-void SmfPlaylistService::playlists(int pageNum, int perPage)
+SmfError SmfPlaylistService::playlists(int pageNum, int perPage)
 	{
-	m_private->playlists(pageNum,perPage);
+	return m_private->playlists(pageNum,perPage);
 	}
 
-void SmfPlaylistService::playlistsOf(SmfMusicProfile *user, int pageNum, int perPage)
+SmfError SmfPlaylistService::playlistsOf(SmfContact *user, int pageNum, int perPage)
 	{
-	m_private->playlistsOf(user,pageNum,perPage);
+	return m_private->playlistsOf(user,pageNum,perPage);
 	}
 
-int SmfPlaylistService::addToPlaylist(SmfPlaylist plst, SmfTrackInfoList *tracks)
+SmfError SmfPlaylistService::addToPlaylist(SmfPlaylist plst, SmfTrackInfoList *tracks)
 	{
 	return m_private->addToPlaylist(plst,tracks);
 	}
 
-int SmfPlaylistService::postCurrentPlayingPlaylist(SmfPlaylist plst)
+SmfError SmfPlaylistService::postCurrentPlayingPlaylist(SmfPlaylist plst)
 	{
 	return m_private->postCurrentPlayingPlaylist(plst);
 	}
 
-void SmfPlaylistService::customRequest(const int& operationId,QByteArray* customData)
+SmfError SmfPlaylistService::customRequest(const int& operationId,QByteArray* customData)
 	{
-	m_private->customRequest(operationId, customData);
+	return m_private->customRequest(operationId, customData);
+	}
+
+SmfError SmfPlaylistService::cancelRequest()
+	{
+	return m_private->cancelRequest();
 	}
 
 SmfProvider* SmfPlaylistService::getProvider() const
@@ -171,49 +217,6 @@ SmfProvider* SmfPlaylistService::getProvider() const
 	return m_baseProvider;
 	}
 //SmfPlaylistService end
-
-
-//SmfMusicEvents start
-SmfMusicEvents::SmfMusicEvents(SmfProvider *baseProvider)
-		:m_baseProvider(baseProvider)
-	{
-	m_private = new SmfMusicEventsPrivate(this);
-	}
-
-SmfMusicEvents::~SmfMusicEvents()
-	{
-	if(m_private)
-		{
-		delete m_private;
-		m_private = NULL;
-		}
-	}
-
-void SmfMusicEvents::events(SmfLocation venue, int pageNum, int perPage)
-	{
-	m_private->events(venue,pageNum,perPage);
-	}
-
-void SmfMusicEvents::venues(SmfLocation location, int pageNum, int perPage)
-	{
-	m_private->venues(location,pageNum,perPage);
-	}
-
-void SmfMusicEvents::postEvents(SmfEventList events)
-	{
-	m_private->postEvents(events);
-	}
-
-void SmfMusicEvents::customRequest(const int& operationId,QByteArray* customData)
-	{
-	m_private->customRequest(operationId, customData);
-	}
-
-SmfProvider* SmfMusicEvents::getProvider() const
-	{
-	return m_baseProvider;
-	}
-//SmfMusicEvents end
 
 
 //SmfLyricsService start
@@ -232,19 +235,24 @@ SmfLyricsService::~SmfLyricsService()
 		}
 	}
 
-void SmfLyricsService::lyrics(SmfTrackInfo track, int pageNum, int perPage)
+SmfError SmfLyricsService::lyrics(SmfTrackInfo track, int pageNum, int perPage)
 	{
-	m_private->lyrics(track,pageNum,perPage);
+	return m_private->lyrics(track,pageNum,perPage);
 	}
 
-void SmfLyricsService::subtitles(SmfTrackInfo track, SmfSubtitleSearchFilter filter, int pageNum, int perPage)
+SmfError SmfLyricsService::subtitles(SmfTrackInfo track, SmfSubtitleSearchFilter filter, int pageNum, int perPage)
 	{
-	m_private->subtitles(track,filter,pageNum,perPage);
+	return m_private->subtitles(track,filter,pageNum,perPage);
 	}
 
-void SmfLyricsService::customRequest(const int& operationId,QByteArray* customData)
+SmfError SmfLyricsService::customRequest(const int& operationId,QByteArray* customData)
 	{
-	m_private->customRequest(operationId, customData);
+	return m_private->customRequest(operationId, customData);
+	}
+
+SmfError SmfLyricsService::cancelRequest()
+	{
+	return m_private->cancelRequest();
 	}
 
 SmfProvider* SmfLyricsService::getProvider() const

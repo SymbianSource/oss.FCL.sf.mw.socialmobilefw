@@ -13,7 +13,7 @@
  * Manasij Roy, Nalina Hariharan
  * 
  * Description:
- * The SmfAlbum class represents a music album
+ * The SmfAlbum class represents an album
  *
  */
 #ifndef SMFALBUM_H_
@@ -22,11 +22,22 @@
 #include <QImage>
 #include <qdatastream.h>
 #include <QSharedData>
-#include <smfclientglobal.h>
 #include <QMetaType>
+#include <smfclientglobal.h>
 
 class SmfAlbumPrivate;
 class SmfArtists;
+class SmfLocation;
+
+
+// Enums
+enum SmfAlbumMediaType
+	{
+	SmfAlbumUnspecified,
+	SmfAlbumMusic,
+	SmfAlbumVideo,
+	SmfAlbumMixed
+	};
 
 /**
  * @ingroup smf_common_group
@@ -65,10 +76,10 @@ public:
 	QString name( ) const;
 	
 	/**
-	 * Method to get the album's image
-	 * @return The album's image
+	 * Method to get the album's image url if any
+	 * @return The album's image url if any
 	 */
-	QImage image( ) const;
+	QUrl imageUrl( ) const;
 	
 	/**
 	 * Method to get the artist names
@@ -77,10 +88,35 @@ public:
 	SmfArtists artists( ) const;
 	
 	/**
-	 * Method to get the id of the album
+	 * Method to get the location of this album
+	 * @return The location of this album
+	 */
+	SmfLocation location( ) const;
+	
+	/**
+	 * Method to get the number of items in this album
+	 * @return The number of items in this album
+	 */
+	int itemsCount( ) const;
+
+	/**
+	 * Method to get the type of this album
+	 * @return The type of this album
+	 */
+	SmfAlbumMediaType type( ) const;
+	
+	/**
+	 * Method to get the id of the album, id is unique to service provider
 	 * @return The ID value 
 	 */
 	QString id( ) const;
+	
+	/**
+	 * Method to get the secondary id of the album, e.g. musicbrainz id of the album for a music album
+	 * @return The ID value 
+	 */
+	QString secondaryId( ) const;
+	
 	
 	/**
 	 * Method to set the album name
@@ -89,10 +125,10 @@ public:
 	void setName( const QString &aName );
 	
 	/**
-	 * Method to set the album's image
-	 * @param aImage The album's image
+	 * Method to set the album's image url
+	 * @param aUrl The album's image url
 	 */
-	void setImage( const QImage &aImage );
+	void setImageUrl( const QUrl &aUrl );
 	
 	/**
 	 * Method to set the artist names
@@ -101,10 +137,35 @@ public:
 	void setArtists( const SmfArtists &aArtists );
 	
 	/**
+	 * Method to set the location of this album
+	 * @param aLoc The location of the album
+	 */
+	void setLocation(const SmfLocation &aLoc );
+	
+	/**
+	 * Method to set the number of items in this album
+	 * @param aCount the number of items in this album
+	 */
+	void setItemsCount( const int aCount );
+
+	/**
+	 * Method to set the type of this album
+	 * @param aType the type of this album
+	 */
+	void setType(SmfAlbumMediaType aType);
+	
+	/**
 	 * Method to set the id of the album
 	 * @param aId The ID value 
 	 */
 	void setId( const QString &aId );
+	
+	/**
+	 * Method to set the secondary id of the album, e.g. musicbrainz id of the album for a music album
+	 * @param aSecondaryID the secondaryID of this album 
+	 */
+	void setSecondaryId( const QString &aSecondaryID );
+	
 	
 private:
 	QSharedDataPointer<SmfAlbumPrivate> d;
@@ -137,6 +198,8 @@ SMFCOMMON_EXPORT QDataStream &operator<<( QDataStream &aDataStream,
  */
 SMFCOMMON_EXPORT QDataStream &operator>>( QDataStream &aDataStream, 
 		SmfAlbum &aAlbum);
+
+typedef QList<SmfAlbum> SmfAlbumList;
 
 // Make the class SmfAlbum known to QMetaType, so that as to register it.
 Q_DECLARE_METATYPE(SmfAlbum)
