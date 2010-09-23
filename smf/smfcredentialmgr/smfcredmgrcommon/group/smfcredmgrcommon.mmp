@@ -10,6 +10,7 @@
 TARGET		  smfcredmgrcommon.lib
 TARGETTYPE	  lib
 UID			 0
+EPOCALLOWDLLDATA
 
 USERINCLUDE	 ..\inc
 
@@ -33,16 +34,6 @@ SYSTEMINCLUDE		/epoc32/include/domain/middleware
 SYSTEMINCLUDE		/epoc32/include/domain/middleware/loc
 */
 SYSTEMINCLUDE		/epoc32/include/platform
-
-LIBRARY		 estor.lib
-LIBRARY		libstdcpp.lib
-LIBRARY		QtGui.lib
-LIBRARY		QtNetwork.lib
-LIBRARY		QtCore.lib
-LIBRARY		libc.lib
-LIBRARY		libm.lib
-LIBRARY		libdl.lib
-STATICLIBRARY	qtmain.lib
 
 CAPABILITY		None
 

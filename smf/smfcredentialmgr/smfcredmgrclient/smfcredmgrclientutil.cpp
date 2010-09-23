@@ -14,7 +14,7 @@
  *  in Credential Manager.
  */
 
-#include <QDebug>
+
 #include "smfcredmgrclientutil.h"
 
 namespace smfcredmgrclientutil

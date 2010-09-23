@@ -25,7 +25,8 @@
 
 CSmfCredMgrClientSymbian::CSmfCredMgrClientSymbian(
 		SmfCredMgrClient* aPublicImpl) :
-	iPublicImpl(aPublicImpl), CActive(EPriorityStandard)
+		CActive(EPriorityStandard),
+		iPublicImpl(aPublicImpl) 
 	{
 
 	}
@@ -122,6 +123,8 @@ TBool CSmfCredMgrClientSymbian::AuthDataSetL(QString RegToken,
 	//return EFalse if count is 0
 	if (fetchAuthTokenSetParams->iAuthTokenArray.Count() == 0)
 		{
+		CleanupStack::PopAndDestroy(fetchAuthTokenSetParams);
+		RDebug::Printf("-In AuthDataSetL()");
 		return EFalse;
 		}
 

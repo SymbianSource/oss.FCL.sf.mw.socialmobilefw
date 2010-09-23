@@ -36,9 +36,10 @@ class SmfCredMgrClientStubSession;
 #endif
 
 /**
+ * @ingroup smf_credmgr_group
  * Qt wrapper class for for exporting APIs of Credential Manager server
  */
-class SmfCredMgrClient : public QObject
+class SmfCredMgrClient_EXPORT SmfCredMgrClient : public QObject
 	{
 	//Q_OBJECT -- todo used when signal and slots implemented
 public:
@@ -46,12 +47,12 @@ public:
 	/**
 	 * Constructor
 	 */
-	SmfCredMgrClient_EXPORT SmfCredMgrClient(QObject* parent = 0);
+	SmfCredMgrClient(QObject* parent = 0);
 
 	/**
 	 * Destructor
 	 */
-	SmfCredMgrClient_EXPORT ~SmfCredMgrClient();
+	~SmfCredMgrClient();
 
 public:
 
@@ -60,8 +61,7 @@ public:
 	 * @param PluginID The ID of the Plugin to be checked
 	 * @return The boolean value-TRUE if authenticated, FALSE if not
 	 */
-	SmfCredMgrClient_EXPORT bool
-	CheckPluginAuthentication(QString PluginID) const;
+	bool CheckPluginAuthentication(QString PluginID) const;
 
 	/**
 	 * API to get the Auth Data set, eg:OAuth_RequestToken; OAuth_AccessToken
@@ -71,40 +71,37 @@ public:
 	 *   so the caller of The API must create space for SmfAuthParams
 	 * @return boolean Value if the reg token is still valid
 	 */
-	SmfCredMgrClient_EXPORT bool AuthDataSet(QString RegToken,
-			QDateTime Validity, SmfAuthParams& AuthDataSet) const;
+	bool AuthDataSet(QString RegToken,QDateTime Validity, SmfAuthParams& AuthDataSet) const;
 
 	/**
 	 * API to get list of URLs which plugin can access
 	 * @param PluginID The ID of the Plugin whose corresponding list of URLs to be retrieved
 	 * @return The URL list
 	 */
-	SmfCredMgrClient_EXPORT QList<QUrl> URLList(QString PluginID) const;
+	QList<QUrl> URLList(QString PluginID) const;
 
 	/**
 	 * API to get the list of authenticated plugins
 	 * @param RegistrationToken The token that validates a list of such plugins.
 	 * @return The list of authenticated plugins
 	 */
-	SmfCredMgrClient_EXPORT QStringList AuthenticatedPluginList(
-			QString RegistrationToken) const;
+	QStringList AuthenticatedPluginList(QString RegistrationToken) const;
 
 	/**
 	 * API to generate NONCE token
 	 * @param Length Lenth of the NONCE tobe generated
 	 * @return The generated NONCE. This is never zero, the minimum length is 12.
 	 */
-	SmfCredMgrClient_EXPORT QString GenerateNONCE(const qint64 Length);
+	QString GenerateNONCE(const qint64 Length);
 
 	/**
 	 * API to update the list of authenticated plugins-add, remove, update to plugins
-	 * @param NewPluginID ID of the new plugin 
+	 * @param NewPluginID ID of the new plugin
 	 * @param Flag flag to enable or disable the plugin
 	 * @param OldPluginID ID of the old plugin to be replaced
 	 * @todo - should return an error code to indicate error while changing the list.
 	 */
-	SmfCredMgrClient_EXPORT void ChangePluginIDList(QString NewPluginID,
-			bool Flag, QString OldPluginID);
+	void ChangePluginIDList(QString NewPluginID,bool Flag, QString OldPluginID);
 	/**
 	 * API to store all data related to an auth app i.e URL list for Plugins, List of Plugins.etc.
 	 * @param Set The auth Key set
@@ -113,10 +110,10 @@ public:
 	 * @param PluginList The plugin list to be set
 	 * @param AuthAppId The Authentication Application Id
 	 * @param Flag flag to enable or disable the plugins
-	 * @return The registration token that completes authentication, its a NULL string if the 
+	 * @return The registration token that completes authentication, its a NULL string if the
 	 *   API fails due to any wrong argument
 	 */
-	SmfCredMgrClient_EXPORT QString StoreAuthData(SmfAuthParams Set,
+	QString StoreAuthData(SmfAuthParams Set,
 			QDateTime Validity, QList<QUrl> URLList, QStringList PluginList,
 			QString AuthAppId, bool Flag);
 
@@ -127,7 +124,7 @@ public:
 	 * @param Validity time by which the key set will expire
 	 * @return The Label of key pair
 	 */
-	SmfCredMgrClient_EXPORT QString StoreRSAKeys(const QString KeyLabel,
+	QString StoreRSAKeys(const QString KeyLabel,
 			const QString Keydata, const QDateTime Validity);
 
 	/**
@@ -139,15 +136,15 @@ public:
 	 * @param Signature The signed message is an output argument
 	 * @param AlgorithmUsed The algorithm used for signing
 	 * return Smf defined errorcode
-	 * @todo - RSA Signing is falgged-put for time being. 
+	 * @todo - RSA Signing is falgged-put for time being.
 	 */
-	SmfCredMgrClient_EXPORT SMFCredMgrErrorCode SignMessage(QString Message,
+	SMFCredMgrErrorCode SignMessage(QString Message,
 			QString Key, QString& Signature, SmfSignatureMethod AlgorithmUsed);
 	/**
-	 * API To delete the RSA Key from the Key Store 
+	 * API To delete the RSA Key from the Key Store
 	 * @param KeyLabel The Label of key pair. This is the value returned while StoreRSAKeys().
 	 */
-	SmfCredMgrClient_EXPORT void DeleteRSAKey(QString KeyLabel);
+	void DeleteRSAKey(QString KeyLabel);
 
 private:
 	/**
@@ -155,7 +152,7 @@ private:
 	 */
 #ifdef Q_OS_SYMBIAN
 	CSmfCredMgrClientSymbian* m_SmfClientPrivate;
-	friend class CSmfCredMgrClientSymbian;
+	//friend class CSmfCredMgrClientSymbian;
 #endif
 
 	};

@@ -17,6 +17,7 @@
 #ifndef SMFQTSYMBIANCONVERSIONUTILS_H_
 #define SMFQTSYMBIANCONVERSIONUTILS_H_
 
+#include <QObject>
 #include <QUrl>
 #include <QDateTime>
 #include <private/qcore_symbian_p.h>
@@ -25,6 +26,9 @@
 #include <QStringList>
 #include <qbytearray.h>
 #include <qlist.h>
+#include <QDebug>
+
+
 
 #ifdef Q_OS_SYMBIAN
 #include <e32base.h>

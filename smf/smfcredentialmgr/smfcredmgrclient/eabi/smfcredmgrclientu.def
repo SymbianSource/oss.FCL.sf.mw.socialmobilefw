@@ -15,11 +15,5 @@ EXPORTS
 	_ZNK16SmfCredMgrClient25CheckPluginAuthenticationE7QString @ 14 NONAME
 	_ZNK16SmfCredMgrClient7URLListE7QString @ 15 NONAME
 	_ZTI16SmfCredMgrClient @ 16 NONAME
-	_ZTI18CSmfSignParameters @ 17 NONAME
-	_ZTI20CSmfRsaKeyParameters @ 18 NONAME
-	_ZTI24CSmfCredMgrClientSymbian @ 19 NONAME
-	_ZTV16SmfCredMgrClient @ 20 NONAME
-	_ZTV18CSmfSignParameters @ 21 NONAME
-	_ZTV20CSmfRsaKeyParameters @ 22 NONAME
-	_ZTV24CSmfCredMgrClientSymbian @ 23 NONAME
+	_ZTV16SmfCredMgrClient @ 17 NONAME
 

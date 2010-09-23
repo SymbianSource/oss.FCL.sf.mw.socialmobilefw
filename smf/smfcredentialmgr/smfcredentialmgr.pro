@@ -10,6 +10,8 @@
 ######################################################################
 
 TEMPLATE = subdirs
-SUBDIRS  = smfcredmgrcommon smfcredmgrclient smfcredmgrserver
+SUBDIRS  = smfcredmgrcommon \
+		   smfcredmgrclient \
+		   smfcredmgrserver
 CONFIG += ordered
 

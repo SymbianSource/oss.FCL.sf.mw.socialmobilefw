@@ -35,16 +35,14 @@ QString SmfCredMgrClient::StoreAuthData(SmfAuthParams Set, QDateTime Validity,
 		QList<QUrl> URLList, QStringList PluginList, QString AuthAppId,
 		bool Flag)
 	{
+	QString qs = NULL;
 	if (!(Set.isEmpty() || URLList.isEmpty() || PluginList.isEmpty()
 			|| AuthAppId.isEmpty() || Validity.isNull()))
 		{
-		QT_TRAP_THROWING( return (m_SmfClientPrivate->storeAuthDataL(Set, Validity, URLList,
-				PluginList, AuthAppId, Flag)) );
+		QT_TRAP_THROWING(qs  = m_SmfClientPrivate->storeAuthDataL(Set, Validity, URLList,
+					PluginList, AuthAppId, Flag));
 		}
-	else
-		{
-		return NULL;
-		}
+	return qs;
 	}
 
 QStringList SmfCredMgrClient::AuthenticatedPluginList(QString RegistrationToken) const
@@ -89,14 +87,12 @@ void SmfCredMgrClient::ChangePluginIDList(QString NewPluginID, bool Flag,
 
 bool SmfCredMgrClient::CheckPluginAuthentication(QString PluginID) const
 	{
+	bool tb = false;
 	if (!(PluginID.isEmpty()))
 		{
-		QT_TRAP_THROWING ( return (m_SmfClientPrivate->isPluginAuthenticatedL(PluginID)) );
+		QT_TRAP_THROWING (tb = m_SmfClientPrivate->isPluginAuthenticatedL(PluginID));
 		}
-	else
-		{
-		return false;
-		}
+	return tb;
 	}
 
 bool SmfCredMgrClient::AuthDataSet(QString RegToken, QDateTime Validity,
@@ -108,6 +104,8 @@ bool SmfCredMgrClient::AuthDataSet(QString RegToken, QDateTime Validity,
 		QT_TRAP_THROWING ( Flag = m_SmfClientPrivate->AuthDataSetL(RegToken, Validity, AuthTokenSet));
 		if (Flag)
 			return true;
+		else
+			return false;
 		}
 	else
 		{
@@ -119,27 +117,24 @@ bool SmfCredMgrClient::AuthDataSet(QString RegToken, QDateTime Validity,
 QString SmfCredMgrClient::StoreRSAKeys(const QString KeyLabel,
 		const QString keydata, const QDateTime Validity)
 	{
+	QString qs = NULL;
 	if (!(KeyLabel.isEmpty() || keydata.isEmpty()) && Validity.isValid())
 		{
-		QT_TRAP_THROWING ( return (m_SmfClientPrivate->storeRSAKeysL(KeyLabel, keydata, Validity)) );
+		QT_TRAP_THROWING (qs = m_SmfClientPrivate->storeRSAKeysL(KeyLabel, keydata, Validity));
 		}
-	else
-		{
-		return NULL;
-		}
+	return qs;
 	}
+
 SMFCredMgrErrorCode SmfCredMgrClient::SignMessage(QString Message, QString Key,
 		QString& Signature, SmfSignatureMethod AlgorithmUsed)
 	{
+	SMFCredMgrErrorCode ec = SmfErrBadParameter;
 	if (!(Message.isEmpty() || Key.isEmpty()))
 		{
-		QT_TRAP_THROWING ( return (m_SmfClientPrivate->signMessageL(Message, Key, Signature,
-				AlgorithmUsed)) );
+		QT_TRAP_THROWING ( ec = m_SmfClientPrivate->signMessageL(Message, Key, 
+				Signature,AlgorithmUsed));
 		}
-	else
-		{
-		return SmfErrBadParameter;
-		}
+	return ec;
 	}
 
 void SmfCredMgrClient::DeleteRSAKey(QString KeyLabel)

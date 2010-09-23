@@ -377,9 +377,12 @@ void CSmfCredMgrDbUser::readAuthTokensL(const TDesC& aAuthAppId, RArray<
 	TInt paramIndex(KErrNone);
 
 	err = sqlReadStatement.Prepare(iDataBase, KSmfDbReadAuthTokens);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
+	
 	paramIndex = sqlReadStatement.ParameterIndex(_L(":iID"));
 	err = sqlReadStatement.BindText(paramIndex, aAuthAppId);
-
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
+	
 	while ((err = sqlReadStatement.Next()) == KSqlAtRow)
 		{
 		//sometimes sqlStmt.Next returns KSqlAtRow even if no row is present
@@ -424,8 +427,10 @@ void CSmfCredMgrDbUser::readUrlL(const TDesC& aAuthAppId,
 	TInt paramIndex(KErrNone);
 
 	err = sqlReadStatement.Prepare(iDataBase, KSmfDbReadURL);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
 	paramIndex = sqlReadStatement.ParameterIndex(_L(":iID"));
 	err = sqlReadStatement.BindText(paramIndex, aAuthAppId);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
 
 	while ((err = sqlReadStatement.Next()) == KSqlAtRow)
 		{
@@ -459,8 +464,10 @@ void CSmfCredMgrDbUser::readValidity(const TDesC& aAuthAppId, TInt64& aValidity)
 	TInt paramIndex(KErrNone);
 
 	err = sqlReadStatement.Prepare(iDataBase, KSmfDbReadValidity);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
 	paramIndex = sqlReadStatement.ParameterIndex(_L(":iID"));
 	err = sqlReadStatement.BindText(paramIndex, aAuthAppId);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
 
 	while ((err = sqlReadStatement.Next()) == KSqlAtRow)
 		{
@@ -492,8 +499,11 @@ void CSmfCredMgrDbUser::readRegistrationTokenL(const TDesC& aAuthAppId,
 	TInt paramIndex(KErrNone);
 
 	err = sqlReadStatement.Prepare(iDataBase, KSmfDbReadRegistrationToken);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
+	
 	paramIndex = sqlReadStatement.ParameterIndex(_L(":iID"));
 	err = sqlReadStatement.BindText(paramIndex, aAuthAppId);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
 
 	while ((err = sqlReadStatement.Next()) == KSqlAtRow)
 		{
@@ -527,8 +537,11 @@ void CSmfCredMgrDbUser::readAuthAppIdInRegTokenTable(const TDesC& aRegToken,
 	TBuf<KMaxBufSize> tokenBuf(aRegToken);
 	err = sqlReadStatement.Prepare(iDataBase,
 			KSmfDbReadAuthAppIdInRegTokenTable);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
+	
 	paramIndex = sqlReadStatement.ParameterIndex(_L(":iID"));
 	err = sqlReadStatement.BindText(paramIndex, tokenBuf);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
 
 	while ((err = sqlReadStatement.Next()) == KSqlAtRow)
 		{
@@ -564,9 +577,11 @@ void CSmfCredMgrDbUser::readAuthAppIdInPluginIdTable(const TDesC& aPluginID,
 	TInt paramIndex(KErrNone);
 
 	err = sqlReadStatement.Prepare(iDataBase, KSmfDbReadAuthAppIdInPluginTable);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
 
 	paramIndex = sqlReadStatement.ParameterIndex(_L(":iID"));
 	err = sqlReadStatement.BindText(paramIndex, aPluginID);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
 
 	while ((err = sqlReadStatement.Next()) == KSqlAtRow)
 		{
@@ -593,10 +608,12 @@ void CSmfCredMgrDbUser::readFlagInPluginIdTable(const TDesC& aPluginID,
 	TInt paramIndex(KErrNone);
 
 	err = sqlReadStatement.Prepare(iDataBase, KSmfDbReadFlagInPluginTable);
-
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
+	
 	paramIndex = sqlReadStatement.ParameterIndex(_L(":iID"));
 	err = sqlReadStatement.BindText(paramIndex, aPluginID);
-
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
+	
 	while ((err = sqlReadStatement.Next()) == KSqlAtRow)
 		{
 		//sometimes sqlStmt.Next returns KSqlAtRow even if no row is present
@@ -632,16 +649,20 @@ TInt CSmfCredMgrDbUser::updatePlugin(const TDesC& aPluginID,
 	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
 
 	err = sqlStatement.Prepare(db, KUpdatePluginID);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
 
 	paramIndex = sqlStatement.ParameterIndex(_L(":iText"));
 	err = sqlStatement.BindText(paramIndex, newPluginBuf);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
 
 	paramIndex = sqlStatement.ParameterIndex(_L(":iFlag"));
 	err = sqlStatement.BindInt(paramIndex, aFlag);
-
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
+	
 	paramIndex = sqlStatement.ParameterIndex(_L(":iID"));
 	err = sqlStatement.BindText(paramIndex, OldPluginBuf);
-
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
+	
 	err = db.Exec(KBegin);
 	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
 	err = sqlStatement.Exec();
@@ -686,9 +707,11 @@ void CSmfCredMgrDbUser::readPluginIdL(const TDesC& aAuthAppId, RPointerArray<
 	TInt flag;
 
 	err = sqlReadStatement.Prepare(iDataBase, KSmfDbReadPluginID);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
 	paramIndex = sqlReadStatement.ParameterIndex(_L(":iID"));
 	err = sqlReadStatement.BindText(paramIndex, aAuthAppId);
-
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
+	
 	while ((err = sqlReadStatement.Next()) == KSqlAtRow)
 		{
 		//sometimes sqlStmt.Next returns KSqlAtRow even if no row is present

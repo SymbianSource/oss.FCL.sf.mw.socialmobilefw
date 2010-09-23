@@ -22,6 +22,10 @@ HEADERS += smfcredmgrclient.h \
     smfcredmgrclientutil.h
 symbian { 
     TARGET.UID3 = 0xEd21cfd3
+
+    # EPOCALLOWDLLDATA have to set true because Qt macros has initialised global data
+    TARGET.EPOCALLOWDLLDATA=1
+    
     SOURCES += smfcredmgrclient_p.cpp \
         smfcredmgrclientsession.cpp
         
@@ -36,7 +40,9 @@ symbian {
     	UserEnvironment \
     	ReadDeviceData \
     	WriteDeviceData
+  	    	
 }
+
 symbian::LIBS += -leuser \
     -lestor \
     -lefsrv \
