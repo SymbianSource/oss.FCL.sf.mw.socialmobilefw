@@ -72,6 +72,7 @@ void AuthApp::on_pushButton_clicked()
 }
 void AuthApp::sessionDidLogin(QString sessionkey)
 {
+	Q_UNUSED(sessionkey)
 	qDebug()<<"Inside AuthApp::sessionDidLogin()";
     if (iLoginDialog )
     {

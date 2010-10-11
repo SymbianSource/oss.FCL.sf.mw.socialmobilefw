@@ -14,19 +14,19 @@
  */
 /**
  *  @section CredentialMgr_info Implementation Information
- *  Currently there are 9 Apis exposed by the CredMgr Client.
- *
- *  The client is a Dll which will be used by Apps to get the CredMgr services.
- *  The server is a seperate EXE(process).
- *
+ *  Currently there are 9 Apis exposed by the CredMgr Client. 
+ *  
+ *  The client is a Dll which will be used by Apps to get the CredMgr services. 
+ *  The server is a seperate EXE(process). 
+ *  
  *  There is also a static LIB SmfCredMgrCommon which contains data structures that are
- *  common between the server-client.
- *
+ *  common between the server-client. 
+ * 
  *  Currently data is given to server to store in a Database using @ref storeAuthData()
- *  and the other APIs are used to retrieve the data from the server-database
+ *  and the other APIs are used to retrieve the data from the server-database 
  *  using SqLite queries.
- *
- * 	So, generally to store authentication data the flow is like
+ * 
+ * 	So, generally to store authentication data the flow is like 
  * @msc {
  * SmfCredMgrClient, SmfCredMgrClient_p, RSmfCredMgrClientSession, SmfCredMgrServer, SmfCredMgrServerSession, CSmfCredMgrDbUser;
  * SmfCredMgrClient->SmfCredMgrClient_p  [label = "storeAuthData()"];
@@ -39,18 +39,18 @@
  * SmfCredMgrClient<-SmfCredMgrClient_p  [label = "return = Registration Token"];
  * };
  *
- *  The flag associated to each Plugin ID is now taken as a generic flag to entire
- * PluginList during storing in  storeAuthData() API ,i.e if Flag = 1 the
- * entire List of Plugins are enabled.
- *
+ *  The flag associated to each Plugin ID is now taken as a generic flag to entire 
+ * PluginList during storing in  storeAuthData() API ,i.e if Flag = 1 the 
+ * entire List of Plugins are enabled. 
+ * 
  *  The NONCE is generated using rand() library function.
- *
- *  @Todo-  1)The validity check of the authentication data at the server side is an open item yet and is to be implemented.
- *  This will require the signal-slot implementation at the client side to notify authentication expiry, if decided that
- *  credentialmgr will launch authapp.
- *  2)The error handling and  state-machine (if required) are to be implemented.
- *  3) The process id of smfserver needs to be checked inside credmgr to ensure only smfserver reads the keys.
- *
+ *   
+ *  @Todo-  1)The validity check of the authentication data at the server side is an open item yet and is to be implemented. 
+ *  This will require the signal-slot implementation at the client side to notify authentication expiry, if decided that 
+ *  credentialmgr will launch authapp. 
+ *  2)The error handling and  state-machine (if required) are to be implemented. 
+ *  3) The process id of smfserver needs to be checked inside credmgr to ensure only smfserver reads the keys. 
+ *   
  */
 
 #ifndef COMMON_H_
@@ -84,7 +84,7 @@ enum SmfSignatureMethod
 	 * Enum for no algorithm
 	 */
 	ESmfNoSigningMethod = 0,
-
+			
 	/**
 	 *Enum for algorithm RSA-SHA1
 	 */
@@ -94,12 +94,12 @@ enum SmfSignatureMethod
 	 *Enum for algorithm HMAC-SHA1
 	 */
 	ESMFHMACProtocol,
-
+	
 	/**
 	 *Enum for Plain Tezt
 	 */
 	ESMFPlainText,
-
+	
 	/**
 	 *Enum for SHA256
 	 */
@@ -145,21 +145,32 @@ enum TCredentialServerRequestID
 	 * Op code to store RSA keys.
 	 */
 	ESmfStoreRSAKey,
-
+	
 	/**
 	 * Op code to sign message using RSA algo.
 	 */
 	ESmfRSASignMessage,
-
+	
 	/**
 	 * Op code to sign using HAMC-SHA1 algo.
 	 */
 	ESmfHMACSHA1SignMessage,
-
+	
 	/**
 	 * Op code to delete RSA keys.
 	 */
-	ESmfDeleteKeys
+	ESmfDeleteKeys,
+	
+	/**
+	 * Op code to check if a particular service is authenticated
+	 */
+	ESmfCheckServiceAuthorization,
+	
+	/**
+	 * Op code to delete the OAuth key set i.e SmfAuthParams
+	 */
+	EDeleteAuthData
+	
 	};
 
 #endif /* COMMON_H_ */

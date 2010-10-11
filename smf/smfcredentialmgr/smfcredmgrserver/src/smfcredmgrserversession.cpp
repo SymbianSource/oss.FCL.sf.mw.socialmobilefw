@@ -321,6 +321,73 @@ void CSmfCredMgrServerSession::ServiceL(const RMessage2& aMessage)
 			aMessage.Complete(err);
 			}
 			break;
+
+		case ESmfCheckServiceAuthorization:
+			{
+			//create buffer to read
+			HBufC* authAppId = HBufC::NewLC(aMessage.GetDesLength(0));
+			TPtr authAppIdPtr(authAppId->Des());
+			aMessage.ReadL(0, authAppIdPtr);
+
+			TBool isAuthenticated = EFalse;
+			iDbUser->checkServiceAuthenticationL(*authAppId, isAuthenticated);
+
+			HBufC8* isAuthenticatedBuf8 = HBufC8::NewLC(4);
+			TPtr8 isAuthenticatedBufPtr8(isAuthenticatedBuf8->Des());
+			isAuthenticatedBufPtr8.AppendNum(isAuthenticated);
+
+			TInt err = aMessage.Write(1, isAuthenticatedBufPtr8);
+
+			CleanupStack::PopAndDestroy(isAuthenticatedBuf8);
+			CleanupStack::PopAndDestroy(authAppId);
+			
+			aMessage.Complete(err);
+			}
+			break;
+
+		case EDeleteAuthData:
+			{
+			//create buffer to read the received data
+			RBuf8 dataBuf;
+			CleanupClosePushL(dataBuf);
+			dataBuf.CreateL(aMessage.GetDesLength(0));
+			aMessage.ReadL(0, dataBuf);
+			CSmfFetchAuthTokenSet* deleteAuthTokenParams =
+					new (ELeave) CSmfFetchAuthTokenSet;
+
+			CleanupStack::PushL(deleteAuthTokenParams);
+			deleteAuthTokenParams->InternalizeL(dataBuf);
+						
+			//create buffer to read
+			HBufC* authAppId = HBufC::NewLC(aMessage.GetDesLength(1));
+			TPtr authAppIdPtr(authAppId->Des());
+			aMessage.ReadL(1, authAppIdPtr);
+
+			TBool deleted = EFalse;
+			
+			TBuf<KMaxBufSize> authAppIDBuf;
+			iDbUser->readAuthAppIdInRegTokenTable(deleteAuthTokenParams->iRegistrationToken->Des(),
+					authAppIDBuf);
+			
+			if(0 == authAppIdPtr.Compare(authAppIDBuf))
+				{
+				deleted = deleteAuthAppInfoL(authAppIdPtr);
+				}
+					
+			HBufC8* deletedBuf8 = HBufC8::NewLC(4);
+			TPtr8 deletedBufPtr8(deletedBuf8->Des());
+			deletedBufPtr8.AppendNum(deleted);
+
+			TInt err = aMessage.Write(2, deletedBufPtr8);
+			
+			CleanupStack::PopAndDestroy(deletedBuf8);
+			CleanupStack::PopAndDestroy(authAppId);
+			CleanupStack::PopAndDestroy(deleteAuthTokenParams);
+			CleanupStack::PopAndDestroy(&dataBuf);
+			
+			aMessage.Complete(err);
+			}
+			break;
 			
 		case ESmfHMACSHA1SignMessage:
 		case ESmfRSASignMessage:
@@ -330,6 +397,7 @@ void CSmfCredMgrServerSession::ServiceL(const RMessage2& aMessage)
 			iKeyStore->HandleMessageL(aMessage);
 			}
 			break;
+			
 		default:
 			//todo -panic client
 			break;
@@ -405,4 +473,15 @@ void CSmfCredMgrServerSession::getTokenArrayL(CSmfFetchAuthTokenSet* aParams)
 	iDbUser->readAuthAppIdInRegTokenTable(aParams->iRegistrationToken->Des(),
 			authAppIDBuf);
 	iDbUser->readAuthTokensL(authAppIDBuf, aParams->iAuthTokenArray);
+	}
+
+bool CSmfCredMgrServerSession::deleteAuthAppInfoL( const TDesC& aAuthAppId )
+	{
+	bool deleted = EFalse;
+	deleted = iDbUser->deleteAuthDataSetL(aAuthAppId);
+	deleted = iDbUser->deletePluginListL(aAuthAppId);
+	deleted = iDbUser->deleteRegTokenValidityL(aAuthAppId);
+	deleted = iDbUser->deleteURLListL(aAuthAppId);
+	
+	return deleted;
 	}

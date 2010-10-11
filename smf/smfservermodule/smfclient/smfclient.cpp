@@ -20,6 +20,7 @@
  */
 
 #include <qdebug.h>
+#include <smfcredmgrclient.h>
 
 #include "smfclient.h"
 #include "smfclient_p.h"
@@ -29,6 +30,7 @@ SmfClient::SmfClient()
 	//Create instance of the private wrapper
 	m_private = new SmfClientPrivate(this);
 	m_providerList = NULL;
+	m_authAppProcess = NULL;
 	}
 
 SmfClient::~SmfClient()
@@ -38,24 +40,108 @@ SmfClient::~SmfClient()
 		delete m_private;
 		m_private = NULL;
 		}
+	
+	if(m_authAppProcess)
+		delete m_authAppProcess;
 	}
 
 QList<SmfProvider>* SmfClient::GetServices(const QString& serviceName)
 	{
 	qDebug()<<"Inside SmfClient::GetServices()";
 	
-	if(m_providerList)
+	//if serviceName is not empty
+	if(serviceName.size())
 		{
-		delete m_providerList;
-		m_providerList = NULL;
+		if(m_providerList)
+			{
+			delete m_providerList;
+			m_providerList = NULL;
+			}
+		//Getting the data synchronously
+		m_providerList = m_private->GetServices(serviceName);
+		qDebug()<<"After m_private->GetServices";
+		
+		return m_providerList;
 		}
-	//Getting the data synchronously
-	m_providerList = m_private->GetServices(serviceName);
-	qDebug()<<"After m_private->GetServices";
-	
-	return m_providerList;
+	else
+		return NULL;
 	}
 
+SMFProviderAuthorizationStatus SmfClient::checkAuthorization(const SmfProvider& provider)
+	{
+	SMFProviderAuthorizationStatus status = SMFProviderAuthStatusUnknown;
+	if(!provider.authenticationAppId().isEmpty())
+		{
+		SmfCredMgrClient csmClient;
+		QString authAppId = provider.authenticationAppId();
+		if(csmClient.CheckServiceAuthorization(authAppId))
+			status = SMFProviderAuthStatusAuthorised;
+		else
+			status = SMFProviderAuthStatusUnauthorised;
+		}
+	return status;
+	}
+
+SmfError SmfClient::loginToService(SmfProvider* provider)
+	{
+	if(!m_authAppProcess)
+		m_authAppProcess = new QProcess();
+	
+	connect(m_authAppProcess, SIGNAL(started()), this, SLOT(started()));
+	connect(m_authAppProcess, SIGNAL(stateChanged(QProcess::ProcessState)),
+					 this, SLOT(stateChanged(QProcess::ProcessState)));
+	connect(m_authAppProcess, SIGNAL(error ( QProcess::ProcessError)),
+					 this, SLOT(error ( QProcess::ProcessError)));
+	
+	connect(m_authAppProcess, SIGNAL(finished(int, QProcess::ExitStatus)),
+					 this, SLOT(finished(int, QProcess::ExitStatus)));
+
+	m_authAppProcess->start(provider->authenticationAppName());
+	m_authAppProcess->waitForFinished(-1);
+	return SmfNoError;
+	}
+
+
+SmfError SmfClient::logoutOfService(SmfProvider* provider)
+	{
+	if(!m_authAppProcess)
+		m_authAppProcess = new QProcess();
+	
+	connect(m_authAppProcess, SIGNAL(started()), this, SLOT(started()));
+	connect(m_authAppProcess, SIGNAL(stateChanged(QProcess::ProcessState)),
+					 this, SLOT(stateChanged(QProcess::ProcessState)));
+	connect(m_authAppProcess, SIGNAL(error ( QProcess::ProcessError)),
+					 this, SLOT(error ( QProcess::ProcessError)));
+	
+	connect(m_authAppProcess, SIGNAL(finished(int, QProcess::ExitStatus)),
+					 this, SLOT(finished(int, QProcess::ExitStatus)));
+	
+	m_authAppProcess->start(provider->authenticationAppName());
+	m_authAppProcess->waitForFinished(-1);
+	return SmfNoError;
+	}
+
+void SmfClient::started()
+	{
+	qDebug()<<"Inside SmfClient::started()";
+	}
+
+void SmfClient::stateChanged(QProcess::ProcessState newState)
+	{
+	qDebug()<<"Inside SmfClient::stateChanged(), state = "<<newState;
+	}
+
+void SmfClient::error(QProcess::ProcessError error)
+	{
+	qDebug()<<"Inside SmfClient::error(), error = "<<error;
+	}
+
+void SmfClient::finished(int exitCode, QProcess::ExitStatus exitStatus)
+	{
+	qDebug()<<"Inside SmfClient::finished()";
+	qDebug()<<"exitcode = "<<exitCode;
+	qDebug()<<"exitStatus = "<<exitStatus;
+	}
 
 /**
 * This method returns the error message for the mentioned argument error code
@@ -333,7 +419,20 @@ QString SmfClient::errorString ( const SmfError &aErrorCode ) const
 			str.append("Smf Error: Invalid relation");
 			break;
 			
-		case SmfUnknownError:							//66
+		case SmfInvalidGuid:							//66
+			str.append("Smf Error: Invalid Guid");
+			break;
+		case SmfInvalidContactUrl:						//67
+			str.append("Smf Error: Invalid ContactUrl");		
+			break;
+		case SmfInvalidLocalId:							//68
+			str.append("Smf Error: Invalid LocalId");
+			break;
+		case SmfContactExists:							//69
+			str.append("Smf Error: Contact Already Exists");
+			break;
+			
+		case SmfUnknownError:							//70
 		default:
 			str.append("Smf Error: Unknown Error");
 		}

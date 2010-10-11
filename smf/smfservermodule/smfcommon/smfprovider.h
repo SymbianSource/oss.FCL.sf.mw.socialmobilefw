@@ -81,6 +81,19 @@ public:
 	QUrl applicationUrl() const;
 	
 	/**
+	 * Method to get the ID of the authentication application 
+	 * for this service
+	 * @return The ID (UID3) of the authentication application 
+	 */
+	QString authenticationAppId( ) const;
+	
+	/**
+	 * Method to get the name of the authentication process
+	 * @return The name of the authentication process 
+	 */
+	QString authenticationAppName( ) const;
+	
+	/**
 	 * List of interfaces that this provider support
 	 * @return List of supported interface names
 	 */
@@ -124,6 +137,18 @@ public:
 	void setApplicationUrl(QUrl& url) ; 
 	
 	/**
+	 * Sets the ID of the authentication application for this service
+	 * @param id The ID (UID3) of the authentication application 
+	 */
+	void setAuthenticationAppId( const QString& id );
+	
+	/**
+	 * Sets the Name of the authentication application process
+	 * @param name The name of the authentication process 
+	 */
+	void setAuthenticationAppName( const QString& name );
+	
+	/**
 	 * Sets list of interfaces that this provider supports
 	 * @param types List of supported interface names
 	 */
@@ -144,6 +169,8 @@ private:
 	QUrl m_appUrl;
 	QStringList m_serviceTypes;
 	QStringList m_supportedLanguages;
+	QString m_authAppId;
+	QString m_authAppName;
 	
 	friend QDataStream &operator<<(QDataStream &, const SmfProvider&);
 	friend QDataStream &operator>>(QDataStream &, SmfProvider&);

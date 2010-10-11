@@ -25,8 +25,7 @@
 
 CSmfCredMgrClientSymbian::CSmfCredMgrClientSymbian(
 		SmfCredMgrClient* aPublicImpl) :
-		CActive(EPriorityStandard),
-		iPublicImpl(aPublicImpl) 
+	CActive(EPriorityStandard), iPublicImpl(aPublicImpl)
 	{
 
 	}
@@ -542,4 +541,91 @@ void CSmfCredMgrClientSymbian::deleteRSAKey(QString KeyLabel)
 	args.Set(0, &bufPtr);
 
 	iSession.RequestService(ESmfDeleteKeys, args);
+	}
+
+TBool CSmfCredMgrClientSymbian::CheckServiceAuthorizationL( const QString& AuthAppId )
+	{
+	RDebug::Printf("+In CSmfCredMgrClientSymbian::CheckServiceAuthorizationL()");
+	
+	//create buffer to serialize data
+	HBufC* authAppIdDes = qt_QString2HBufC(AuthAppId);
+	CleanupStack::PushL(authAppIdDes);
+	
+	TPtr authAppIdPtr = authAppIdDes->Des();
+	TIpcArgs args;
+	args.Set(0, &authAppIdPtr);
+	
+	// to get the data from server, we create a space.
+	HBufC8* retBuf = HBufC8::NewL(10);
+	CleanupStack::PushL(retBuf);
+
+	TPtr8 outputptr = retBuf->Des();
+	args.Set(1, &outputptr);
+
+	iSession.RequestService(ESmfCheckServiceAuthorization, args);
+	
+	TLex8 iLex = TLex8(outputptr);
+	TBool value = EFalse;
+	iLex.Val(value);
+
+	CleanupStack::PopAndDestroy(retBuf);
+	CleanupStack::PopAndDestroy(authAppIdDes);
+
+	return value;	
+	}
+
+TBool CSmfCredMgrClientSymbian::DeleteAuthDataL( const QString& AuthAppId, const QString& RegToken, 
+		const QDateTime& Validity )
+	{
+	RDebug::Printf("+In DeleteAuthDataL()");
+	CSmfFetchAuthTokenSet* deleteAuthTokenParams =
+			new (ELeave) CSmfFetchAuthTokenSet;
+
+	CleanupStack::PushL(deleteAuthTokenParams);
+
+	//fill the input params
+	deleteAuthTokenParams->iRegistrationToken = qt_QString2HBufC(RegToken);
+	deleteAuthTokenParams->iValidity = Validity.toTime_t();
+
+	//create buffer to serialize data
+	CBufFlat* buf = CBufFlat::NewL(KMaxBufSize);
+	CleanupStack::PushL(buf);
+	RBufWriteStream stream(*buf);
+	CleanupClosePushL(stream);
+
+	deleteAuthTokenParams->ExternalizeL(stream);
+	stream.CommitL();
+
+	TPtr8 bufPtr = buf->Ptr(0);
+
+	TIpcArgs args;
+	args.Set(0, &bufPtr);
+	
+	//create buffer to serialize data
+	HBufC* authAppIdDes = qt_QString2HBufC(AuthAppId);
+	CleanupStack::PushL(authAppIdDes);
+	
+	TPtr authAppIdPtr = authAppIdDes->Des();
+	args.Set(1, &authAppIdPtr);
+	
+	// to get the data from server, we create a space.
+	HBufC8* retBuf = HBufC8::NewL(10);
+	CleanupStack::PushL(retBuf);
+
+	TPtr8 outputptr = retBuf->Des();
+	args.Set(2, &outputptr);
+
+	iSession.RequestService(EDeleteAuthData, args);
+	
+	TLex8 iLex = TLex8(outputptr);
+	TBool value = EFalse;
+	iLex.Val(value);
+
+	CleanupStack::PopAndDestroy(retBuf);
+	CleanupStack::PopAndDestroy(authAppIdDes);
+	CleanupStack::PopAndDestroy(&stream);
+	CleanupStack::PopAndDestroy(buf);
+	CleanupStack::PopAndDestroy(deleteAuthTokenParams);
+
+	return value;		
 	}

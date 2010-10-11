@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'progressbar.ui'
 **
-** Created: Wed Sep 22 18:27:56 2010
+** Created: Mon Sep 27 15:44:20 2010
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

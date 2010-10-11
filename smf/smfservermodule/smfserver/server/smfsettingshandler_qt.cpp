@@ -6,7 +6,7 @@
  */
 
 #include "smfsettingshandler_qt.h"
-#include "SettingsConstants.h"
+#include <SettingsConstants.h>
 
 SmfSettingsRepositoryQt::SmfSettingsRepositoryQt(QObject *parent)
     {

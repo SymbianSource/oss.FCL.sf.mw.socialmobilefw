@@ -409,6 +409,8 @@ SmfPluginError FlickrContactFetcherPlugin::groups( SmfPluginRequestData &aReques
 		const int aPageNum , 
 		const int aItemsPerPage  )
 	{
+	Q_UNUSED(aPageNum)
+	Q_UNUSED(aItemsPerPage)
 	qDebug()<<"Inside FlickrContactFetcherPlugin::groups()";
 
 	SmfPluginError error = SmfPluginErrInvalidArguments;
@@ -466,6 +468,7 @@ SmfPluginError FlickrContactFetcherPlugin::searchInGroup( SmfPluginRequestData &
 		const int aPageNum , 
 		const int aItemsPerPage  )
 	{
+	Q_UNUSED(aContact)
 #ifndef TESTINGTHISFUNCTION
 	Q_UNUSED(aRequest)
 	Q_UNUSED(aGroup)
@@ -629,7 +632,7 @@ SmfPluginError FlickrContactFetcherPlugin::responseAvailable(
 	if(SmfTransportOpNoError == aTransportResult)
 		{
 		qDebug()<<"No transport error";
-		
+
 #ifndef TESTINGTHISFUNCTION	
 		if(SmfContactGetFriends == aOperation)
 #else
@@ -931,6 +934,15 @@ QString FlickrProviderBase::authenticationApp( QString &aProgram,
 	}
 
 /**
+ * Method to get the authentication application process name
+ * @return The authentication application process name (eg: "FlickrAuthApp.exe")
+ */
+QString FlickrProviderBase::authenticationAppName( ) const
+	{
+	return m_authAppName;
+	}
+
+/**
  * Method to get the unique registration ID provided by the 
  * Smf for authorised plugins
  * @return The unique registration ID/token provided by the Smf for 
@@ -948,6 +960,7 @@ void FlickrProviderBase::initialize()
 	m_serviceUrl = QUrl(QString("http://api.flickr.com"));
 	m_pluginId = "flickrcontactfetcherplugin.qtplugin";
 	m_authAppId = "0xE1D8C7D7";
+	m_authAppName = "Flickr.exe";
 	m_supportedInterfaces.append("org.symbian.smf.plugin.contact.fetcher/v0.2");
 	QSettings iSettings;
 	m_smfRegToken = iSettings.value("CMFlickrRegToken").toString();

@@ -34,8 +34,6 @@ static const QString kAPIFormat = "XML";
 static const char kUserAgent[] = "FacebookConnect";
 static const QString kStringBoundary = "3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
 
-static const double kTimeoutInterval = 180.0;
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -135,6 +133,7 @@ bool FBRequest::isSpecialMethod() const {
 
 QString FBRequest::urlForMethod (const QString& aMethod) const {
 
+	Q_UNUSED(aMethod)
 	return iSession->apiURL();
 }
 

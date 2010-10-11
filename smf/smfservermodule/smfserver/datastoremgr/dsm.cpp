@@ -16,6 +16,7 @@
 #include <dsm.h>
 #include <QDebug>
 
+
 // Static data initialization
 DataStoreManager* DataStoreManager::dsmInstance = NULL;
 const QString DataStoreManager::dbName = "dsm.db";
@@ -49,6 +50,10 @@ DataStoreManager::~DataStoreManager(){
     db.close();
     state = CLOSED;
     delete dsmInstance;
+    if(iSmsfRelationItem)
+    	delete iSmsfRelationItem;
+    if(iDSMContactPckgItem)
+    	delete iDSMContactPckgItem;
 }
 
 //! \fn getState()
@@ -69,10 +74,12 @@ QString DataStoreManager::getErrorText() const{
     return lastMsg;
 }
 
-SmfRelationId DataStoreManager::create(SmfProvider *aProvider, SmfContact *aContact)
+ SmfError DataStoreManager::create(SmfRelationId &aRelationId,SmfProvider *aProvider, SmfContact *aContact)
 	{
+	SmfError err = SmfNoError;
+	aRelationId.clear();
 	if(NULL == aProvider || NULL == aContact)
-		return QString::number(-1);//SmfUnknownError 
+		return SmfUnknownError;//SmfUnknownError 
 	
 	QString userId, contactUrl, localId, managerUri, presenceState, presenceText, statusText;
 	QDateTime dateTime;
@@ -117,16 +124,22 @@ SmfRelationId DataStoreManager::create(SmfProvider *aProvider, SmfContact *aCont
 	qDebug()<<"Inside Test DSM Create: snsDesc"<<snsDesc;
 	
 	
+	int contactID;
+	err = addContactToTable(contactID,userId, contactUrl, localId, managerUri, snsName, snsDesc, snsUrl, presenceState, presenceText , statusText, timeStampInSeconds);
+	if(SmfNoError == err)
+		{
+		QString cntcId(QString::number(addRelationToTable(contactID)));
+		aRelationId.append(cntcId);
+		}
+		return err;
 	
-	const int contactID = addContactToTable(userId, contactUrl, localId, managerUri, snsName, snsDesc, snsUrl, presenceState, presenceText , statusText, timeStampInSeconds);
-	if(!(contactIfExist(contactID)))
-		return QString::number(-1);
-	return QString::number( addRelationToTable( contactID ) );
+	//return QString::number( addRelationToTable( contactID ) );
 }
 
 SmfError DataStoreManager::associate( 	SmfRelationId aPhoneId,	
 										const SmfContact* aContact, 
 										SmfProvider* aProvider){
+	SmfError err = SmfNoError;
 	if(NULL == aProvider || NULL == aContact)
 			return SmfError(-1);//SmfUnknownError
 	
@@ -165,12 +178,17 @@ SmfError DataStoreManager::associate( 	SmfRelationId aPhoneId,
 	qDebug()<<"Inside Test DSM Associate: snsUrl"<<snsUrl;
 	qDebug()<<"Inside Test DSM Associate: snsDesc"<<snsDesc;
 	
-	const int contactID = addContactToTable(userId, contactUrl, localId, managerUri, snsName, snsDesc, snsUrl, presenceState, presenceText , statusText, timeStampInSeconds);
+	int contactID;
+	err = addContactToTable(contactID,userId, contactUrl, localId, managerUri, snsName, snsDesc, snsUrl, presenceState, presenceText , statusText, timeStampInSeconds);
+	if(SmfNoError == err)
+		{
 	TInt Id = addRelationToTable( contactID,  aPhoneId.toInt()); 
 	if(Id == aPhoneId.toInt())
-		return  SmfNoError ;
+			err = SmfNoError ;
 	else
-		return SmfDbOpeningError;
+			err = SmfDbOpeningError;
+		}
+	return err;
 }
 
 /** remove contact from a relation */
@@ -667,7 +685,8 @@ int DataStoreManager::addContactToTable( 	const QString &aLocalId,
 	
 }
 
-int DataStoreManager::addContactToTable(const QString &aUserId, 
+SmfError DataStoreManager::addContactToTable (int &aContactId,
+									const QString &aUserId, 
 									const QString &aContactUrl,
 									const QString &aLocalId,
 									const QString &aManagerUri,
@@ -679,7 +698,19 @@ int DataStoreManager::addContactToTable(const QString &aUserId,
 									const QString &aStatusText,
 									const Int64 aTimeStamp ){
 	
-	int contactId;
+	SmfError err = SmfNoError;	
+	
+	if(contactIfExist(aUserId,aSnsName))
+		return SmfContactExists;
+	
+	if(aUserId.isEmpty() || aUserId.isNull())
+		return SmfInvalidGuid;
+	
+	if(aContactUrl.isEmpty() || aContactUrl.isNull())
+		return SmfInvalidContactUrl;
+	
+	if(aLocalId.isEmpty() || aLocalId.isNull())
+			return SmfInvalidContactUrl;
 		
 	if(SmfDbOpeningError == openDB())
 		return SmfDbOpeningError;
@@ -715,12 +746,12 @@ int DataStoreManager::addContactToTable(const QString &aUserId,
 		return SmfDbQueryExecutonError; 
 
 	if(qry.next()){
-		contactId = qry.value(0).toInt();
+		aContactId = qry.value(0).toInt();
 	}
 
 	qry.finish();
 	db.close();
-	return contactId;	
+	return err;	
 }
 
 SmfError DataStoreManager::removeContactFromTable(const int aContactId){
@@ -742,19 +773,19 @@ SmfError DataStoreManager::removeContactFromTable(const int aContactId){
 }
 
 
-
-TBool DataStoreManager::contactIfExist( const int aContactId){
+TBool DataStoreManager::contactIfExist( const QString &userId,const QString &snsName){
 	
 	TBool contactExist = EFalse;
 	if(SmfDbOpeningError == openDB())
 		return EFalse;
 
 	QSqlQuery qry;
-	TBool queryPep = qry.prepare("SELECT contactId FROM contact WHERE contactId=:contactId");
+	TBool queryPep;
+	queryPep = qry.prepare("SELECT userId FROM contact WHERE userId=:userId");
 	if(!queryPep)
 		return EFalse;
 		
-	qry.bindValue(":contactId", aContactId);
+	qry.bindValue(":userId", userId);
 
 	if(SmfDbQueryExecutonError == executeQuery(qry))
 		return EFalse; 
@@ -762,10 +793,24 @@ TBool DataStoreManager::contactIfExist( const int aContactId){
 	if( qry.first() )
 		contactExist = ETrue;
 		
+	if(contactExist){
+		queryPep = qry.prepare("SELECT userId FROM contact WHERE snsName=:snsName");
+		if(!queryPep)
+			return EFalse;
+			
+		qry.bindValue(":snsName", snsName);
+
+		if(SmfDbQueryExecutonError == executeQuery(qry))
+			return EFalse; 
+
+		if( qry.first() )
+			contactExist = ETrue;	
+	}
 	qry.finish();
 	db.close();
 
 	return contactExist;
+		
 }
 
 TBool DataStoreManager::relationIfExist( const int aRelationId){

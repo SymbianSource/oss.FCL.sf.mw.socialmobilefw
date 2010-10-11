@@ -46,7 +46,7 @@ SmfRelationMgrPrivate::~SmfRelationMgrPrivate()
 		}
 	}
 
-SmfRelationId SmfRelationMgrPrivate::create( SmfProvider *provider, SmfContact *contact)
+SmfError SmfRelationMgrPrivate::create(SmfRelationId &aRelationId, SmfProvider *provider, SmfContact *contact)
 	{
 	m_dataForDSM.clear();
 	QDataStream writeStream(&m_dataForDSM,QIODevice::WriteOnly);
@@ -75,18 +75,18 @@ SmfRelationId SmfRelationMgrPrivate::create( SmfProvider *provider, SmfContact *
 	
 	m_dataFromDSM.clear();
 	SmfError err = SmfNoError;
-	SmfRelationId relnId;
+	//SmfError relnId;
 	m_dataFromDSM = m_SmfClientPrivate->sendDSMSyncRequest(SmfRelationCreate,m_dataForDSM,err,maxSmfRelationIdSize);
 	if(err == SmfNoError)
 		{
 		QDataStream readStream(&m_dataFromDSM,QIODevice::ReadOnly);
-		readStream>>relnId;
+		readStream>>aRelationId;
 		}
 	else
 		{
 		User::Panic(_L("DSM err = "),err);
 		}
-	return relnId;
+	return err;
 	}
 
 SmfError SmfRelationMgrPrivate::associate( SmfRelationId& relation,

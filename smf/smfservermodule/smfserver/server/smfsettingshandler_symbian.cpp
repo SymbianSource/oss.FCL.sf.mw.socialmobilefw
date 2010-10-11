@@ -38,7 +38,7 @@ CSettingsRepository* CSettingsRepository::NewLC()
     }
 CSettingsRepository::CSettingsRepository()
     {
-
+	iRepository = NULL;
     }
 
 CSettingsRepository::~CSettingsRepository()

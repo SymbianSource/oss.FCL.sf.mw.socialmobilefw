@@ -132,10 +132,10 @@ TInt SmfServerSymbian::findAndServiceclient(TInt requestID,QByteArray* parsedDat
 
 
 SmfServerSymbianSession::SmfServerSymbianSession(SmfServerSymbian* aServer):
-			iServer(aServer),iPtrToBuf(NULL,0) ,
-			iIntfNameSymbian8(NULL,0), iProviderSymbian8(NULL,0),
-			iIntfNameSymbian(NULL,0) ,iXtraDataPtr8(NULL,0),
-			iPtrToDataForClient(NULL,0) ,iPtr8DataForDSM(NULL,0),iPtr8DataFromDSM(NULL,0)  
+			iServer(aServer), iIntfNameSymbian8(NULL,0),
+			iProviderSymbian8(NULL,0), iXtraDataPtr8(NULL,0), 
+			iPtr8DataForDSM(NULL,0), iPtr8DataFromDSM(NULL,0), 
+			iPtrToDataForClient(NULL,0)  
 	{
 	iServer->iSessionCount++;
 	}
@@ -147,6 +147,7 @@ SmfServerSymbianSession::~SmfServerSymbianSession()
 	iServer->iSessionCount--;
 	}
 
+#ifdef Q_FOR_FUTURE 
 void SmfServerSymbianSession::clientAuthorizationFinished(bool success)
 	{
 	qDebug()<<"Inside SmfServerSymbianSession::clientAuthorizationFinished() = "<<success;
@@ -162,6 +163,7 @@ void SmfServerSymbianSession::clientAuthorizationFinished(bool success)
 		HandleClientMessageL(iMessage);
 		}
 	}
+#endif
 
 void SmfServerSymbianSession::resultsAvailable(QByteArray* parsedData,SmfError error)
 	{
@@ -195,10 +197,13 @@ void SmfServerSymbianSession::ServiceL(const RMessage2& aMessage)
 	qDebug()<<"Inside SmfServerSymbianSession::ServiceL() = "<<iMessage.Function();
 	iMessage = aMessage;
 
+
+#ifdef Q_FOR_FUTURE 
 	//construct the client auth id
 	SmfClientAuthID clientAuthID;
 	clientAuthID.pid = aMessage.SecureId();
 	clientAuthID.session = this;
+#endif
 	//TODO:- No client pid checking?No capability? So why symbian client-server?
 	HandleClientMessageL(iMessage);
 	}
@@ -379,6 +384,10 @@ void SmfServerSymbianSession::HandleDSMServiceL(const RMessage2 & aMessage)
 			iPtr8DataFromDSM.Set(iData8FromDSM->Des());
 			iPtr8DataFromDSM.Copy(reinterpret_cast<const TText8*>(qtdataFromDSM.constData()),qtdataFromDSM.length());
 			TInt writeErr = aMessage.Write(1,iPtr8DataFromDSM);
+			iDSMErr.Zero();
+			TInt errInt = dsmErr;
+			iDSMErr.AppendNum(errInt);
+			writeErr = aMessage.Write(2,iDSMErr);
 			}
 		}
 	else

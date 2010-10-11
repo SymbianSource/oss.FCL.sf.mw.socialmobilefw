@@ -1,16 +1,19 @@
 TEMPLATE  = 	subdirs
 SUBDIRS   =	AuthApp \
-		FlickrAuthApp \
+		DemoGUI \
 		fbactivityfetcherplugin \
 		fbcontactfetcherplugin \
 		fbpostproviderplugin \
+		FlickrAuthApp \
 		flickrcontactfetcherplugin \
 		flickrgalleryplugin \
+		LastFmAuthApp \
+		lastfmmusiceventplugin \
 		lastfmmusicsearchplugin \
 		lastfmmusicserviceplugin \
 		lastfmplaylistserviceplugin \
-		lastfmmusiceventplugin \
+		LinkedInAuthApp \
 		MusicLyricsPlugin \
 		smfclientapp \
-		DemoGUI
+		TwitterAuthApp
 CONFIG += ordered

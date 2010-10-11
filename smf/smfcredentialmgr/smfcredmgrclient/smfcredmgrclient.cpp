@@ -35,30 +35,24 @@ QString SmfCredMgrClient::StoreAuthData(SmfAuthParams Set, QDateTime Validity,
 		QList<QUrl> URLList, QStringList PluginList, QString AuthAppId,
 		bool Flag)
 	{
-	QString qs = NULL;
+	QString regToken;
+	
 	if (!(Set.isEmpty() || URLList.isEmpty() || PluginList.isEmpty()
 			|| AuthAppId.isEmpty() || Validity.isNull()))
 		{
-		QT_TRAP_THROWING(qs  = m_SmfClientPrivate->storeAuthDataL(Set, Validity, URLList,
-					PluginList, AuthAppId, Flag));
+		QT_TRAP_THROWING( regToken = m_SmfClientPrivate->storeAuthDataL(Set, Validity, URLList,
+				PluginList, AuthAppId, Flag) );
 		}
-	return qs;
+	return regToken;
 	}
 
 QStringList SmfCredMgrClient::AuthenticatedPluginList(QString RegistrationToken) const
 	{
 	QStringList List;
-	if (RegistrationToken.isEmpty())
-		{
-		//return the empty list
-		return List;
-		}
-	else
-		{
+	if (!RegistrationToken.isEmpty())
 		QT_TRAP_THROWING( m_SmfClientPrivate->authenticatedPluginListL(RegistrationToken, List));
-		return List;
-		}
-	
+
+	return List;
 	}
 
 QList<QUrl> SmfCredMgrClient::URLList(QString PluginID) const
@@ -87,54 +81,62 @@ void SmfCredMgrClient::ChangePluginIDList(QString NewPluginID, bool Flag,
 
 bool SmfCredMgrClient::CheckPluginAuthentication(QString PluginID) const
 	{
-	bool tb = false;
+	bool result = false;
 	if (!(PluginID.isEmpty()))
 		{
-		QT_TRAP_THROWING (tb = m_SmfClientPrivate->isPluginAuthenticatedL(PluginID));
+		TBool check = EFalse;
+		QT_TRAP_THROWING ( check =  m_SmfClientPrivate->isPluginAuthenticatedL(PluginID) );
+		if(check)
+			result = true;
+		else
+			result = false;
 		}
-	return tb;
+	return result;
 	}
 
 bool SmfCredMgrClient::AuthDataSet(QString RegToken, QDateTime Validity,
 		SmfAuthParams& AuthTokenSet) const
 	{
+	bool datastored = false;
 	if (!(RegToken.isEmpty() || Validity.isNull()))
 		{
 		TBool Flag = EFalse;
 		QT_TRAP_THROWING ( Flag = m_SmfClientPrivate->AuthDataSetL(RegToken, Validity, AuthTokenSet));
 		if (Flag)
-			return true;
+			datastored = true;
 		else
-			return false;
+			datastored = false;
 		}
 	else
 		{
 		AuthTokenSet.clear();
-		return false;
 		}
+	
+	return datastored;
 	}
 
 QString SmfCredMgrClient::StoreRSAKeys(const QString KeyLabel,
 		const QString keydata, const QDateTime Validity)
 	{
-	QString qs = NULL;
+	QString retData;
+	
 	if (!(KeyLabel.isEmpty() || keydata.isEmpty()) && Validity.isValid())
 		{
-		QT_TRAP_THROWING (qs = m_SmfClientPrivate->storeRSAKeysL(KeyLabel, keydata, Validity));
+		QT_TRAP_THROWING ( retData = m_SmfClientPrivate->storeRSAKeysL(KeyLabel, keydata, Validity) );
 		}
-	return qs;
+	return retData;
 	}
 
 SMFCredMgrErrorCode SmfCredMgrClient::SignMessage(QString Message, QString Key,
 		QString& Signature, SmfSignatureMethod AlgorithmUsed)
 	{
-	SMFCredMgrErrorCode ec = SmfErrBadParameter;
+	SMFCredMgrErrorCode errorCode = SmfErrBadParameter;
 	if (!(Message.isEmpty() || Key.isEmpty()))
 		{
-		QT_TRAP_THROWING ( ec = m_SmfClientPrivate->signMessageL(Message, Key, 
-				Signature,AlgorithmUsed));
+		QT_TRAP_THROWING ( errorCode =  m_SmfClientPrivate->signMessageL(Message, Key, Signature,
+				AlgorithmUsed) );
 		}
-	return ec;
+	return errorCode;
 	}
 
 void SmfCredMgrClient::DeleteRSAKey(QString KeyLabel)
@@ -144,3 +146,38 @@ void SmfCredMgrClient::DeleteRSAKey(QString KeyLabel)
 		m_SmfClientPrivate->deleteRSAKey(KeyLabel);
 		}
 	}
+
+bool SmfCredMgrClient::CheckServiceAuthorization( const QString& AuthAppId )
+	{
+	bool isAuthorised = false;
+	if (!AuthAppId.isEmpty())
+		{
+		TBool Flag = EFalse;
+		QT_TRAP_THROWING ( Flag = m_SmfClientPrivate->CheckServiceAuthorizationL(AuthAppId));
+		if (Flag)
+			isAuthorised = true;
+		else
+			isAuthorised = false;
+		}
+	
+	return isAuthorised;
+	}
+
+SMFCredMgrErrorCode SmfCredMgrClient::DeleteAuthData( const QString& AuthAppId,
+		const QString& RegToken, const QDateTime& Validity )
+	{
+	SMFCredMgrErrorCode errorCode = SmfErrBadParameter;
+	
+	if (!(AuthAppId.isEmpty() || RegToken.isEmpty() || Validity.isNull()))
+		{
+		TBool Flag = EFalse;
+		QT_TRAP_THROWING ( Flag = m_SmfClientPrivate->DeleteAuthDataL(AuthAppId, RegToken, Validity));
+		if (Flag)
+			errorCode = SmfErrNone;
+		else
+			errorCode = SmfErrUnAutherised;
+		}
+	
+	return errorCode;
+	}
+

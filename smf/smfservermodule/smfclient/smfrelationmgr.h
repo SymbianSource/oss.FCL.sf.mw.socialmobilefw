@@ -129,13 +129,20 @@ public slots:
 	 * then it would have QtMobility::QContactId properly filled with managerUri and localId.
 	 * These two field would also be stored in SmfRelationMgr (for easily identifying the SmfContacts).
 	 *
-	 * After successful creation, a relationId would be returned. More and more SmfContacts can
-	 * be added to this relation using this RelationId
+	 * @param aRelationID[] To get the relationID after successful creation of contact and Relation Table
+	 * @return SmfError ErrorCode to identify the type of Error
+	 * 
+	 * After successful creation, SmfNoError would be returned. More and more SmfContacts can
+	 * be added to this relation using the RelationId aRelationID
+	 * 
+	 * In case of error, proper error code will be returned
 	 */
-	SmfRelationId create(SmfProvider *provider=NULL, SmfContact *contact=NULL);
+	SmfError create(SmfRelationId &aRelationID,SmfProvider *provider=NULL, SmfContact *contact=NULL);
 
-	/** assign contact to a relation */
-	SmfError associate( SmfRelationId& phoneId,
+	/** assign contact to a relation 
+	 * @param aRelationID The realationId to associate to
+	 */
+	SmfError associate( SmfRelationId& aRelationID,
 						const SmfContact* contact,
 						SmfProvider* provider);
 

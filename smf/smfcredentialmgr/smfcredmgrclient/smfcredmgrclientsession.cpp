@@ -101,10 +101,9 @@ void RSmfCredMgrClientSession::RequestAsyncService(
 	SendReceive(aRequestType, aStatus);
 	}
 
-void RSmfCredMgrClientSession::RequestService(
+TInt RSmfCredMgrClientSession::RequestService(
 		TCredentialServerRequestID aRequestType, const TIpcArgs &aArgs)
 	{
-	TInt err = SendReceive(aRequestType, aArgs);
-
+	return SendReceive(aRequestType, aArgs);
 	}
 

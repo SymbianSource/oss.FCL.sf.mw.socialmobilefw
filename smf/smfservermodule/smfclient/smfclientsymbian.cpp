@@ -45,8 +45,8 @@ CSmfClientSymbian* CSmfClientSymbian::NewLC(smfObserver* aObserver )
 
 CSmfClientSymbian::CSmfClientSymbian(smfObserver* aObserver)
 		: CActive( EPriorityStandard ),
-		iObserver(aObserver),
-		iDataPtr(NULL, 0, 0)
+		  iObserver(aObserver)//,
+		  //iDataPtr(NULL, 0, 0)
 	{
 	CActiveScheduler::Add(this);
 	}
@@ -149,12 +149,12 @@ QByteArray CSmfClientSymbian::sendSyncRequest(QString aInterfaceName,
 
 QByteArray CSmfClientSymbian::sendDSMSyncRequest(SmfRequestTypeID requestType,QByteArray& aSerializedData,SmfError& aErr,TInt maxSize)
 	{
-	Q_UNUSED(aErr)
+	//Q_UNUSED(aErr)
 			
 	qDebug()<<"CSmfClientSymbian::sendDSMSyncRequest for : "<<requestType;
-	SmfError err = SmfNoError;
+	//SmfError err = SmfNoError;
 	//Gets data synchronously from the server
-    TPtr8 symbianBuf(iSession.sendDSMSyncRequest(requestType,aSerializedData,err,maxSize));
+    TPtr8 symbianBuf(iSession.sendDSMSyncRequest(requestType,aSerializedData,aErr,maxSize));
     //convert this into bytearray
     QByteArray receivedData(reinterpret_cast<const char*>(symbianBuf.Ptr()),symbianBuf.Length());
     qDebug()<<"receivedData size="<<receivedData.size();
@@ -175,15 +175,8 @@ TInt CSmfClientSymbian::sendRequest( QByteArray& aSerializedData, QString aInter
 
 
 RSmfClientSymbianSession::RSmfClientSymbianSession()
-		:iDataPtr8(NULL, 0, 0),
-		 iDataPtr16(NULL,0),
-		 iPtrProvider(NULL,0),
-		 iPtrProvider8(NULL,0),
-		 iIntfNamePtr(NULL,0),
-		 iIntfNamePtr8(NULL,0),
-		 iPtrToXtraInfo(NULL, 0),
-		 iPtrToXtraInfo8(NULL,0),
-		 iPtr8ToSlot0(NULL,0)
+		:iDataPtr8(NULL, 0, 0), iPtrProvider8(NULL,0),
+		 iIntfNamePtr8(NULL,0), iPtr8ToSlot0(NULL,0)
     {
     // No implementation required
     }
@@ -348,7 +341,7 @@ TPtr8 RSmfClientSymbianSession::sendSyncRequest(QString aInterfaceName,
  * Sends sync DSM request to the Smf server
  */
 TPtr8 RSmfClientSymbianSession::sendDSMSyncRequest(SmfRequestTypeID aRequestType,
-		QByteArray& aSerializedData, SmfError& aErr, TInt maxSize)
+		QByteArray& aSerializedData, SmfError &aErr, TInt maxSize)
 	{
 	/**
 	 * Slot 0:- Data to be passed to DSM
@@ -379,7 +372,7 @@ TPtr8 RSmfClientSymbianSession::sendDSMSyncRequest(SmfRequestTypeID aRequestType
     args.Set(1, &iDataPtr8);
     iDSMErr.Zero();
     args.Set(2,&iDSMErr);
-    
+
     TInt sendErr = SendReceive(aRequestType,args);
     qDebug()<<"DSM SendReceive = "<<sendErr;
     TInt numIndex;

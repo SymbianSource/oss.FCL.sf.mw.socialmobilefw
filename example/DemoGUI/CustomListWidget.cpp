@@ -84,6 +84,7 @@ void CustomListWidget::AddListItem(QString aIconPath,QString aFirstLine,QString 
 
 void CustomListWidget::AddListItem(QMainWindow *mainWindow,QStringList aIconPath,QStringList aNames)
 {
+	Q_UNUSED(mainWindow)
 	qDebug()<<"Inside GridView::CreateGridView()";
 	qDebug()<<"aIconPath count = "<<aIconPath.count();
 	qDebug()<<"names count = "<<aNames.count();
@@ -121,7 +122,6 @@ void CustomListWidget::AddListItem(QMainWindow *mainWindow,QStringList aIconPath
 		{
 		QPushButton *pushBtn = new QPushButton();
 		qDebug()<<"name = "<<aNames[index];
-		int gapFac = KHeadNameHeight+ToolbarIconHeight;
 		pushBtn->setGeometry(i*colSpace,(j*rowSpace + KWidgetGapFactor),colSpace,rowSpace);
 		pushBtn->setIconSize(QSize(colSpace-(3*KWidgetGapFactor),colSpace+(3*KWidgetGapFactor)));
 		qDebug()<<"icon = "<<aIconPath[index];
@@ -319,10 +319,10 @@ QWidget* CustomListWidget::CreateListwidget(SmfPostList *postsList)
     return customlist;
 	
 	}
-QWidget* CreateListwidget(SmfActivityEntryList *activityList)
+/*QWidget* CreateListwidget(SmfActivityEntryList *activityList)
 			{
 	
-			}
+			}*/
 
 /*QWidget* CustomListWidget::CreateListwidget(QString aIconPath,QString aFirstLine,QString aSecondLine)
 {

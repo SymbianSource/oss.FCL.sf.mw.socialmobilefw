@@ -600,7 +600,7 @@ void SmfTransportManagerUtil::networkReplyFinished ( QNetworkReply *aNetworkRepl
 			if((QString("1f") == QString(firstByte.toHex())) && (QString("8b") == QString(secondByte.toHex())) )
 				{
 				gzipEncoded = true;
-				qDebug()<<"Response is gzip encoded!!!";
+				qDebug()<<"Response is gzip encoded!!! = "<<gzipEncoded;
 				arr = inflateResponse(response, error);
 				if(!arr)
 					trResult = SmfTransportOpGzipError;

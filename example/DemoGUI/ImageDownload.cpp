@@ -42,6 +42,7 @@ bool downloading = false;
 
 ImageDownload::ImageDownload(QObject *parent)
 	{
+	Q_UNUSED(parent)
 	manager = new QNetworkAccessManager(this);
 	
 #ifdef EMULATORTESTING

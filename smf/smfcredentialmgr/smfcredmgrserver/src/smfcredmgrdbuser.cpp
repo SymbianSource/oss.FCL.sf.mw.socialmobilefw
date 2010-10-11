@@ -382,7 +382,7 @@ void CSmfCredMgrDbUser::readAuthTokensL(const TDesC& aAuthAppId, RArray<
 	paramIndex = sqlReadStatement.ParameterIndex(_L(":iID"));
 	err = sqlReadStatement.BindText(paramIndex, aAuthAppId);
 	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
-	
+
 	while ((err = sqlReadStatement.Next()) == KSqlAtRow)
 		{
 		//sometimes sqlStmt.Next returns KSqlAtRow even if no row is present
@@ -609,11 +609,11 @@ void CSmfCredMgrDbUser::readFlagInPluginIdTable(const TDesC& aPluginID,
 
 	err = sqlReadStatement.Prepare(iDataBase, KSmfDbReadFlagInPluginTable);
 	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
-	
+
 	paramIndex = sqlReadStatement.ParameterIndex(_L(":iID"));
 	err = sqlReadStatement.BindText(paramIndex, aPluginID);
 	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
-	
+
 	while ((err = sqlReadStatement.Next()) == KSqlAtRow)
 		{
 		//sometimes sqlStmt.Next returns KSqlAtRow even if no row is present
@@ -658,11 +658,11 @@ TInt CSmfCredMgrDbUser::updatePlugin(const TDesC& aPluginID,
 	paramIndex = sqlStatement.ParameterIndex(_L(":iFlag"));
 	err = sqlStatement.BindInt(paramIndex, aFlag);
 	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
-	
+
 	paramIndex = sqlStatement.ParameterIndex(_L(":iID"));
 	err = sqlStatement.BindText(paramIndex, OldPluginBuf);
 	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
-	
+
 	err = db.Exec(KBegin);
 	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
 	err = sqlStatement.Exec();
@@ -711,7 +711,7 @@ void CSmfCredMgrDbUser::readPluginIdL(const TDesC& aAuthAppId, RPointerArray<
 	paramIndex = sqlReadStatement.ParameterIndex(_L(":iID"));
 	err = sqlReadStatement.BindText(paramIndex, aAuthAppId);
 	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());
-	
+
 	while ((err = sqlReadStatement.Next()) == KSqlAtRow)
 		{
 		//sometimes sqlStmt.Next returns KSqlAtRow even if no row is present
@@ -733,4 +733,132 @@ void CSmfCredMgrDbUser::readPluginIdL(const TDesC& aAuthAppId, RPointerArray<
 			}
 		}
 	sqlReadStatement.Close();
+	}
+
+void CSmfCredMgrDbUser::checkServiceAuthenticationL(const TDesC& aAuthAppId, 
+		TBool& isAuthorised )
+	{
+	TInt err(KErrNone);
+	isAuthorised = EFalse;
+
+	RSqlStatement sqlReadStatement;
+	TInt paramIndex(KErrNone);
+
+	err = sqlReadStatement.Prepare(iDataBase, KSmfDbReadAuthTokens);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
+	paramIndex = sqlReadStatement.ParameterIndex(_L(":iID"));
+	err = sqlReadStatement.BindText(paramIndex, aAuthAppId);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
+	while ((err = sqlReadStatement.Next()) == KSqlAtRow)
+		{
+		//sometimes sqlStmt.Next returns KSqlAtRow even if no row is present
+		if (!sqlReadStatement.IsNull(0))
+			{
+			// Element found means some key sets are 
+			// available in the database for this auth app
+			isAuthorised = ETrue;
+			break;
+			}
+		else
+			{
+			__ASSERT_DEBUG( 0, User::Invariant());
+			}
+		}
+	sqlReadStatement.Close();
+	}
+
+bool CSmfCredMgrDbUser::deleteAuthDataSetL( const TDesC& aAuthAppId )
+	{
+	TInt err(KErrNone);
+	TBool deleted = EFalse;
+
+	RSqlStatement sqlDeleteStatement;
+	TInt paramIndex(KErrNone);
+
+	err = sqlDeleteStatement.Prepare(iDataBase, KSmfDbDeleteAuthTokens);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
+	paramIndex = sqlDeleteStatement.ParameterIndex(_L(":iID"));
+	err = sqlDeleteStatement.BindText(paramIndex, aAuthAppId);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
+
+	err = sqlDeleteStatement.Exec();
+	
+	if(err >= 0)
+		deleted = ETrue;
+	
+	sqlDeleteStatement.Close();
+	
+	return deleted;
+	}
+
+bool CSmfCredMgrDbUser::deletePluginListL( const TDesC& aAuthAppId )
+	{
+	TInt err(KErrNone);
+	TBool deleted = EFalse;
+
+	RSqlStatement sqlDeleteStatement;
+	TInt paramIndex(KErrNone);
+
+	err = sqlDeleteStatement.Prepare(iDataBase, KSmfDbDeletePluginList);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
+	paramIndex = sqlDeleteStatement.ParameterIndex(_L(":iID"));
+	err = sqlDeleteStatement.BindText(paramIndex, aAuthAppId);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
+
+	err = sqlDeleteStatement.Exec();
+	
+	if(err >= 0)
+		deleted = ETrue;
+	
+	sqlDeleteStatement.Close();
+	
+	return deleted;
+	}
+
+bool CSmfCredMgrDbUser::deleteRegTokenValidityL( const TDesC& aAuthAppId )
+	{
+	TInt err(KErrNone);
+	TBool deleted = EFalse;
+
+	RSqlStatement sqlDeleteStatement;
+	TInt paramIndex(KErrNone);
+
+	err = sqlDeleteStatement.Prepare(iDataBase, KSmfDbDeleteRegTokenValidity);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
+	paramIndex = sqlDeleteStatement.ParameterIndex(_L(":iID"));
+	err = sqlDeleteStatement.BindText(paramIndex, aAuthAppId);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
+
+	err = sqlDeleteStatement.Exec();
+	
+	if(err >= 0)
+		deleted = ETrue;
+	
+	sqlDeleteStatement.Close();
+	
+	return deleted;
+	}
+
+bool CSmfCredMgrDbUser::deleteURLListL( const TDesC& aAuthAppId )
+	{
+	TInt err(KErrNone);
+	TBool deleted = EFalse;
+
+	RSqlStatement sqlDeleteStatement;
+	TInt paramIndex(KErrNone);
+
+	err = sqlDeleteStatement.Prepare(iDataBase, KSmfDbDeleteURLList);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
+	paramIndex = sqlDeleteStatement.ParameterIndex(_L(":iID"));
+	err = sqlDeleteStatement.BindText(paramIndex, aAuthAppId);
+	__ASSERT_DEBUG( (err >= KErrNone), User::Invariant());	
+
+	err = sqlDeleteStatement.Exec();
+	
+	if(err >= 0)
+		deleted = ETrue;
+	
+	sqlDeleteStatement.Close();
+	
+	return deleted;
 	}

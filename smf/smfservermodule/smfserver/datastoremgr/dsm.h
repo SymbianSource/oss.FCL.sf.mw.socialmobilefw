@@ -105,7 +105,7 @@ class DataStoreManager : public QObject
 		QString getErrorText() const;
     
 	public slots:
-        SmfRelationId create(SmfProvider *aProvider=NULL, SmfContact *aContact=NULL);
+         SmfError create(SmfRelationId &RelID,SmfProvider *aProvider=NULL, SmfContact *aContact=NULL);
 
 		/** assign contact to a relation */
 		SmfError associate( SmfRelationId aRelation,
@@ -162,7 +162,8 @@ class DataStoreManager : public QObject
 									const QString &snsDesc,
 									const QString &snsUrl);
         
-        int addContactToTable( const QString &userId, 
+        SmfError addContactToTable( int &aContactId,
+									const QString &userId, 
 									const QString &contactUrl,
 									const QString &localId,
 									const QString &managerUri,
@@ -184,7 +185,7 @@ class DataStoreManager : public QObject
         SmfRelationItem* searchContact(const int aContactId);
         
         /**search for contact if exist, return True/False*/
-        TBool contactIfExist( const int aContactId);
+        TBool contactIfExist( const QString &userId,const QString &snsName);
         
         
         /*------------------Operation on Relation Table-------------------*/ 
@@ -233,6 +234,7 @@ class DataStoreManager : public QObject
         QSqlDatabase db;
         SmfRelationItem * iSmsfRelationItem;
         DSMContactPckg	*iDSMContactPckgItem;
+        SmfRelationId iRelationId;
        
 };
 

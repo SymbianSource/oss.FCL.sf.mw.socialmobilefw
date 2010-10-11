@@ -158,6 +158,24 @@ public:
 	 * @param KeyLabel The Label of key pair. This is the value returned while StoreRSAKeys().
 	 */
 	void deleteRSAKey(QString KeyLabel);
+	
+	/**
+	 * API to check if a particular service is logged in or not (ie, key sets 
+	 * of a service is saved in credential manager or not)
+	 * @param AuthAppId The Authentication Application Id
+	 * @return ETrue if service is logged in else EFalse
+	 */
+	TBool CheckServiceAuthorizationL( const QString& AuthAppId );
+	
+	/**
+	 * API to delete all data related to an auth app i.e URL list for Plugins, List of Plugins.etc.
+	 * @param AuthAppId The Authentication Application Id
+	 * @param RegToken Registration Token obtained from SMF while storing this Auth Data set
+	 * @param Validity Time by which the Auth set will expire
+	 * @return ETrue if service is data is deleted else EFalse
+	 */
+	TBool DeleteAuthDataL( const QString& AuthAppId, const QString& RegToken, 
+			const QDateTime& Validity );
 
 protected:
 	// Functions from base classes

@@ -962,6 +962,14 @@ QString FBActivityProviderBase::authenticationApp( QString &aProgram,
 	return m_authAppId;
 	}
 
+/**
+ * Method to get the authentication application process name
+ * @return The authentication application process name (eg: "FlickrAuthApp.exe")
+ */
+QString FBActivityProviderBase::authenticationAppName( ) const
+	{
+	return m_authAppName;
+	}
 
 /**
  * Method to get the unique registration ID provided by the 
@@ -986,6 +994,7 @@ void FBActivityProviderBase::initialize()
 	m_serviceUrl = QUrl(QString("http://www.facebook.com"));
 	m_pluginId = "fbactivityfetcherplugin.qtplugin";
 	m_authAppId = "0xEFE2FD23";
+	m_authAppName = "AuthApp.exe";
 	m_supportedInterfaces.append("org.symbian.smf.plugin.activity.fetcher/v0.2");
 	QSettings iSettings;
 	m_smfRegToken = iSettings.value("FBCMRegToken").toString();

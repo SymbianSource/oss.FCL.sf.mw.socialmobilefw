@@ -28,9 +28,6 @@
 
 static const QString kAPIRestURL = "http://api.flickr.com/services/rest/";
 
-static const int kMaxBurstRequests = 3;
-static const int kBurstDuration = 2;
-
 static FBSession* sharedSession = NULL;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,6 +56,7 @@ FBSession::FBSession( const QString& aAppKey, const QString& aAppSecret, const Q
         iApiSecret ( aAppSecret ),
         m_Client(new SmfCredMgrClient(this))	
 {
+	Q_UNUSED(aGetSessionProxy)
     if (!sharedSession)
     {
         sharedSession = this;
@@ -184,6 +182,7 @@ void FBSession::unsave()
 bool FBSession::performRequest(FBRequest* aRequest, bool aEnqueue) {
     // Stagger requests that happen in short bursts to prevent the server from rejecting
     // them for making too many requests in a short time
+	Q_UNUSED(aEnqueue)
 	qDebug()<<"Inside FBSession::performRequest";
         aRequest->connect();
         return true;

@@ -51,6 +51,13 @@ _LIT(KSmfDbReadAuthAppIdInRegTokenTable, "SELECT AuthAppId, Validity FROM RegTok
 //UPDATE 
 _LIT( KUpdatePluginID, "UPDATE PluginIDTable SET PluginId =:iText, IsEnabled =:iFlag WHERE PluginId = :iID");
 
+// DELETE
+_LIT(KSmfDbDeleteAuthTokens, "DELETE FROM AuthParamsTable WHERE AuthAppId = :iID");
+_LIT(KSmfDbDeletePluginList, "DELETE FROM PluginIDTable WHERE AuthAppId = :iID");
+_LIT(KSmfDbDeleteRegTokenValidity, "DELETE FROM RegTokenValidityTable WHERE AuthAppId = :iID");
+_LIT(KSmfDbDeleteURLList, "DELETE FROM URLTable WHERE AuthAppId = :iID");
+
+
 /**
  * The class to use the server database i.e insert table in Db, query from Db.
  */
@@ -197,6 +204,42 @@ public:
 	 * @param aArray [out] The array to be updated with plugin ids 
 	 */
 	void readPluginIdL(const TDesC& aAuthAppId, RPointerArray<HBufC>& aArray);
+	
+	/**
+	 * Method to check if a particular service is logged in or not (ie, key sets 
+	 * of a service is saved in credential manager or not)
+	 * @param AuthAppId The Authentication Application Id
+	 * @param isAuthorised [out] ETrue if service is logged in else EFalse
+	 */
+	void checkServiceAuthenticationL(const TDesC& aAuthAppId, TBool& isAuthorised );
+	
+	/**
+	 * Method to delete the auth params of the requested service from the database table 
+	 * @param AuthAppId The Authentication Application Id
+	 * @return ETrue if service is data is deleted else EFalse
+	 */
+	bool deleteAuthDataSetL( const TDesC& aAuthAppId );
+	
+	/**
+	 * Method to delete the plugin list of the requested service from the database table 
+	 * @param AuthAppId The Authentication Application Id
+	 * @return ETrue if service is data is deleted else EFalse
+	 */
+	bool deletePluginListL( const TDesC& aAuthAppId );
+	
+	/**
+	 * Method to delete the reg token and validity of the requested service from the database table 
+	 * @param AuthAppId The Authentication Application Id
+	 * @return ETrue if service is data is deleted else EFalse
+	 */
+	bool deleteRegTokenValidityL( const TDesC& aAuthAppId );
+	
+	/**
+	 * Method to delete the URL list of the requested service from the database table 
+	 * @param AuthAppId The Authentication Application Id
+	 * @return ETrue if service is data is deleted else EFalse
+	 */
+	bool deleteURLListL( const TDesC& aAuthAppId );
 
 private:
 	/**

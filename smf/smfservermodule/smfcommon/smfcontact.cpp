@@ -20,7 +20,7 @@
 
 #include <QFile>
 #include <QTextStream>
-
+#include <QDebug>
 #include "smfcontact.h"
 #include "smfcontact_p.h"
 
@@ -124,7 +124,15 @@ QVariant SmfContact::value( const QString& aSubType ) const
  */
 void SmfContact::setValue(const QString& aSubType,QVariant& value)
 	{
+	if(value.isValid())
+		{
+		if((value.toInt()>127 && value.toString()!="Polygon") || (value.toInt()<0 && value.toString()!="Polygon"))
+			{
+			qDebug()<< "Invalid data in qVariant";
+			}
+	else		
 	d->m_details.insert(aSubType,value);
+		}
 	}
 
 /**

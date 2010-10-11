@@ -416,6 +416,7 @@ SmfPluginError FBContactFetcherPlugin::searchInGroup( SmfPluginRequestData &aReq
 		const int aPageNum , 
 		const int aItemsPerPage  )
 	{
+	Q_UNUSED(aContact)
 	Q_UNUSED(aRequest)
 	Q_UNUSED(aGroup)
 	Q_UNUSED(aPageNum)
@@ -1062,6 +1063,16 @@ QString FBContactProviderBase::authenticationApp( QString &aProgram,
 
 
 /**
+ * Method to get the authentication application process name
+ * @return The authentication application process name (eg: "FlickrAuthApp.exe")
+ */
+QString FBContactProviderBase::authenticationAppName( ) const
+	{
+	return m_authAppName;
+	}
+
+
+/**
  * Method to get the unique registration ID provided by the 
  * Smf for authorised plugins
  * @return The unique registration ID/token provided by the Smf for 
@@ -1084,6 +1095,7 @@ void FBContactProviderBase::initialize()
 	m_serviceUrl = QUrl(QString("http://api.facebook.com"));
 	m_pluginId = "fbcontactfetcherplugin.qtplugin";
 	m_authAppId = "0xEFE2FD23";
+	m_authAppName = "AuthApp.exe";
 	m_supportedInterfaces.append("org.symbian.smf.plugin.contact.fetcher/v0.2");
 	QSettings iSettings;
 	m_smfRegToken = iSettings.value("FBCMRegToken").toString();

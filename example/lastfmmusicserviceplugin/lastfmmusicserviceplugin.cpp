@@ -476,7 +476,8 @@ SmfPluginError LastFmMusicServicePlugin::searchVenue(
 	SmfPluginError error = SmfPluginErrInvalidArguments;
 
 	// invalid arguments
-	if( aPageNum < 0 || aItemsPerPage < 0 || aVenue.name().isEmpty() )
+	//if( aPageNum < 0 || aItemsPerPage < 0 || aVenue.name().isEmpty() ) kindly check this
+	if( aPageNum < 0 || aItemsPerPage < 0)
 		{
 		qDebug()<<"Invalid arguments";
 		return error;
@@ -1567,6 +1568,16 @@ QString LastFmMusicServiceProviderBase::authenticationApp( QString &aProgram,
 
 
 /**
+ * Method to get the authentication application process name
+ * @return The authentication application process name (eg: "FlickrAuthApp.exe")
+ */
+QString LastFmMusicServiceProviderBase::authenticationAppName( ) const
+	{
+	return m_authAppName;
+	}
+
+
+/**
  * Method to get the unique registration ID provided by the 
  * Smf for authorised plugins
  * @return The unique registration ID/token provided by the Smf for 
@@ -1588,10 +1599,11 @@ void LastFmMusicServiceProviderBase::initialize()
 	m_description = "Last.fm music service plugin description";
 	m_serviceUrl = QUrl(QString("http://www.last.fm"));
 	m_pluginId = "lastfmmusicserviceplugin.qtplugin";
-	m_authAppId = "0x12345678";
+	m_authAppId =   "0xE1D8C7D8";
+	m_authAppName = "LastFm.exe";
 	m_supportedInterfaces.append("org.symbian.smf.plugin.music.service/v0.2");
 	QSettings iSettings;
-	m_smfRegToken = iSettings.value("LastFmRegToken").toString();
+	m_smfRegToken = iSettings.value("CMLastFmRegToken").toString();
 	m_validity = iSettings.value("LastFmExpiryTime").toDateTime();
 	}
 

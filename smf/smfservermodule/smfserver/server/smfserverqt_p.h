@@ -35,7 +35,10 @@ public:
     SmfServerQt(SmfServer* wrapper);
     ~SmfServerQt();
 
-    inline SmfServer *wrapper() const;
+    inline SmfServer *SmfServerQt::wrapper() const
+    {
+        return m_generic;
+    }
 
     bool start();
     int sessionListCount() const;
@@ -53,17 +56,9 @@ private:
     SmfServer *m_generic;
     QLocalServer *m_server;
     QList<SmfServerQtSession*> m_sessions;
-};
-
-inline SmfServer *SmfServerQt::wrapper() const
-{
-    return m_generic;
-}
-    
-private:
     SmfServerQt *iServer;
     QLocalSocket *iClientConnection;
-
 	};
+
 
 #endif // SMFSERVERQT_P_H

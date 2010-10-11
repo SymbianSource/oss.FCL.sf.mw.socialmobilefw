@@ -257,7 +257,7 @@ struct SmfResultPage
 	uint iPageNum;
 	};
 
-
+#ifdef Q_FOR_FUTURE 
 struct SmfClientAuthID
 	{
 #ifdef Q_OS_SYMBIAN
@@ -268,6 +268,7 @@ struct SmfClientAuthID
 	SmfServerQtSession* session;
 #endif
 	};
+#endif
 
 /**
  * Smf wide errors
@@ -340,8 +341,12 @@ enum SmfError
 	SmfDbContactNotExist,						//63
 	SmfErrItemNotInRelation,                    //64
 	SmfErrInvalidRelation,                      //65  
-	SmfUnknownError								//66
-
+	SmfInvalidGuid,							    //66
+	SmfInvalidContactUrl,						//67
+	SmfInvalidLocalId,							//68
+	SmfContactExists,							//69
+	SmfUnknownError,							//70
+	SmfInvalidDataInArguement					//71
 	};
 
 

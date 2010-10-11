@@ -356,7 +356,6 @@ void SmfPluginManager::responseAvailable (
 				qDebug()<<"Plugin responseAvailable() failed!!!, error = "<<retValue;
 				
 				// Error in parsing, sent to server
-// ToDo :- For testing:-
 				stream<<result.toString();
 				m_server->resultsAvailable(sessionId, &arr, retValue);
 			}
@@ -471,7 +470,7 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 
 	tableCreated = query.exec("CREATE TABLE IF NOT EXISTS pluginDetails ("
 			"pluginId TEXT PRIMARY KEY, interfaceName TEXT, serviceProvider TEXT, "
-			"description TEXT, serviceUrl TEXT, authAppId TEXT)");
+			"description TEXT, serviceUrl TEXT, authAppId TEXT, authAppName TEXT)");
 
 	// Error - table not created, Plugin Manager might not work properly
 	if(!tableCreated)
@@ -545,6 +544,9 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 						// get the service URL
 						QString servURL = plugin->getProviderInfo()->serviceUrl().toString();
 						
+						// get the auth application process name
+						QString authAppName = plugin->getProviderInfo()->authenticationAppName();
+								
 						// get the authentication application id
 						QString str;
 						QStringList list;
@@ -557,16 +559,19 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 						QSqlQuery rowInsertQuery;
 						
 						// insert into database
-						bool rowInserted = rowInsertQuery.exec(QString("INSERT INTO pluginDetails VALUES ('%1', "
-								"'%2', '%3', '%4', '%5', '%6')").arg(id).arg(intfImplemented).arg(serProv)
-								.arg(desc).arg(servURL).arg(authAppId));
+						bool rowInserted = rowInsertQuery.exec(QString("INSERT INTO pluginDetails VALUES ("
+								"'%1', '%2', '%3', '%4', '%5', '%6', '%7')").arg(id).arg(intfImplemented)
+								.arg(serProv).arg(desc).arg(servURL).arg(authAppId).arg(authAppName));
 						
 						if(rowInserted)
-							qDebug()<<QString("This Plugin's information is added to database : '%1' '%2' '%3'")
-											.arg(id).arg(intfImplemented).arg(serProv);
+							qDebug()<<QString("This Plugin's information is added to database : '%1' '%2' '%3' '%4'")
+											.arg(id).arg(intfImplemented).arg(serProv).arg(authAppId);
 						else
+							{
+							qDebug()<<"Data base insert statement returned = "<<rowInserted;
 							if(0 != query.lastError().text().size())
 								qDebug()<<"plugins data not written to database!!!, error = "<<query.lastError().text();
+							}
 				    	}
 				    else
 				    	{
@@ -594,7 +599,11 @@ bool SmfPluginManager::initializeSmfPluginDataBase ( )
 			}
 		}
 	else
-		qDebug()<<"No Smf plugins installed!!!";
+		{
+			qDebug()<<"No Smf plugins installed!!!";
+			return false;
+		}
+	
 	
 	// Close the database
 	m_pluginDataBase.close();
@@ -908,6 +917,7 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 	QString interfaceName;
 	QString serviceProv;
 	QString authAppId;
+	QString authAppName;
 
 	// Get all the files in the directory at a specified path(sorted)
 	QStringList newPlugins = dir.entryList(QDir::Files, QDir::Name);
@@ -1019,6 +1029,7 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 			QString prgm;
 			QStringList list;
 			authAppId = instance->getProviderInfo()->authenticationApp(prgm, list, QIODevice::ReadWrite);
+			authAppName = instance->getProviderInfo()->authenticationAppName();
 			}
 		
 		unload(instance);
@@ -1026,7 +1037,7 @@ void SmfPluginManager::directoryChanged ( const QString &aPath )
 		// Also add to the database the value newListIterator and aPath
 		QSqlQuery insertRowQuery;
 		bool rowInserted = insertRowQuery.exec(QString("INSERT INTO pluginDetails VALUES "
-				"('%1', '%2', '%3', '%4')").arg(pluginId).arg(interfaceName).arg(serviceProv).arg(authAppId));
+				"('%1', '%2', '%3', '%4', '%5')").arg(pluginId).arg(interfaceName).arg(serviceProv).arg(authAppId).arg(authAppName));
 
 		 // Error
 		if (!rowInserted)
@@ -1133,7 +1144,7 @@ void SmfPluginManager::getPlugins(const QString& aInterface, QMap<QString,SmfPro
 	
 	// Query the database for all pluginIDs that implement the given interface
 	QSqlQuery query(QString("SELECT pluginId, interfaceName, serviceProvider, description, "
-			"serviceUrl FROM pluginDetails where interfaceName = '%1'").arg(aInterface));
+			"serviceUrl, authAppId, authAppName FROM pluginDetails where interfaceName = '%1'").arg(aInterface));
 	
 	while(query.next())
 		{
@@ -1174,6 +1185,20 @@ void SmfPluginManager::getPlugins(const QString& aInterface, QMap<QString,SmfPro
 		prov.setServiceUrl(url);
 #ifdef DETAILEDDEBUGGING
 		qDebug()<<"  Its url = "<<url.toString();
+#endif
+
+		// Get the auth app ID
+		QString id(query.value(5).toString());
+		prov.setAuthenticationAppId(id);
+#ifdef DETAILEDDEBUGGING
+		qDebug()<<"  Its auth app id = "<<id;
+#endif
+		
+		// Get the auth app name
+		QString name (query.value(6).toString());
+		prov.setAuthenticationAppName(name);
+#ifdef DETAILEDDEBUGGING
+		qDebug()<<"  Its auth app name = "<<name;
 #endif
 
 		aMap.insert(pluginId, prov);

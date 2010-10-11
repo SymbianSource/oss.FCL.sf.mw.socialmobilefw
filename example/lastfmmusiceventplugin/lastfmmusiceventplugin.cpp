@@ -185,6 +185,7 @@ SmfPluginError MusicEventPlugin::venues( SmfPluginRequestData &aRequest,
 	{
 		Q_UNUSED(aItemsPerPage);
 		Q_UNUSED(aPageNum);
+		Q_UNUSED(aLocation)
 		
 		SmfPluginError error = SmfPluginErrUserNotLoggedIn;
 		 	
@@ -427,6 +428,7 @@ SmfPluginError MusicEventPlugin::attendees( SmfPluginRequestData &aRequest,
 			const int aPageNum ,
 			const int aItemsPerPage )
 	{
+		Q_UNUSED(aPageNum)
 		Q_UNUSED(aItemsPerPage);
 		SmfPluginError error = SmfPluginErrUserNotLoggedIn;
 		writeLog("MusicEventPlugin::events()");
@@ -915,7 +917,19 @@ QString MusicProviderBase::authenticationApp( QString &aProgram,
 		QStringList & aArguments, 
 		QIODevice::OpenModeFlag aMode ) const
 	{
+	Q_UNUSED(aProgram)
+	Q_UNUSED(aArguments)
+	Q_UNUSED(aMode)
 	return m_authAppId;
+	}
+
+/**
+ * Method to get the authentication application process name
+ * @return The authentication application process name (eg: "FlickrAuthApp.exe")
+ */
+QString MusicProviderBase::authenticationAppName( ) const
+	{
+	return m_authAppName;
 	}
 
 /**
@@ -939,6 +953,7 @@ void MusicProviderBase::initialize()
 	  m_supportedLanguages << "English" ;
 	  m_pluginId =    "lastfmmusiceventplugin.qtplugin";
 	  m_authAppId =   "0xE1D8C7D8";
+	  m_authAppName = "LastFm.exe";
 	  QSettings iSettings;
 	  m_smfRegToken = iSettings.value("CMLastFmRegToken").toString();
 	  m_validity = iSettings.value("LastFmExpiryTime").toDateTime();

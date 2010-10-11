@@ -133,6 +133,7 @@ SmfPluginError LastFmPlaylistServicePlugin::playlists(
 	
 	gPageNum = aPageNum;
 	gItemsPerPage = aItemsPerPage;
+	qDebug()<<"Pagenumber = "<<gPageNum;
 
 	// Get the key sets from SMF Plugin Utility class.
 	QString apiKey;
@@ -881,6 +882,16 @@ QString LastFmPlaylistServiceProviderBase::authenticationApp( QString &aProgram,
 
 
 /**
+ * Method to get the authentication application process name
+ * @return The authentication application process name (eg: "FlickrAuthApp.exe")
+ */
+QString LastFmPlaylistServiceProviderBase::authenticationAppName( ) const
+	{
+	return m_authAppName;
+	}
+
+
+/**
  * Method to get the unique registration ID provided by the 
  * Smf for authorised plugins
  * @return The unique registration ID/token provided by the Smf for 
@@ -902,10 +913,11 @@ void LastFmPlaylistServiceProviderBase::initialize()
 	m_description = "Last.fm music playlist plugin description";
 	m_serviceUrl = QUrl(QString("http://www.last.fm"));
 	m_pluginId = "lastfmplaylistserviceplugin.qtplugin";
-	m_authAppId = "0x12345678";
+	m_authAppId =   "0xE1D8C7D8";
+	m_authAppName = "LastFm.exe";
 	m_supportedInterfaces.append("org.symbian.smf.plugin.music.playlist/v0.2");
 	QSettings iSettings;
-	m_smfRegToken = iSettings.value("LastFmRegToken").toString();
+	m_smfRegToken = iSettings.value("CMLastFmRegToken").toString();
 	m_validity = iSettings.value("LastFmExpiryTime").toDateTime();
 	}
 

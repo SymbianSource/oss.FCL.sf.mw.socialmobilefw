@@ -48,7 +48,7 @@ void SmfSettingsHandler::SetAuthExpirationValue(QString & aVal)
 
 void SmfSettingsHandler::SetRoamingStatusforDataTransfer(QString & aStatus)
 {
-	m_repository->SetAuthExpirationValue(aStatus);
+	m_repository->SetRoamingStatusforDataTransfer(aStatus);
 }
 
 QString SmfSettingsHandler::GetMaxDataTransferLimit() const

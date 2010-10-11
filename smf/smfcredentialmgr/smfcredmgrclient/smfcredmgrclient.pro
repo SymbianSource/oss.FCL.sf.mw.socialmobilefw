@@ -40,9 +40,7 @@ symbian {
     	UserEnvironment \
     	ReadDeviceData \
     	WriteDeviceData
-  	    	
 }
-
 symbian::LIBS += -leuser \
     -lestor \
     -lefsrv \

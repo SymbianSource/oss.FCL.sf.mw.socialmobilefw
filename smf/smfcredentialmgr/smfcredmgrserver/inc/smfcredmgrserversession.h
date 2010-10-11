@@ -104,6 +104,13 @@ private:
 	 * @param aParams class containg the array to be filled
 	 */
 	void getTokenArrayL(CSmfFetchAuthTokenSet* aParams);
+	
+	/**
+	 * Deleted the information stored about a particular service from Db (like auth params, 
+	 * plugin list, url list, reg token and validity)
+	 * @param aAuthAppId The authentication application ID of the service
+	 */
+	bool deleteAuthAppInfoL( const TDesC& aAuthAppId );
 
 private:  // Data
 	CSmfCredMgrServer& iServer;

@@ -37,9 +37,6 @@ static const QString kAPIVersion = "1.0";
 static const QString kAPIFormat = "XML";
 static const QString kStringBoundary = "3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f";
 
-static const double kTimeoutInterval = 180.0;
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 static bool caseInsensitiveLessThan(const QString &s1, const QString &s2)
@@ -181,6 +178,7 @@ bool FBRequest::isSpecialMethod() const {
 
 QString FBRequest::urlForMethod (const QString& aMethod) const {
 
+	Q_UNUSED(aMethod)
 	return iSession->apiURL();
 }
 

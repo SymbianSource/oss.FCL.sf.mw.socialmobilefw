@@ -61,6 +61,23 @@ SmfGalleryPrivate::~SmfGalleryPrivate()
  */
 SmfError SmfGalleryPrivate::albums(QStringList names, SmfContact* user, int pageNum, int perPage)
 	{
+	for(int iCount = 0;iCount<names.length();iCount++)
+		{
+		if(names.isEmpty() || names[iCount].isNull() || !(names[iCount].isSimpleText())
+		   ||(isdigit(names[iCount].toInt())))
+			{
+			qDebug()<<"Invalid Names or user";	
+			return SmfInvalidDataInArguement;
+			}
+		}
+		if((pageNum<0 && perPage >0) || (pageNum>0 && perPage <0) || (pageNum ==0 && perPage ==0) 
+			|| (pageNum > 100  &&  perPage >0) || (pageNum > 0 && perPage > 30) || (isalpha(pageNum)&& isalpha(perPage)))
+    
+	
+			{
+			 qDebug()<<"Invalid Arguments, Check for Negative Values, Large Values, Junk Values";
+			 return SmfInvalidDataInArguement;
+			}
 	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_gallery->getProvider();
@@ -113,6 +130,15 @@ SmfError SmfGalleryPrivate::albums(QStringList names, SmfContact* user, int page
  */
 SmfError SmfGalleryPrivate::pictures(SmfPictureAlbumList &albums,int pageNum,int perPage)
 	{
+	if((pageNum<0 && perPage >0) || (pageNum>0 && perPage <0) || (pageNum ==0 && perPage ==0) 
+		|| (pageNum > 100  &&  perPage >0) || (pageNum > 0 && perPage > 30) || (isalpha(pageNum)&& isalpha(perPage)))
+					         
+		{
+				    
+		qDebug()<<"Invalid Arguments, Check for Negative Values, Large Values, Junk Values";
+		SmfError error = SmfInvalidDataInArguement;
+		return error;
+		}
 	SmfError err = SmfNoError;
 	//We need to pass Opcode and SmfProvider serialized into bytearray 
 	SmfProvider* m_baseProvider = m_gallery->getProvider();

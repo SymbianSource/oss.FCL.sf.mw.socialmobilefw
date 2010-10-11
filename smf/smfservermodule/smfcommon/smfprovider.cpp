@@ -81,6 +81,25 @@ QUrl SmfProvider::applicationUrl() const
 	}
 
 /**
+ * Method to get the ID of the authentication application 
+ * for this service
+ * @return The ID (UID3) of the authentication application 
+ */
+QString SmfProvider::authenticationAppId( ) const
+	{
+	return m_authAppId;
+	}
+
+/**
+ * Method to get the name of the authentication process
+ * @return The name of the authentication process 
+ */
+QString SmfProvider::authenticationAppName( ) const
+	{
+	return m_authAppName;
+	}
+
+/**
  * List of interfaces that this provider support
  * @return List of supported interface names
  */
@@ -145,6 +164,24 @@ void SmfProvider::setApplicationUrl(QUrl& url)
 	}
 
 /**
+ * Sets the ID of the authentication application for this service
+ * @param id The ID (UID3) of the authentication application 
+ */
+void SmfProvider::setAuthenticationAppId( const QString& id )
+	{
+	m_authAppId = id;
+	}
+
+/**
+ * Sets the Name of the authentication application process
+ * @param name The name of the authentication process 
+ */
+void SmfProvider::setAuthenticationAppName( const QString& name )
+	{
+	m_authAppName = name;
+	}
+
+/**
  * Sets list of interfaces that this provider supports
  * @param types List of supported interface names
  */
@@ -180,6 +217,8 @@ QDataStream &operator<<(QDataStream& out, const SmfProvider& base)
 	out<<base.m_appUrl;
 	out<<base.m_serviceTypes;
 	out<<base.m_supportedLanguages;
+	out<<base.m_authAppId;
+	out<<base.m_authAppName;
 	return out; 
 	}
 
@@ -199,5 +238,7 @@ QDataStream &operator>>(QDataStream& in, SmfProvider& base)
 	in>>base.m_appUrl;
 	in>>base.m_serviceTypes;
 	in>>base.m_supportedLanguages;
+	in>>base.m_authAppId;
+	in>>base.m_authAppName;
 	return in; 
 	}

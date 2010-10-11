@@ -50,6 +50,15 @@ SmfActivityFetcherPrivate::~SmfActivityFetcherPrivate()
 
 SmfError SmfActivityFetcherPrivate::selfActivities(int pageNum, int perPage)
 	{
+	 if((pageNum<0 && perPage >0) || (pageNum>0 && perPage <0) || (pageNum ==0 && perPage ==0) 
+		|| (pageNum > 100  &&  perPage >0) || (pageNum > 0 && perPage > 30) || (isalpha(pageNum)&& isalpha(perPage)))
+			         
+		{
+		    
+		qDebug()<<"Invalid Arguments, Check for Negative Values, Large Values, Junk Values";
+		SmfError error = SmfInvalidDataInArguement;
+		return error;
+		}
 	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_activityFetcher->getProvider();
 	//serialize start
@@ -80,6 +89,16 @@ SmfError SmfActivityFetcherPrivate::selfActivities(int pageNum, int perPage)
 
 SmfError SmfActivityFetcherPrivate::friendsActivities(const SmfContact & aFriend, int pageNum, int perPage)
 	{
+	
+	if((pageNum<0 && perPage >0) || (pageNum>0 && perPage <0) || (pageNum ==0 && perPage ==0) 
+		|| (pageNum > 100  &&  perPage >0) || (pageNum > 0 && perPage > 30) || (isalpha(pageNum)&& isalpha(perPage)))
+			         
+		{
+		    
+		qDebug()<<"Invalid Arguments, Check for Negative Values, Large Values, Junk Values";
+		SmfError error = SmfInvalidDataInArguement;
+		return error;
+		}
 	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_activityFetcher->getProvider();
 	//serialize start
@@ -111,6 +130,16 @@ SmfError SmfActivityFetcherPrivate::friendsActivities(const SmfContact & aFriend
 
 SmfError SmfActivityFetcherPrivate::filtered(QList<SmfActivityObjectType> filters, int pageNum, int perPage)
 	{
+	
+	if((pageNum<0 && perPage >0) || (pageNum>0 && perPage <0) || (pageNum ==0 && perPage ==0) 
+		|| (pageNum > 100  &&  perPage >0) || (pageNum > 0 && perPage > 30) || (isalpha(pageNum)&& isalpha(perPage)))
+				         
+		{
+			    
+		qDebug()<<"Invalid Arguments, Check for Negative Values, Large Values, Junk Values";
+		SmfError error = SmfInvalidDataInArguement;
+		return error;
+		}
 	SmfError err = SmfNoError;
 	SmfProvider* m_baseProvider = m_activityFetcher->getProvider();
 	

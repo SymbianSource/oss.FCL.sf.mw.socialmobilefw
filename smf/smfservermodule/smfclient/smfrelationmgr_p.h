@@ -42,7 +42,7 @@ public:
 	
 public:
 	/** create a relation with first contact (id optional) */
-	SmfRelationId create(SmfProvider *provider=NULL, SmfContact *contact=NULL);
+	SmfError create(SmfRelationId &aRelationID,SmfProvider *provider=NULL, SmfContact *contact=NULL);
 
 	/** assign contact to a relation */
 	SmfError associate( SmfRelationId& relation,

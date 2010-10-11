@@ -34,6 +34,8 @@ This is pre-beta version of Social Mobile Framework code. Folder organization is
                                 \smf\smfservermodule\util\qjson
 
                 \smf\smfsettingsui - this contains SMF settins UI [incomplete]
+                
+                \Tests - contains test code for testing at smfclient level
 
 
 
@@ -65,14 +67,6 @@ Pre-build steps:
     If your proxy requires authentication, provide "<username> space <password>" in plaintext in a file 
     "DoNotShare.txt" and place this file in "C:/Data/" - which is at "\epoc32\winscw\c\data" under your 
     SDK installation folder. You are good to go now.
-2. Since sample plugins are not integrated with Auth App and Credential Mgr yet, currently it expects
-the necessary credentials in plain text. Sample smfclientapp uses facebook plugins, place a file 
-named "FaceBookKeys.txt" under "C:/Data/" - which is at "\epoc32\winscw\c\data". This file should
-contain keys in the following order:  API key, API secret, session key, session secret.. all separated by \n
-If you want to know how to generate these, please see 
-http://wiki.developers.facebook.com/index.php/Authorization_and_Authentication_for_Desktop_Applications
-We are integrating plugins with CredentialMgr, so these painful steps won't be required once it is up.
-
 
 
 Building Steps :  - 
@@ -169,3 +163,21 @@ These are exported to \epoc32\include from \smf\smfcredentialmgr\smfcredmgrclien
 	smfcredmgrclientglobal.h
 	smfutils.h
 	smfcredmgrcommon.h
+	
+	
+Observed Dependencies
+==============================================================================
+The authentication applications are loading web pages through Qt Webkit and hence its performance depends 
+on your network speed and response from the service provider. So if the page taken time to load please be 
+patient enough till loading is completed.
+
+
+
+Using Test Applications
+==============================================================================
+1) For testing individual interfaces, build the test applications provided (they are console bases applications). 
+Start the eshell and start individual application from eshell.
+
+2) For using test applications used to test SMF from Multiple client application, use the CrossTest1 and CrossTest2 
+applications. Build both and from the emulator start CrossTest1.exe (which in turn will send the request and 
+starts CrossTest2 immediately after sending the request to SMF.

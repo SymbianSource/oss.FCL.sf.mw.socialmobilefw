@@ -56,9 +56,7 @@ symbian: {
         ReadDeviceData \
         WriteDeviceData
     TARGET.EPOCALLOWDLLDATA = 1
-    LIBS += -lsmfcommon
-
-
+    LIBS += -lsmfcommon -lsmfcredmgrclient
 }
 symbian: { 
 	PRIVATE_HEADERS += smfclientsymbian.h \

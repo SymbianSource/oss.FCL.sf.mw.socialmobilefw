@@ -169,24 +169,31 @@ void FBDialog::dismissWithSuccess( bool aSuccess, bool aAnimated)
 
 void FBDialog::dismissWithError (const FBError& aError)
 {
+	Q_UNUSED(aError)
 	QMessageBox msgbox;
 	QString msg ("Error!Please try again!");
 	msgbox.setText(msg);
 }
 void FBDialog::slotAuthenticationRequired( QNetworkReply* reply, QAuthenticator* authenticator )
 	{
+		Q_UNUSED(reply)
+		Q_UNUSED(authenticator)
 		QMessageBox msgbox;
 		QString msg ("Error!Authentication Required");
 		msgbox.setText(msg);
 	}
 void FBDialog::slotsslErrors( QNetworkReply* reply, const QList<QSslError>& errors  )
 	{
+		Q_UNUSED(reply)
+		Q_UNUSED(errors)
 		QMessageBox msgbox;
 		QString msg ("Error!SSL Error");
 		msgbox.setText(msg);
 	}
 void FBDialog::slotproxyAuthenticationRequired( const QNetworkProxy& proxy, QAuthenticator* authenticator  )
 	{
+		Q_UNUSED(proxy)
+		Q_UNUSED(authenticator)
 		QMessageBox msgbox;
 		QString msg ("Error!Proxy Authenticatio Required");
 		msgbox.setText(msg);
@@ -322,7 +329,7 @@ void FBDialog::loadProgress(int progress)
 	}*/
 void FBDialog::GetSessionKey(const QUrl& aUrl)
 {
-
+	Q_UNUSED(aUrl)
 }
 void FBDialog::connectToGetFullToken()
 {

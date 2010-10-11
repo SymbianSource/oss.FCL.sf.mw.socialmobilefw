@@ -1403,6 +1403,15 @@ QString FlickrProviderBase::authenticationApp( QString &aProgram,
 	}
 
 /**
+ * Method to get the authentication application process name
+ * @return The authentication application process name (eg: "FlickrAuthApp.exe")
+ */
+QString FlickrProviderBase::authenticationAppName( ) const
+	{
+	return m_authAppName;
+	}
+
+/**
  * Method to get the unique registration ID provided by the 
  * Smf for authorised plugins
  * @return The unique registration ID/token provided by the Smf for 
@@ -1420,6 +1429,7 @@ void FlickrProviderBase::initialize()
 	m_serviceUrl = QUrl(QString("http://api.flickr.com"));
 	m_pluginId = "flickrgalleryplugin.qtplugin";
 	m_authAppId = "0xE1D8C7D7";
+	m_authAppName = "Flickr.exe";
 	m_supportedInterfaces.append("org.symbian.smf.plugin.gallery/v0.2");
 	QSettings iSettings;
 	m_smfRegToken = iSettings.value("CMFlickrRegToken").toString();

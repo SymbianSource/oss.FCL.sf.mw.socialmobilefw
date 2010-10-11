@@ -152,16 +152,6 @@ private: // Data
 	 * For callback, when the client gets serviced by the server
 	 */
 	smfObserver* iObserver;
-	
-	//Interface name, to be passed to the server
-	TBuf<128> iInterfaceName;
-	QString iInterfaceNameQt;
-	//Data ptr
-	TPtr iDataPtr;
-	//Bytearray
-	QByteArray* iBytearray;
-	HBufC* iBuffer;
-	TInt iMaxMessageSize;
 
 	};
 

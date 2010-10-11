@@ -266,6 +266,12 @@ public:
 			QIODevice::OpenModeFlag aMode = QIODevice::ReadWrite ) const;
 	
 	/**
+	 * Method to get the authentication application process name
+	 * @return The authentication application process name (eg: "FlickrAuthApp.exe")
+	 */
+	QString authenticationAppName( ) const;
+	
+	/**
 	 * Method to get the unique registration ID provided by the 
 	 * Smf for authorised plugins
 	 * @return The unique registration ID/token provided by the Smf for 
@@ -286,6 +292,7 @@ private:
 	QStringList m_supportedLanguages;
 	QString m_pluginId;
 	QString m_authAppId;
+	QString m_authAppName;
 	QString m_smfRegToken;
 	QDateTime m_validity;
 	};

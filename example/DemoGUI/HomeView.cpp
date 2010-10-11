@@ -12,7 +12,7 @@
 #include <QDebug>
 #include "ImageDownload.h"
 
-static int tab = 0;
+//static int tab = 0;
 
 HomeView::HomeView(QString aHeadName):
         iHeadName(aHeadName)
@@ -220,6 +220,7 @@ void HomeView::getFriends()
 
 void HomeView::friendsAvailable(SmfContactList* friendsList, SmfError error, SmfResultPage resultPage)
 	{
+	Q_UNUSED(resultPage)
 	qDebug()<<"Inside HomeView::friendsAvailable()";
 	
 	m_friendsList = friendsList;
@@ -235,7 +236,6 @@ void HomeView::friendsAvailable(SmfContactList* friendsList, SmfError error, Smf
 		}
 	
 	//display friends description
-	int count = 0;
 	qDebug()<<"Number of friends retrieved = "<<friendsList->count();
 	if(friendsList->count() == 0)
 		{
@@ -422,7 +422,6 @@ void HomeView::postsAvailable(SmfPostList* postsList, SmfError error, SmfResultP
 		}
 	
 	//display posts details
-	int count = 0;
 	qDebug()<<"Number of posts retrieved = "<<postsList->count();
 	if(postsList->count() == 0)
 		{
@@ -519,7 +518,6 @@ void HomeView::albumsAvailable(SmfPictureAlbumList* albums, SmfError error, SmfR
 		}
 	
 	//display album details
-	int count = 0;
 	qDebug()<<"Number of albums retrieved = "<<albums->count();
 	if(albums->count() == 0)
 		{
@@ -587,6 +585,7 @@ void HomeView::getActivities()
 
 void HomeView::activitiesAvailable(SmfActivityEntryList* activitiesList, SmfError error, SmfResultPage resultPage)
 	{
+	Q_UNUSED(resultPage)
 	qDebug()<<"Inside HomeView::activitiesAvailable()";
 	
 	m_activitiesList = activitiesList;
@@ -603,7 +602,6 @@ void HomeView::activitiesAvailable(SmfActivityEntryList* activitiesList, SmfErro
 		}
 	
 	//display activity description
-	int count = 0;
 	qDebug()<<"Number of activities retrieved = "<<activitiesList->count();
 	
 	if(activitiesList->count() == 0)
@@ -693,6 +691,7 @@ void HomeView::getPhotos()
 
 void HomeView::picturesAvailable(SmfPictureList* picList, SmfError error, SmfResultPage resultPage)
 	{
+	Q_UNUSED(resultPage)
 	qDebug()<<"Inside HomeView::picturesAvailable()";
 	
 	m_picList = picList;
@@ -708,7 +707,6 @@ void HomeView::picturesAvailable(SmfPictureList* picList, SmfError error, SmfRes
 		}
 	
 	//display pic description
-	int count = 0;
 	qDebug()<<"Number of pic retrieved = "<<picList->count();
 	
 	QMap<QString, QUrl> urlMap;

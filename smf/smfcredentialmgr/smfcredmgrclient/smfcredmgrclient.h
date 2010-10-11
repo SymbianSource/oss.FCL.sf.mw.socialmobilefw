@@ -96,7 +96,7 @@ public:
 
 	/**
 	 * API to update the list of authenticated plugins-add, remove, update to plugins
-	 * @param NewPluginID ID of the new plugin
+	 * @param NewPluginID ID of the new plugin 
 	 * @param Flag flag to enable or disable the plugin
 	 * @param OldPluginID ID of the old plugin to be replaced
 	 * @todo - should return an error code to indicate error while changing the list.
@@ -110,7 +110,7 @@ public:
 	 * @param PluginList The plugin list to be set
 	 * @param AuthAppId The Authentication Application Id
 	 * @param Flag flag to enable or disable the plugins
-	 * @return The registration token that completes authentication, its a NULL string if the
+	 * @return The registration token that completes authentication, its a NULL string if the 
 	 *   API fails due to any wrong argument
 	 */
 	QString StoreAuthData(SmfAuthParams Set,
@@ -136,15 +136,33 @@ public:
 	 * @param Signature The signed message is an output argument
 	 * @param AlgorithmUsed The algorithm used for signing
 	 * return Smf defined errorcode
-	 * @todo - RSA Signing is falgged-put for time being.
+	 * @todo - RSA Signing is falgged-put for time being. 
 	 */
 	SMFCredMgrErrorCode SignMessage(QString Message,
 			QString Key, QString& Signature, SmfSignatureMethod AlgorithmUsed);
 	/**
-	 * API To delete the RSA Key from the Key Store
+	 * API To delete the RSA Key from the Key Store 
 	 * @param KeyLabel The Label of key pair. This is the value returned while StoreRSAKeys().
 	 */
 	void DeleteRSAKey(QString KeyLabel);
+	
+	/**
+	 * API to check if a particular service is logged in or not (ie, key sets 
+	 * of a service is saved in credential manager or not)
+	 * @param AuthAppId The Authentication Application Id
+	 * @return true if service is logged in else false
+	 */
+	bool CheckServiceAuthorization( const QString& AuthAppId );
+	
+	/**
+	 * API to delete all data related to an auth app i.e URL list for Plugins, List of Plugins.etc.
+	 * @param AuthAppId The Authentication Application Id
+	 * @param RegToken Registration Token obtained from SMF while storing this Auth Data set
+	 * @param Validity Time by which the Auth set will expire
+	 * @return Smf defined errorcode of the operation
+	 */
+	SMFCredMgrErrorCode DeleteAuthData( const QString& AuthAppId,
+			const QString& RegToken, const QDateTime& Validity );
 
 private:
 	/**
@@ -152,7 +170,6 @@ private:
 	 */
 #ifdef Q_OS_SYMBIAN
 	CSmfCredMgrClientSymbian* m_SmfClientPrivate;
-	//friend class CSmfCredMgrClientSymbian;
 #endif
 
 	};

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'AuthApp.ui'
 **
-** Created: Wed Sep 22 18:28:00 2010
+** Created: Tue Sep 28 12:00:11 2010
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

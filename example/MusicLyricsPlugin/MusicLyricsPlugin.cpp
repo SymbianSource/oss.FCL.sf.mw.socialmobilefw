@@ -80,6 +80,9 @@ SmfPluginError MusicLyricsPlugin::lyrics( SmfPluginRequestData &aRequest,
 				const int aPageNum , 
 				const int aItemsPerPage  ) 
 	{
+	Q_UNUSED(aItemsPerPage)
+	Q_UNUSED(aPageNum)
+	Q_UNUSED(aTrack)
 	 SmfPluginError error = SmfPluginErrUserNotLoggedIn;
 		
 	writeLog("MusicLyricsPlugin::lyrics()");
@@ -122,6 +125,10 @@ SmfPluginError MusicLyricsPlugin::subtitles( SmfPluginRequestData &aRequest,
 				const int aPageNum , 
 				const int aItemsPerPage ) 
 	{
+	Q_UNUSED(aItemsPerPage)
+		Q_UNUSED(aPageNum)
+	Q_UNUSED(aTrack)
+	Q_UNUSED(aFilter)
 	//spanda_13
 	SmfPluginError error = SmfPluginErrUserNotLoggedIn;
 			
@@ -541,7 +548,19 @@ QString MusicProviderBase::authenticationApp( QString &aProgram,
 		QStringList & aArguments, 
 		QIODevice::OpenModeFlag aMode ) const
 	{
+	Q_UNUSED(aProgram)
+	Q_UNUSED(aArguments)
+	Q_UNUSED(aMode)
 	return m_authAppId;
+	}
+
+/**
+ * Method to get the authentication application process name
+ * @return The authentication application process name (eg: "FlickrAuthApp.exe")
+ */
+QString MusicProviderBase::authenticationAppName( ) const
+	{
+	return m_authAppName;
 	}
 
 /**
@@ -564,6 +583,7 @@ void MusicProviderBase::initialize()
 	  m_supportedLanguages << "English" ;
 	  m_pluginId =    "musiclyricsplugin.qtplugin";
 	  m_authAppId =   "0xEFE2FD23";
+	  m_authAppName = "abc.exe";
 	  m_smfRegToken = "hsdfusdghf";
 	  
 	  //sandeep_Added_13-08-2010

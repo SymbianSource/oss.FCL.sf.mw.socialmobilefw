@@ -61,7 +61,7 @@ public:
 	/**
 	 * Issue request to server using SendReceive()
 	 */
-	void RequestService(TCredentialServerRequestID aRequestType,
+	TInt RequestService(TCredentialServerRequestID aRequestType,
 			const TIpcArgs &aArgs);
 
 	};

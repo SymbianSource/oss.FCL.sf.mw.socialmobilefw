@@ -25,10 +25,6 @@
 #include <QMap>
 #include <smfglobal.h>
 #include <smfcredmgrclientglobal.h>
-#ifdef CLIENT_SERVER_TEST
-	#include <QTimer>
-	#include <QTextStream>
-#endif
 
 #include "smfserverglobal.h"
 
@@ -136,6 +132,8 @@ public:
 			QByteArray& qtdataFromDSM );
 	
 public slots:
+
+#ifdef Q_FOR_FUTURE
 	/**
 	 * This slot is called when Credential Manager is done with the autherizing
 	 * the client for the first time. See isClientAuthorized() and authorizeClient().
@@ -143,6 +141,7 @@ public slots:
 	 * ID in case its not same as SID of the client.
 	 */
 	void clientAuthorizationFinished ( bool success, SmfClientAuthID authID );
+#endif
 	
 	/**
 	 * This slot is called as a result of trigger from Plugin manager when the 
@@ -152,26 +151,6 @@ public slots:
 	 */
 	void resultsAvailable ( int requestID, QByteArray* parsedData, SmfError error );
 
-#ifdef CLIENT_SERVER_TEST
-	/**
-	 * Services the client request by sending the requested data.
-	 * Note:- This will be handled by private implementation.
-	 */
-/*	void serviceClient ( QByteArray* parsedData );*/
-		
-	/**
-	 * This slot is called for every cleanup timer expiry, in this slot, we need
-	 * to call SmfDataStoreManager's API to refresh data store
-	 */
-	void timerExpired ( ) {}
-	
-	/**
-	 * This method is called every time timerExpired slot is trigerred
-	 * Fetches the last saved requests through Transport Manager and Plugin Manager
-	 * Who will save the last request (Tranport Manager or Data Store Manager) TBD later
-	 */
-	void runSavedRequest ( ) {}
-#endif
 	/**
 	 * This slot is called when the data store updates are available as a result of
 	 * "runSavedRequest()".
@@ -200,24 +179,5 @@ private:
 	SmfPluginManager* m_pluginManager;
 	SmfCredMgrClient* m_credentialMngr;
 	};
-
-#ifdef CLIENT_SERVER_TEST
-class dummyPM : public QObject
-	{
-		Q_OBJECT
-public:
-		dummyPM(SmfServer* server,QObject* parent=0);
-		~dummyPM();
-		SmfError createRequest ( const quint32& aSessionID, 
-				const QString& aPluginID, 
-				const SmfRequestTypeID& aOperation, 
-				QByteArray& aInputData );
-public slots:
-	void responseAvailable();
-private:
-		QTimer* m_timer;
-		SmfServer* m_server;
-	};
-#endif
 
 #endif // SMFSERVER_H

@@ -95,7 +95,6 @@ void FBLoginDialog::load()
 void FBLoginDialog::requestDidLoad(const QVariant& aResult)
 {
 	qDebug()<<"Inside FBLoginDialog::requestDidLoad";
-    bool conversionError = false;
     QVariantHash object = aResult.toHash();
     
     QString frob = object.value("frob").toString();

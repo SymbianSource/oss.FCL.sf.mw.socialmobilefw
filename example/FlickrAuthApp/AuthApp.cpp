@@ -71,7 +71,7 @@ void AuthApp::on_pushButton_clicked()
 }
 void AuthApp::sessionDidLogin(QString Token)
 {
-
+	Q_UNUSED(Token)
     if (iLoginDialog )
     {
 		QMessageBox msgbox;

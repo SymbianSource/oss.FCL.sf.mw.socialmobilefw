@@ -155,7 +155,8 @@ void SmfServer::getAuthorizedPlugins(QList<SmfPluginID>& list,QList<SmfPluginID>
 	authList.clear();
 	for(int i=0;i<list.count();i++)
 		{
-		bool isAuthorized = m_credentialMngr->CheckPluginAuthentication(list[i]);
+		bool isAuthorized = false;
+		isAuthorized = m_credentialMngr->CheckPluginAuthentication(list[i]);
 		if(isAuthorized)
 			authList.append(list[i]);
 		}
@@ -220,7 +221,7 @@ SmfError SmfServer::sendToDSM ( QByteArray qtdataForDSM, SmfRequestTypeID opcode
 		QByteArray& qtdataFromDSM )
 	{
 	qDebug()<<"Inside SmfServer::sendToDSM()";
-	
+	SmfError err = SmfNoError;
 	DataStoreManager* dsm = DataStoreManager::getDataStoreManager();
 	
 	//Note:- deserialization and formation of user profile and social profile are done by server
@@ -250,7 +251,9 @@ SmfError SmfServer::sendToDSM ( QByteArray qtdataForDSM, SmfRequestTypeID opcode
 				delete contact;
 				contact = NULL;
 				}
-			SmfRelationId relnId = dsm->create(provider,contact);
+			SmfRelationId relnId;
+			relnId.clear();
+			err = dsm->create(relnId,provider,contact);
 			writeStream<<relnId;
 			if(provider != NULL)
 				delete provider;
@@ -281,11 +284,7 @@ SmfError SmfServer::sendToDSM ( QByteArray qtdataForDSM, SmfRequestTypeID opcode
 				provider = NULL;
 				}
 
-			QString snsName = provider->serviceName();
-			QString snsUrl = (provider->serviceUrl()).toString();
-			QString snsDesc = provider->description();
-			
-			SmfError err = dsm->associate(relnId,contact,provider);
+			err = dsm->associate(relnId,contact,provider);
 			int errInt = err;
 			writeStream<<errInt;
 			if(contact != NULL)
@@ -307,7 +306,7 @@ SmfError SmfServer::sendToDSM ( QByteArray qtdataForDSM, SmfRequestTypeID opcode
 				delete contact;
 				contact = NULL;
 				}
-			SmfError err = dsm->remove(relnId, contact);
+			err = dsm->remove(relnId, contact);
 			int errInt = err;
 			writeStream<<errInt;
 			if(NULL != contact)
@@ -389,7 +388,7 @@ SmfError SmfServer::sendToDSM ( QByteArray qtdataForDSM, SmfRequestTypeID opcode
 			{
 			SmfRelationId relnId;
 			readStream>>relnId;
-			SmfError err = dsm->deleteRelation(relnId);
+			err = dsm->deleteRelation(relnId);
 			int errInt = err;
 			writeStream<<errInt;
 			break;
@@ -397,9 +396,10 @@ SmfError SmfServer::sendToDSM ( QByteArray qtdataForDSM, SmfRequestTypeID opcode
 		default:
 			break;
 		}
-	return SmfNoError;
+	return err;
 	}
 
+#ifdef Q_FOR_FUTURE 
 /**
  * This slot is invoked when CM finishes the authorization of the client.
  * @param authID As it contains the session ptr, sever directly invokes the session's API to notify success
@@ -412,6 +412,7 @@ void SmfServer::clientAuthorizationFinished(bool success,SmfClientAuthID authID 
 	//TODO:- define set of smf wide error after consulting with other module owners
 	authID.session->clientAuthorizationFinished(success);
 	}
+#endif
 
 /**
  * This API is called by PM once its done with request and parsing
@@ -455,34 +456,3 @@ void SmfServer::authenticationKeysExpired(NotificationType type,SmfPluginID id)
 	//CMclient->requestAuthExpiryNotify();
 	}
 
-#ifdef CLIENT_SERVER_TEST
-/**
- * Seems reduntant
- */
-/*void SmfServer::serviceClient(QByteArray* parsedData)
-	{
-	Q_UNUSED(parsedData)
-	}*/
-
-dummyPM::dummyPM(SmfServer* server,QObject* parent)
-: m_server(server),QObject(parent)
-	{
-	m_timer = new QTimer(this);
-	connect(m_timer, SIGNAL(timeout()), this, SLOT(responseAvailable()));
-	}
-SmfError dummyPM::createRequest ( const quint32& aSessionID, 
-		const QString& aPluginID, 
-		const SmfRequestTypeID& aOperation, 
-		QByteArray& aInputData )
-	{
-	qDebug()<<QString::number(aSessionID);
-	qDebug()<<aPluginID;
-	qDebug()<<QString::number(aOperation);
-	qDebug()<<QString::number(aInputData.size());
-	m_timer->start(1000);
-	}
-void dummyPM::responseAvailable()
-	{
-	
-	}
-#endif

@@ -204,11 +204,13 @@ public:
      */
 	void resultsAvailable(QByteArray* parsedData,SmfError error);
 	
+#ifdef Q_FOR_FUTURE 
 	/**
 	 * Called by the SmfServer when client authorization finishes.
 	 * @param success success of the authorization
 	 */
 	void clientAuthorizationFinished(bool success);
+#endif
 	
 protected:
     //TMessageParams ReadMessageAndRetrieveParams (const RMessage2 & aMessage);
@@ -257,10 +259,7 @@ private:
 	//this interface id will be provided by Smf client, will map Smf Client 
 	// interface hierarchy
 	SmfInterfaceID iInterfaceID;
-	TPtr iIntfNameSymbian;
 	TPtr8 iIntfNameSymbian8;
-	
-	TBuf8<125> iInterfaceNametbuf;
 	TPtr8 iProviderSymbian8;
 	TPtr8 iXtraDataPtr8;
 	HBufC8* iData8ForDSM;
@@ -269,7 +268,6 @@ private:
 	TPtr8 iPtr8DataFromDSM;
 	TBuf<100> iDSMErr;
 	HBufC8* iProviderBuf8;
-	HBufC8* iXtraDataBuf8;
 	HBufC8* iIntfNameBuf8;
 	QMap<SmfPluginID,SmfProvider> iPluginIDMap;
 	QList<SmfPluginID> iPluginIDList;
@@ -279,16 +277,14 @@ private:
 	 * To keep track of the requests sent by this session,not required for now, as only one
 	 * outstanding request per session is required
 	 */
-	RArray<RMessage2> iRequestList;
+	//RArray<RMessage2> iRequestList;
 	/**
 	 * Last request opcode
 	 */
 	TInt iLastRequest;
-	TPtr8 iPtrToBuf;
 	TPtr8 iPtrToDataForClient;
 	HBufC8* iDataForClient;
 	QByteArray resultData;
-	QByteArray xtraData;
 	};
 
 #endif // SMFSERVERSYMBIAN_H

@@ -154,7 +154,6 @@ void FBLoginDialog::FetchKeyFromUrl(const QUrl& aUrl)
     qDebug()<<"uid"<<uid<<"\n";
     qDebug()<<"expires"<<expires<<"\n";
     qDebug()<<"secret"<<secret<<"\n";
-    bool ok = false;
     uint expiry = expires.toUInt();//.toUInt(&conversionError);
     QDateTime expiration; expiration.setTime_t( expiry );
     iSession->beginSession(session_key, secret,expiration);

@@ -96,9 +96,9 @@ SmfRelationMgr::~SmfRelationMgr()
 		}
 	}
 
-SmfRelationId SmfRelationMgr::create(SmfProvider *provider, SmfContact *contact)
+ SmfError SmfRelationMgr::create(SmfRelationId &aRelatioID,SmfProvider *provider, SmfContact *contact)
 	{
-	return m_private->create(provider,contact);
+	return m_private->create(aRelatioID,provider,contact);
 	}
 
 SmfError SmfRelationMgr::associate(SmfRelationId& relation,const SmfContact* contact,SmfProvider* provider)
