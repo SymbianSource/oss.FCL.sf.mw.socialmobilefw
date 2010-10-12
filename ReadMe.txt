@@ -1,6 +1,8 @@
 Content:
 ==============================================================================
-This is pre-beta version of Social Mobile Framework code. Folder organization is as follows - 
+This is beta version of Social Mobile Framework code. 
+
+Folder organization is as follows - 
                 Doxyfile - Doxygen configuration file 
 
                 \doc - contains smfhelp.chm file, refer this for interface information
@@ -35,7 +37,8 @@ This is pre-beta version of Social Mobile Framework code. Folder organization is
 
                 \smf\smfsettingsui - this contains SMF settins UI [incomplete]
                 
-                \Tests - contains test code for testing at smfclient level
+                \Tests - contains test cases and test code for testing at smfclient level
+					\Smf_functional_test_cases_v0.2.xls
 
 
 
@@ -168,16 +171,35 @@ These are exported to \epoc32\include from \smf\smfcredentialmgr\smfcredmgrclien
 Observed Dependencies
 ==============================================================================
 The authentication applications are loading web pages through Qt Webkit and hence its performance depends 
-on your network speed and response from the service provider. So if the page taken time to load please be 
-patient enough till loading is completed.
+on your network speed and response from the service provider. In a slow connection scenario please be 
+patient while the page loading is completed.
 
 
 
 Using Test Applications
 ==============================================================================
-1) For testing individual interfaces, build the test applications provided (they are console bases applications). 
+For testing individual interfaces, build the test applications provided (they are console bases applications). 
 Start the eshell and start individual application from eshell.
 
-2) For using test applications used to test SMF from Multiple client application, use the CrossTest1 and CrossTest2 
-applications. Build both and from the emulator start CrossTest1.exe (which in turn will send the request and 
-starts CrossTest2 immediately after sending the request to SMF.
+
+
+Maturity Information
+==============================================================================
+This release has been tested with plug-ins written for Facebook, Flickr, Last.fm, Lyricsfly.com
+However these plugins are far from complete in terms of full funtionality support. As a result 
+there are quite a few cases failing as shown in the summary below - 
+TOTAL			171
+PASSED		58	   
+FAILED		75	   
+NOT TESTED		19	   
+NOT IMPLEMENTED	19	   
+Please see detials of the test cases under socialmobilefw\Tests\Smf_functional_test_cases_v0.2.xls
+		 
+The failed cases which are not contributed only towards limitations of Plugins, are raised as bugs 
+Bug 3810 -
+Bug 3811 - 
+Bug 3812 -
+Bug 3813 - 
+
+
+The work is ongoing to bridge the gaps in test-plugins for full funtional tests.

@@ -473,7 +473,7 @@ void SmfTestApp::storelistsListAvailable(SmfProviderList* list ,SmfError error,S
 			}
 			
 		//display friends information
-		int count = 0;
+		
 		qDebug()<<"Number of friends retrieved = "<<list->count();
 		if(0 == list->count())
 			{
@@ -544,7 +544,7 @@ void SmfTestApp::trackSearchAvailableSlot(SmfTrackInfoList* list, SmfError error
 			}
 			
 		//display friends information
-		int count = 0;
+		
 		qDebug()<<"Number of friends retrieved = "<<list->count();
 		if(0 == list->count())
 			{
@@ -615,7 +615,7 @@ void SmfTestApp::friendsListAvailable ( SmfContactList* list, SmfError error, Sm
 		}
 		
 	//display friends information
-	int count = 0;
+	
 	qDebug()<<"Number of friends retrieved = "<<list->count();
 	if(0 == list->count())
 		{

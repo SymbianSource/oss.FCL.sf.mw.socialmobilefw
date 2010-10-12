@@ -104,7 +104,6 @@ void SmfTestApp::friendsListAvailable ( SmfContactList* list, SmfError error, Sm
 		}
 		
 	//display friends information
-	int count = 0;
 	qDebug()<<"Number of friends retrieved = "<<list->count();
 	if(0 == list->count())
 		{
@@ -193,8 +192,7 @@ void SmfTestApp::FacebookFiltered()
 			Article.append(SmfActivityObjTypeComment);
 			
 			// specify some dummy value for Article
-			int pageNum = 1,perPage=1;			  
-			SmfError err = p_smfActivityFetcher->filtered(Article);
+		  	SmfError err = p_smfActivityFetcher->filtered(Article);
 			bool connected = QObject::connect(p_smfActivityFetcher,SIGNAL(resultsAvailable(SmfActivityEntryList*, SmfError, SmfResultPage)),
 					this,SLOT(resultsAvailableSlot(SmfActivityEntryList*, SmfError, SmfResultPage)));
 			qDebug() <<"SmfActivityFetcher::filter" ;

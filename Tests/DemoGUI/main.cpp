@@ -46,12 +46,12 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
 #ifdef Q_OS_SYMBIAN    
-CAknAppUi* appUi = dynamic_cast<CAknAppUi*> (CEikonEnv::Static()->AppUi()); 
-TRAPD(error,     
-if (appUi) {        // Lock application orientation into landscape        
-appUi->SetOrientationL(CAknAppUi::EAppUiOrientationPortrait);    
-}    
-);    
+	CAknAppUi* appUi = dynamic_cast<CAknAppUi*> (CEikonEnv::Static()->AppUi()); 
+	if (appUi) {
+	// Lock application orientation into landscape        
+	TRAPD(error,(appUi->SetOrientationL(CAknAppUi::EAppUiOrientationPortrait)));
+	Q_UNUSED(error);
+	}    
 #endif
   
     
